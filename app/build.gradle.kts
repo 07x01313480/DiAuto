@@ -16,7 +16,6 @@ android {
 
     buildFeatures {
         buildConfig = true
-        aidl = true // needed for shizuku
     }
 
     externalNativeBuild {
@@ -223,7 +222,6 @@ dependencies {
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.startup:startup-runtime:1.1.1")
-    implementation("com.google.android.gms:play-services-nearby:19.3.0")
     // ViewModel and LiveData
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
     kapt("androidx.lifecycle:lifecycle-compiler:2.6.2")
@@ -246,9 +244,6 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.3.5")
     implementation("androidx.navigation:navigation-ui-ktx:2.3.5")
 
-    // DexMaker for runtime subclassing (Hotspot Fix)
-    implementation("com.linkedin.dexmaker:dexmaker:2.28.3")
-
     // Glide for image/GIF loading (custom loading screen)
     implementation("com.github.bumptech.glide:glide:4.16.0")
     kapt("com.github.bumptech.glide:compiler:4.16.0")
@@ -256,8 +251,4 @@ dependencies {
     // ZXing for QR Code generation
     implementation("com.google.zxing:core:3.5.3")
 
-    // Shizuku for root / shell access
-    implementation("dev.rikka.shizuku:api:13.1.5")
-    implementation("dev.rikka.shizuku:provider:13.1.5")
-    implementation("com.github.topjohnwu.libsu:core:6.0.0")
 }

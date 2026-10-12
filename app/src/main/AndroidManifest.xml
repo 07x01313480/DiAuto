@@ -2,10 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-sdk tools:overrideLibrary="
-        com.google.android.gms.nearby, com.google.android.gms.base, com.google.android.gms.tasks, com.google.android.gms.common,
-        rikka.shizuku.provider, rikka.shizuku.api, rikka.shizuku.shared, rikka.shizuku.aidl, com.topjohnwu.superuser" />
-
     <queries>
         <intent>
             <action android:name="android.settings.WIFI_SETTINGS" />
@@ -48,26 +44,17 @@
         android:protectionLevel="signature" />
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission
-        android:name="android.permission.NEARBY_WIFI_DEVICES"
-        android:usesPermissionFlags="neverForLocation"
-        tools:targetApi="s" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_SUPERUSER" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.BROADCAST_STICKY" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -199,11 +186,6 @@
             android:windowSoftInputMode="stateHidden|adjustResize"
             android:theme="@style/AppTheme" />
 
-        <activity
-            android:name=".main.OnboardingActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/AppTheme" />
 
         <service
             android:name=".aap.AapService"
@@ -304,24 +286,6 @@
             </intent-filter>
         </receiver>
 
-        <receiver
-            android:name=".app.AutoStartReceiver"
-            android:directBootAware="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
-            android:name=".app.WifiAutoStartReceiver"
-            android:directBootAware="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.net.wifi.STATE_CHANGE" />
-            </intent-filter>
-        </receiver>
-
         <activity
             android:name=".main.AutomationActivity"
             android:excludeFromRecents="true"
@@ -333,7 +297,6 @@
                 <action android:name="com.andrerinas.openheadunit.ACTION_SET_NIGHT_MODE" />
                 <action android:name="com.andrerinas.openheadunit.ACTION_CONNECT" />
                 <action android:name="com.andrerinas.openheadunit.ACTION_DISCONNECT" />
-                <action android:name="com.andrerinas.openheadunit.ACTION_START_SELF_MODE" />
                 <action android:name="com.andrerinas.openheadunit.ACTION_STOP_SERVICE" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -369,12 +332,5 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <provider
-            android:name="rikka.shizuku.ShizukuProvider"
-            android:authorities="${applicationId}.shizuku"
-            android:enabled="true"
-            android:exported="true"
-            android:multiprocess="false"
-            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
     </application>
 </manifest>

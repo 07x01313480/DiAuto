@@ -680,20 +680,8 @@ class MainActivity : BaseActivity() {
     }
 
     private fun setupWifiDirectInfo() {
-        val tvInfo = findViewById<android.widget.TextView>(R.id.wifi_direct_info)
-        val settings = Settings(this)
-
-        lifecycleScope.launch {
-            AapService.wifiDirectName.collectLatest { name ->
-                val isHelperMode = settings.wifiConnectionMode == 2
-                if (isHelperMode && name != null) {
-                    tvInfo.text = "WiFi Direct: $name"
-                    tvInfo.visibility = View.VISIBLE
-                } else {
-                    tvInfo.visibility = View.GONE
-                }
-            }
-        }
+        // DiAuto Lite has no WiFi Direct name to show.
+        findViewById<android.widget.TextView>(R.id.wifi_direct_info)?.visibility = View.GONE
     }
 
     override fun onStart() {
@@ -778,32 +766,13 @@ class MainActivity : BaseActivity() {
             return
         }
 
-        if (intentAction == AapService.ACTION_START_SELF_MODE || 
-           (intentData?.scheme == "headunit" && intentData.host == "selfmode")) {
-            AppLog.i("MainActivity: Forced self-mode start requested")
-            HomeFragment.forceSelfModeLaunch = true
-            val selfModeIntent = Intent(this, AapService::class.java).apply {
-                this.action = AapService.ACTION_START_SELF_MODE
-            }
-            ContextCompat.startForegroundService(this, selfModeIntent)
-        }
-
         if (intent.action == Intent.ACTION_VIEW) {
             if (intentData?.scheme == "headunit" && intentData.host == "connect") {
-                val ip = intentData.getQueryParameter("ip")
-                if (!ip.isNullOrEmpty()) {
-                    AppLog.i("Received connect intent for IP: $ip")
-                    ContextCompat.startForegroundService(this, Intent(this, AapService::class.java).apply {
-                        action = AapService.ACTION_CONNECT_SOCKET
-                    })
-                    lifecycleScope.launch(Dispatchers.IO) { App.provide(this@MainActivity).commManager.connect(ip, 5277) }
-                } else {
-                    AppLog.i("Received connect intent without IP -> triggering last session auto-connect")
-                    val autoIntent = Intent(this, AapService::class.java).apply {
-                        action = AapService.ACTION_CHECK_USB
-                    }
-                    ContextCompat.startForegroundService(this, autoIntent)
+                AppLog.i("Received connect intent -> checking USB")
+                val autoIntent = Intent(this, AapService::class.java).apply {
+                    action = AapService.ACTION_CHECK_USB
                 }
+                ContextCompat.startForegroundService(this, autoIntent)
             } else if (intentData?.scheme == "headunit" && intentData.host == "disconnect") {
                 AppLog.i("Received disconnect intent")
                 val stopIntent = Intent(this, AapService::class.java).apply {
@@ -885,18 +854,9 @@ class MainActivity : BaseActivity() {
     }
 
     fun checkSetupFlow() {
-        val appSettings = Settings(this)
-        // Show the intelligent onboarding wizard once whenever the stored version is
-        // older than the current one (covers fresh installs and upgraders alike).
-        val wizardPending = appSettings.onboardingVersion < OnboardingActivity.CURRENT_ONBOARDING_VERSION
-        if (wizardPending && !OnboardingActivity.deferredThisSession) {
-            // The wizard's permissions step handles runtime permissions, so don't also prompt here.
-            startActivity(Intent(this, OnboardingActivity::class.java))
-        } else if (!wizardPending) {
-            // Onboarding already completed (e.g. upgraders): request runtime permissions directly.
-            requestPermissions()
-        }
-        // Wizard deferred this session ("Do it later"): wait until it runs on the next launch.
+        // No setup wizard in DiAuto Lite: the first start applies the recommended display setup.
+        LiteSetup.runFirstStart(this, Settings(this))
+        requestPermissions()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {

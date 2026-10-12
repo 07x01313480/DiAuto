@@ -42,9 +42,6 @@ class App : Application() {
             ConscryptInitializer.initialize()
         }
 
-        // Root support
-        component.suExecutor.register()
-
         if (isUserUnlocked()) {
             val settings = Settings(this) // Create a Settings instance
             AppLog.init(settings, this) // Initialize AppLog with settings for conditional logging

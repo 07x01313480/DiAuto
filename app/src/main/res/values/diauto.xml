@@ -6,7 +6,7 @@
     <color name="da_accent">#A6C8FF</color>
     <color name="da_text">#F1F5FC</color>
     <color name="da_muted">#A8B6CA</color>
-    <string name="da_brand">DiAuto</string>
+    <string name="da_brand">DiAuto Lite</string>
     <string name="da_tagline">YOUR PHONE. YOUR DRIVE.</string>
     <string name="da_headline">A familiar drive.</string>
     <string name="da_description">Your maps, music and conversations.\nAndroid Auto, right here on your car display.</string>
@@ -15,8 +15,8 @@
     <string name="da_ready">Ready when you are</string>
     <string name="da_connecting">Connecting to your phone…</string>
     <string name="da_connected">Android Auto is connected</string>
-    <string name="da_hint">Pair your phone in the car’s Bluetooth settings, then choose Connect phone. Keep Bluetooth and Wi-Fi on.</string>
-    <string name="da_wireless">WIRELESS ANDROID AUTO</string>
+    <string name="da_hint">Plug your phone into the car’s USB port with a data cable, then choose Connect phone.</string>
+    <string name="da_wireless">ANDROID AUTO OVER USB</string>
     <string name="da_usb">Connect with USB</string>
     <string name="da_usb_hint">Prefer a cable? Plug in your phone.</string>
     <string name="da_settings">Settings</string>

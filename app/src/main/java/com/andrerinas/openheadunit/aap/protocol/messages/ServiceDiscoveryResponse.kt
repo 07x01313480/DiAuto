@@ -160,7 +160,7 @@ class ServiceDiscoveryResponse(private val context: Context)
             services.add(audio2)
 
             if (settings.enableAudioSink) {
-                if (!AapService.selfMode) {
+                run {
                     val audio1 = Control.Service.newBuilder().also { service ->
                         service.id = Channel.ID_AU1
                         service.mediaSinkService = Control.Service.MediaSinkService.newBuilder().also {
@@ -172,7 +172,7 @@ class ServiceDiscoveryResponse(private val context: Context)
                     services.add(audio1)
                 }
 
-                if (!AapService.selfMode && !settings.musicViaBluetooth) {
+                if (!settings.musicViaBluetooth) {
                     val audio0 = Control.Service.newBuilder().also { service ->
                         service.id = Channel.ID_AUD
                         service.mediaSinkService = Control.Service.MediaSinkService.newBuilder().also {
