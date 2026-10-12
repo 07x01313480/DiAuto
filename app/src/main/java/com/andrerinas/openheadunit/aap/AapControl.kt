@@ -46,7 +46,15 @@ internal class AapControlMedia(
             Media.MsgType.MEDIA_MESSAGE_STOP_VALUE -> return mediaSinkStopRequest(message.channel)
             Media.MsgType.MEDIA_MESSAGE_VIDEO_FOCUS_REQUEST_VALUE -> {
                 val focusRequest = message.parse(Media.VideoFocusRequestNotification.newBuilder()).build()
-                AppLog.i("RX: Video Focus Request - mode: %s, reason: %s", focusRequest.mode, focusRequest.reason)
+                AppLog.i("RX: Video Focus Request on %s - mode: %s, reason: %s", Channel.name(message.channel), focusRequest.mode, focusRequest.reason)
+
+                if (message.channel == Channel.ID_CLUSTER_VID) {
+                    // The dashboard follows the phone; a request there is about the cluster only and
+                    // must never be read as the user leaving Android Auto.
+                    val gain = focusRequest.mode != Media.VideoFocusMode.VIDEO_FOCUS_NATIVE
+                    aapTransport.send(VideoFocusEvent(gain = gain, unsolicited = false, channel = Channel.ID_CLUSTER_VID))
+                    return 0
+                }
 
                 if (focusRequest.mode == Media.VideoFocusMode.VIDEO_FOCUS_NATIVE) {
                     AppLog.i("Video Focus NATIVE received. User likely clicked Exit. Stopping transport.")
@@ -95,6 +103,11 @@ internal class AapControlMedia(
         if (channel == Channel.ID_VID) {
             aapTransport.gainVideoFocus()
         }
+        if (channel == Channel.ID_CLUSTER_VID) {
+            // The dashboard has no activity of its own to take focus; it is projected as soon as
+            // the phone sets it up, and the picture appears once DiAuto's screen hands it a surface.
+            aapTransport.send(VideoFocusEvent(gain = true, unsolicited = true, channel = Channel.ID_CLUSTER_VID))
+        }
 
         // Pushing AudioFocusNotification
         if (Channel.isAudio(channel)) {
@@ -110,6 +123,9 @@ internal class AapControlMedia(
     }
 
     private fun maxUnackedFor(channel: Int): Int {
+        // A 30 fps map needs little in flight, and a short window keeps it from competing with the
+        // main screen on a congested wireless link.
+        if (channel == Channel.ID_CLUSTER_VID) return 4
         if (channel == Channel.ID_VID) {
             val softwareHevc =
                 aapTransport.settings.videoCodec == VideoDecoder.CodecType.H265.settingsValue &&
@@ -436,9 +452,9 @@ internal class AapControlGateway(
 
         when (message.channel) {
             Channel.ID_CTR -> return serviceControl.execute(message)
-            Channel.ID_INP -> return touchControl.execute(message)
+            Channel.ID_INP, Channel.ID_CLUSTER_INP -> return touchControl.execute(message)
             Channel.ID_SEN -> return sensorControl.execute(message)
-            Channel.ID_VID, Channel.ID_AUD, Channel.ID_AU1, Channel.ID_AU2, Channel.ID_MIC -> return mediaControl.execute(message)
+            Channel.ID_VID, Channel.ID_CLUSTER_VID, Channel.ID_AUD, Channel.ID_AU1, Channel.ID_AU2, Channel.ID_MIC -> return mediaControl.execute(message)
         }
         return 0
     }

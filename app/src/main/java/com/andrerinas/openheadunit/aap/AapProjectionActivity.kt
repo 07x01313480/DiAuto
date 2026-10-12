@@ -931,6 +931,22 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        // The dashboard map needs an activity window to present on, so it lives while this
+        // screen is visible, like the main projection surface does.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            com.andrerinas.openheadunit.hud.ClusterMapScreen.show(this)
+        }
+    }
+
+    override fun onStop() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            com.andrerinas.openheadunit.hud.ClusterMapScreen.dismiss()
+        }
+        super.onStop()
+    }
+
     override fun onPause() {
         isForeground = false
         AppLog.i("AapProjectionActivity: onPause")
