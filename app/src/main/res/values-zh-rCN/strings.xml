@@ -964,7 +964,10 @@
     <string name="cluster_marker_horizontal">车辆标记：左 / 右</string>
     <string name="cluster_marker_vertical">车辆标记：上 / 下</string>
     <string name="cluster_marker_centre">居中</string>
-    <string name="cluster_map_hint">请通过方向盘菜单将仪表盘设为小屏或全屏导航。DiAuto 界面打开时显示地图。Waze 和 Google 地图支持仪表地图；转向卡片取决于应用。</string>
+    <string name="cluster_map_hint">通过方向盘菜单将仪表盘设为小屏或全屏导航。只要 Android Auto 保持连接，地图就会一直显示，即使摄像头或其他应用在前台。Waze 和 Google 地图支持仪表盘地图；转向卡片取决于应用。</string>
+    <string name="cluster_map_overlay_hint">如果打开摄像头或其他应用时仪表盘地图消失，请允许 DiAuto 显示在其他应用上层。可选：许多车机无需此权限也能保持显示。</string>
+    <string name="cluster_map_overlay_grant">允许显示在其他应用上层</string>
+    <string name="cluster_map_overlay_unavailable">此车机没有该权限的设置页面。</string>
     <string name="da_connection_setup">连接设置</string>
     <string name="da_connection_setup_hint">选择连接方式并设置车载热点。</string>
     <string name="da_diagnostics">诊断</string>

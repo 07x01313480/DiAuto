@@ -1336,6 +1336,17 @@ class SettingsFragment : Fragment() {
                     stableId = "clusterMapHint",
                     textResId = R.string.cluster_map_hint
                 ))
+                if (!com.andrerinas.openheadunit.utils.AppPermissions.isOverlayGranted(requireContext())) {
+                    items.add(SettingItem.InfoBanner(
+                        stableId = "clusterMapOverlayHint",
+                        textResId = R.string.cluster_map_overlay_hint
+                    ))
+                    items.add(SettingItem.ActionButton(
+                        stableId = "clusterMapOverlayGrant",
+                        textResId = R.string.cluster_map_overlay_grant,
+                        onClick = { openOverlaySettings() }
+                    ))
+                }
             }
         }
 
@@ -2447,6 +2458,16 @@ class SettingsFragment : Fragment() {
             }
             .setNegativeButton(R.string.cancel, null)
             .show()
+    }
+
+    private fun openOverlaySettings() {
+        val packageUri = android.net.Uri.parse("package:" + requireContext().packageName)
+        val opened = runCatching {
+            startActivity(Intent(SystemSettings.ACTION_MANAGE_OVERLAY_PERMISSION, packageUri))
+        }.isSuccess || runCatching {
+            startActivity(Intent(SystemSettings.ACTION_MANAGE_OVERLAY_PERMISSION))
+        }.isSuccess
+        if (!opened) Toast.makeText(requireContext(), R.string.cluster_map_overlay_unavailable, Toast.LENGTH_LONG).show()
     }
 
     private fun openCarClientWifiSettings() {

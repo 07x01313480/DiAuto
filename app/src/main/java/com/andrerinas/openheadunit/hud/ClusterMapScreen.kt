@@ -12,11 +12,13 @@ import android.os.Bundle
 import android.view.Display
 import android.view.Surface
 import android.view.TextureView
+import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
 import com.andrerinas.openheadunit.App
 import com.andrerinas.openheadunit.aap.protocol.messages.ClusterDisplayServices
 import com.andrerinas.openheadunit.utils.AppLog
+import com.andrerinas.openheadunit.utils.AppPermissions
 
 /**
  * Shows the Android Auto cluster stream on BYD's instrument-cluster projection display.
@@ -81,6 +83,14 @@ internal class ClusterMapScreen(
         private const val DILINK4_NAME = "fission_bg_xdjaVirtualSurface"
 
         private var current: ClusterMapScreen? = null
+        private var currentOwner: Owner? = null
+
+        /**
+         * Who the dashboard window belongs to, tried in this order. A window owned by DiAuto's
+         * screen is stopped with it, so the map would vanish whenever the camera or another app
+         * comes to the front; the first two belong to the app and stay up until the session ends.
+         */
+        private enum class Owner { OVERLAY, APP, SCREEN }
 
         /** Shows the dashboard map while a session with it enabled is up. Safe to call repeatedly. */
         fun show(context: Context) {
@@ -91,15 +101,43 @@ internal class ClusterMapScreen(
                 AppLog.w("ClusterMap: no BYD dashboard display among ${describeDisplays(context)}")
                 return
             }
-            val screen = ClusterMapScreen(context, display, ClusterDisplayServices.profile(settings))
-            runCatching { screen.show() }
-                .onSuccess { current = screen }
-                .onFailure { AppLog.e("ClusterMap: could not show on ${display.name}: ${it.message}") }
+            val profile = ClusterDisplayServices.profile(settings)
+            val app = context.applicationContext
+            val owners = buildList {
+                // "Display over other apps" lets the window outlive DiAuto's screen for certain.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && AppPermissions.isOverlayGranted(app)) add(Owner.OVERLAY)
+                // Without it, a presentation of the app's own is accepted on many firmwares.
+                add(Owner.APP)
+                add(Owner.SCREEN)
+            }
+            for (owner in owners) {
+                val screen = ClusterMapScreen(if (owner == Owner.SCREEN) context else app, display, profile)
+                if (owner == Owner.OVERLAY && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    screen.window?.setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY)
+                }
+                val shown = runCatching { screen.show() }
+                    .onFailure { AppLog.w("ClusterMap: $owner window refused on ${display.name}: ${it.message}") }
+                    .isSuccess
+                if (shown) {
+                    current = screen
+                    currentOwner = owner
+                    AppLog.i("ClusterMap: shown as $owner window" +
+                        if (owner == Owner.SCREEN) " (closes when DiAuto's screen is hidden)" else "")
+                    return
+                }
+            }
         }
 
+        /** DiAuto's screen is going away: closes the map only if that screen owns its window. */
+        fun onScreenHidden() {
+            if (currentOwner == Owner.SCREEN) dismiss()
+        }
+
+        /** The session ended. */
         fun dismiss() {
             current?.let { runCatching { it.dismiss() } }
             current = null
+            currentOwner = null
         }
 
         fun requestKeyframe(context: Context) {
