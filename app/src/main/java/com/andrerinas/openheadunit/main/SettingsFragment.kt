@@ -2584,13 +2584,10 @@ class SettingsFragment : Fragment() {
     }
 
     /**
-     * Opens Android's notification-access screen. Car firmware often has none, so the fallback
-     * shows the adb command that grants the same access, with a copy button.
-     */
-    /**
      * BYD replaces the settings app: the standard notification-access action lands on its own
      * screen, which only says the feature is not supported. Android's settings app is often still
-     * installed underneath, so its screens are tried directly first and BYD's are skipped.
+     * installed underneath, so its screens are tried directly first and BYD's are skipped. When
+     * none can be opened, the fallback shows the adb command that grants the same access.
      */
     private fun openNotificationAccessSettings() {
         val context = requireContext()
