@@ -940,6 +940,12 @@
     <string name="no_files_found">لم يتم العثور على ملفات</string>
     <string name="byd_navigation_title">شاشة BYD الأمامية ولوحة العدادات</string>
     <string name="byd_navigation_description">عرض إرشادات Android Auto على شاشات BYD المدعومة. تجريبي؛ يختلف التوافق حسب السيارة.</string>
+    <string name="nav_notification_guidance_title">إرشادات تطبيقات الملاحة على هذه الشاشة</string>
+    <string name="nav_notification_guidance_description">عرض أسهم الانعطاف والمسافة واسم الشارع من Waze أو خرائط Google المشغّلة على شاشة السيارة نفسها، بدون هاتف. تُقرأ من إشعار الملاحة؛ ميزة تجريبية. تبقى الأولوية لـ Android Auto أثناء الاتصال.</string>
+    <string name="nav_notification_access_needed">اسمح بالوصول إلى الإشعارات ليتمكن DiAuto من قراءة إرشادات تطبيق الملاحة.</string>
+    <string name="nav_notification_grant_access">السماح بالوصول إلى الإشعارات</string>
+    <string name="nav_notification_access_adb">لا تحتوي شاشة السيارة هذه على صفحة الوصول إلى الإشعارات. شغّل هذا الأمر من حاسوب متصل عبر ADB:\n\n%1$s</string>
+    <string name="nav_notification_copy_command">نسخ الأمر</string>
     <string name="da_connection_setup">إعداد الاتصال</string>
     <string name="da_connection_setup_hint">اختر طريقة الاتصال وأعدّ نقطة اتصال سيارتك.</string>
     <string name="da_diagnostics">التشخيص</string>
