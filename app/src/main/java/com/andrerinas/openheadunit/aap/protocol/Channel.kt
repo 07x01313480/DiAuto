@@ -19,7 +19,7 @@ object Channel {
     const val ID_WIFI = 13
     /** Video of the instrument-cluster (dashboard) display; declared only when it is enabled. */
     const val ID_CLUSTER_VID = 14
-    /** Input of the cluster display; declared only for the auxiliary turn-card display. */
+    /** Input of the cluster display; declared with it. */
     const val ID_CLUSTER_INP = 15
 
     fun name(channel: Int): String {

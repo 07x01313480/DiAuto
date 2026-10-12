@@ -12,7 +12,7 @@ import com.andrerinas.openheadunit.utils.Settings
  *
  * Android Auto renders a navigation app's cluster map on a video sink whose display_type is
  * CLUSTER (Waze and Google Maps both support it). The turn card is an AUXILIARY display opened on
- * KEYCODE_TURN_CARD, which the phone only accepts together with an input service for that display.
+ * KEYCODE_TURN_CARD. Each display is declared with an input service of its own.
  */
 internal object ClusterDisplayServices {
 
@@ -72,13 +72,11 @@ internal object ClusterDisplayServices {
         val services = mutableListOf(
             Control.Service.newBuilder().setId(Channel.ID_CLUSTER_VID).setMediaSinkService(sink).build()
         )
-        if (p.displayType == ClusterMapConfig.DISPLAY_TYPE_AUXILIARY) {
-            services += Control.Service.newBuilder().setId(Channel.ID_CLUSTER_INP).setInputSourceService(
-                Control.Service.InputSourceService.newBuilder()
-                    .addAllKeycodesSupported(AUXILIARY_KEYCODES)
-                    .setDisplayId(ClusterMapConfig.DISPLAY_ID)
-            ).build()
-        }
+        // Every extra display gets an input service bound to it, as LIVI declares its cluster; only
+        // the turn card takes keys.
+        val input = Control.Service.InputSourceService.newBuilder().setDisplayId(ClusterMapConfig.DISPLAY_ID)
+        if (p.displayType == ClusterMapConfig.DISPLAY_TYPE_AUXILIARY) input.addAllKeycodesSupported(AUXILIARY_KEYCODES)
+        services += Control.Service.newBuilder().setId(Channel.ID_CLUSTER_INP).setInputSourceService(input).build()
         return services
     }
 
