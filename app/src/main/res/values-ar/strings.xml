@@ -946,6 +946,7 @@
     <string name="nav_notification_grant_access">السماح بالوصول إلى الإشعارات</string>
     <string name="nav_notification_access_adb">لا تحتوي شاشة السيارة هذه على صفحة الوصول إلى الإشعارات. شغّل هذا الأمر من حاسوب متصل عبر ADB:\n\n%1$s</string>
     <string name="nav_notification_copy_command">نسخ الأمر</string>
+    <string name="nav_notification_access_path">افتح التطبيقات ← وصول خاص للتطبيقات ← الوصول إلى الإشعارات، ثم فعّل DiAuto.</string>
     <string name="da_connection_setup">إعداد الاتصال</string>
     <string name="da_connection_setup_hint">اختر طريقة الاتصال وأعدّ نقطة اتصال سيارتك.</string>
     <string name="da_diagnostics">التشخيص</string>

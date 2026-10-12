@@ -950,6 +950,7 @@
     <string name="nav_notification_grant_access">Allow notification access</string>
     <string name="nav_notification_access_adb">This head unit has no notification-access screen. Run this command from a computer connected over ADB:\n\n%1$s</string>
     <string name="nav_notification_copy_command">Copy command</string>
+    <string name="nav_notification_access_path">Open Apps → Special app access → Notification access, then turn on DiAuto.</string>
     <string name="da_connection_setup">Connection setup</string>
     <string name="da_connection_setup_hint">Choose a connection and set up your car hotspot.</string>
     <string name="da_diagnostics">Diagnostics</string>

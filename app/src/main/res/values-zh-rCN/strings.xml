@@ -947,6 +947,7 @@
     <string name="nav_notification_grant_access">允许通知访问</string>
     <string name="nav_notification_access_adb">此车机没有通知访问设置页面。请在通过 ADB 连接的电脑上运行此命令：\n\n%1$s</string>
     <string name="nav_notification_copy_command">复制命令</string>
+    <string name="nav_notification_access_path">打开“应用”→“特殊应用权限”→“通知使用权”，然后开启 DiAuto。</string>
     <string name="da_connection_setup">连接设置</string>
     <string name="da_connection_setup_hint">选择连接方式并设置车载热点。</string>
     <string name="da_diagnostics">诊断</string>

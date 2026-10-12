@@ -956,6 +956,7 @@
     <string name="nav_notification_grant_access">Permitir acceso a notificaciones</string>
     <string name="nav_notification_access_adb">Esta unidad no tiene pantalla de acceso a notificaciones. Ejecuta este comando desde un ordenador conectado por ADB:\n\n%1$s</string>
     <string name="nav_notification_copy_command">Copiar comando</string>
+    <string name="nav_notification_access_path">Abre Aplicaciones → Acceso especial de apps → Acceso a notificaciones y activa DiAuto.</string>
     <string name="da_connection_setup">Configuración de conexión</string>
     <string name="da_connection_setup_hint">Elige una conexión y configura el punto de acceso del coche.</string>
     <string name="da_diagnostics">Diagnóstico</string>
