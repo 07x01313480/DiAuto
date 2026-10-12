@@ -974,6 +974,12 @@
     <string name="cluster_map_overlay_unavailable">此车机没有该权限的设置页面。</string>
     <string name="byd_left_hand_traffic_title">靠左行驶</string>
     <string name="byd_left_hand_traffic_description">环岛按顺时针方向行驶，例如英国、日本或澳大利亚。靠右行驶的地区请保持关闭。用于在比亚迪显示屏上显示环岛出口编号。</string>
+    <string name="nav_notification_guidance_title">在此屏幕上显示导航应用的指引</string>
+    <string name="nav_notification_guidance_description">无需手机，显示车机上运行的 Waze 或 Google 地图的转向箭头、距离和街道。从其导航通知中读取；实验功能。连接 Android Auto 时以其为准。</string>
+    <string name="nav_notification_access_needed">请允许通知访问权限，以便 DiAuto 读取导航应用的指引。</string>
+    <string name="nav_notification_grant_access">允许通知访问</string>
+    <string name="nav_notification_access_adb">此车机没有通知访问设置页面。请在通过 ADB 连接的电脑上运行此命令：\n\n%1$s</string>
+    <string name="nav_notification_copy_command">复制命令</string>
     <string name="da_connection_setup">连接设置</string>
     <string name="da_connection_setup_hint">选择连接方式并设置车载热点。</string>
     <string name="da_diagnostics">诊断</string>

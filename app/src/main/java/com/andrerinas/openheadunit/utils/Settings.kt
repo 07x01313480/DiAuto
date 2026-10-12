@@ -156,6 +156,10 @@ class Settings(private val context: Context) {
     var bydLeftHandTraffic: Boolean
         get() = prefs.getBoolean("byd-left-hand-traffic", false)
         set(value) { prefs.edit().putBoolean("byd-left-hand-traffic", value).apply() }
+    /** Read turn guidance from Waze / Google Maps running on the head unit for the BYD displays. */
+    var navNotificationGuidance: Boolean
+        get() = prefs.getBoolean("nav-notification-guidance", false)
+        set(value) { prefs.edit().putBoolean("nav-notification-guidance", value).apply() }
 
     var showNavigationNotifications: Boolean
         get() = prefs.getBoolean("show-navigation-notifications", false)

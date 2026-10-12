@@ -977,6 +977,12 @@
     <string name="cluster_map_overlay_unavailable">This head unit has no screen for this permission.</string>
     <string name="byd_left_hand_traffic_title">Traffic drives on the left</string>
     <string name="byd_left_hand_traffic_description">Roundabouts turn clockwise, as in the UK, Japan or Australia. Leave off where traffic keeps right. Used to show the roundabout exit number on BYD displays.</string>
+    <string name="nav_notification_guidance_title">Directions from navigation apps on this screen</string>
+    <string name="nav_notification_guidance_description">Show turn arrows, distance and street from Waze or Google Maps running on the head unit itself, without a phone. Read from their navigation notification; experimental. Android Auto keeps priority while connected.</string>
+    <string name="nav_notification_access_needed">Allow notification access so DiAuto can read the navigation app\'s directions.</string>
+    <string name="nav_notification_grant_access">Allow notification access</string>
+    <string name="nav_notification_access_adb">This head unit has no notification-access screen. Run this command from a computer connected over ADB:\n\n%1$s</string>
+    <string name="nav_notification_copy_command">Copy command</string>
     <string name="da_connection_setup">Connection setup</string>
     <string name="da_connection_setup_hint">Choose a connection and set up your car hotspot.</string>
     <string name="da_diagnostics">Diagnostics</string>
