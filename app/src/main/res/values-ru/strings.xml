@@ -954,6 +954,10 @@
     <string name="cluster_map_detail_normal">Обычный</string>
     <string name="cluster_map_detail_large">Крупный</string>
     <string name="cluster_map_detail_extra_large">Очень крупный</string>
+    <string name="cluster_map_width">Ширина макета</string>
+    <string name="cluster_map_width_compact">Компактно (карточки над и под автомобилем)</string>
+    <string name="cluster_map_width_wide">Широко (карточки могут уйти в углы)</string>
+    <string name="cluster_map_width_full">Во всю ширину</string>
     <string name="cluster_marker_horizontal">Метка автомобиля: влево / вправо</string>
     <string name="cluster_marker_vertical">Метка автомобиля: вверх / вниз</string>
     <string name="cluster_marker_centre">По центру</string>

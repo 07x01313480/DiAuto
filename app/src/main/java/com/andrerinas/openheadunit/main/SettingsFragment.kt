@@ -88,6 +88,7 @@ class SettingsFragment : Fragment() {
     private var pendingClusterMapDetail: Int? = null
     private var pendingClusterMarkerX: Int? = null
     private var pendingClusterMarkerY: Int? = null
+    private var pendingClusterMapWidth: Int? = null
     private var pendingShowNavigationNotifications: Boolean? = null
     private var pendingSyncMediaSessionAaMetadata: Boolean? = null
     private var pendingResolution: Int? = null
@@ -220,6 +221,7 @@ class SettingsFragment : Fragment() {
         pendingClusterMapDetail = settings.clusterMapDetail
         pendingClusterMarkerX = settings.clusterMarkerX
         pendingClusterMarkerY = settings.clusterMarkerY
+        pendingClusterMapWidth = settings.clusterMapWidth
         pendingShowNavigationNotifications = settings.showNavigationNotifications
         pendingSyncMediaSessionAaMetadata = settings.syncMediaSessionWithAaMetadata
         pendingResolution = settings.resolutionId
@@ -341,6 +343,7 @@ class SettingsFragment : Fragment() {
         pendingClusterMapDetail = settings.clusterMapDetail
         pendingClusterMarkerX = settings.clusterMarkerX
         pendingClusterMarkerY = settings.clusterMarkerY
+        pendingClusterMapWidth = settings.clusterMapWidth
         pendingShowNavigationNotifications = settings.showNavigationNotifications
         pendingSyncMediaSessionAaMetadata = settings.syncMediaSessionWithAaMetadata
         pendingResolution = settings.resolutionId
@@ -469,6 +472,7 @@ class SettingsFragment : Fragment() {
         pendingClusterMapDetail?.let { settings.clusterMapDetail = it }
         pendingClusterMarkerX?.let { settings.clusterMarkerX = it }
         pendingClusterMarkerY?.let { settings.clusterMarkerY = it }
+        pendingClusterMapWidth?.let { settings.clusterMapWidth = it }
         pendingShowNavigationNotifications?.let { settings.showNavigationNotifications = it }
         pendingSyncMediaSessionAaMetadata?.let { settings.syncMediaSessionWithAaMetadata = it }
         pendingResolution?.let { settings.resolutionId = it }
@@ -598,6 +602,7 @@ class SettingsFragment : Fragment() {
                         pendingClusterMapDetail != settings.clusterMapDetail ||
                         pendingClusterMarkerX != settings.clusterMarkerX ||
                         pendingClusterMarkerY != settings.clusterMarkerY ||
+                        pendingClusterMapWidth != settings.clusterMapWidth ||
                         pendingShowNavigationNotifications != settings.showNavigationNotifications ||
                         pendingSyncMediaSessionAaMetadata != settings.syncMediaSessionWithAaMetadata ||
                         pendingResolution != settings.resolutionId ||
@@ -1270,6 +1275,10 @@ class SettingsFragment : Fragment() {
                     arrayOf(getString(R.string.cluster_map_detail_small), getString(R.string.cluster_map_detail_normal),
                         getString(R.string.cluster_map_detail_large), getString(R.string.cluster_map_detail_extra_large)),
                     pendingClusterMapDetail ?: 1) { pendingClusterMapDetail = it }
+                choice("clusterMapWidth", R.string.cluster_map_width,
+                    arrayOf(getString(R.string.cluster_map_width_compact), getString(R.string.cluster_map_width_wide),
+                        getString(R.string.cluster_map_width_full)),
+                    pendingClusterMapWidth ?: 0) { pendingClusterMapWidth = it }
                 val x = pendingClusterMarkerX ?: 0
                 items.add(SettingItem.SliderSettingEntry(
                     stableId = "clusterMarkerX",

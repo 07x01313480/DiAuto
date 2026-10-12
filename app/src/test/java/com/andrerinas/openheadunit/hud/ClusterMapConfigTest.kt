@@ -102,7 +102,29 @@ class ClusterMapConfigTest {
     }
 
     @Test
+    fun `wider layouts widen the safe area around the same centre`() {
+        val wide = ClusterMapConfig.profile(Content.MAP, Size.NORMAL, Detail.NORMAL, 0, 0, ClusterMapConfig.Width.WIDE)
+        assertEquals(1920 * 16 / 100, wide.contentInsets.left)
+        assertEquals(1920 * 16 / 100, wide.contentInsets.right)
+        assertEquals(profile().contentInsets.top, wide.contentInsets.top)
+        val full = ClusterMapConfig.insets(1920, 720, 0, 0, ClusterMapConfig.Width.FULL)
+        assertEquals(1920 * 3 / 100, full.left)
+    }
+
+    @Test
+    fun `a wide safe area still moves with the marker and stays on the panel`() {
+        for (x in -10..10) {
+            val i = ClusterMapConfig.insets(1920, 720, x, 0, ClusterMapConfig.Width.FULL)
+            assertTrue("x=$x $i", i.left >= 0 && i.right >= 0 && i.left + i.right < 1920)
+        }
+        val centre = ClusterMapConfig.insets(1920, 720, 0, 0, ClusterMapConfig.Width.WIDE)
+        val left = ClusterMapConfig.insets(1920, 720, -1, 0, ClusterMapConfig.Width.WIDE)
+        assertEquals(centre.left - 192, left.left)
+    }
+
+    @Test
     fun `unknown stored values fall back to defaults`() {
+        assertEquals(ClusterMapConfig.Width.COMPACT, ClusterMapConfig.Width.of(7))
         assertEquals(Content.MAP, Content.of(9))
         assertEquals(Size.NORMAL, Size.of(-1))
         assertEquals(Detail.NORMAL, Detail.of(7))

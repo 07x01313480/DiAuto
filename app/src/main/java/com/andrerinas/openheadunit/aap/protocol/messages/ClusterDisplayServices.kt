@@ -25,6 +25,7 @@ internal object ClusterDisplayServices {
         ClusterMapConfig.Detail.of(settings.clusterMapDetail),
         settings.clusterMarkerX,
         settings.clusterMarkerY,
+        ClusterMapConfig.Width.of(settings.clusterMapWidth),
     )
 
     fun build(settings: Settings): List<Control.Service> {

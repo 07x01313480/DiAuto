@@ -141,6 +141,10 @@ class Settings(private val context: Context) {
         get() = prefs.getInt("cluster-marker-y", 0)
         set(value) { prefs.edit().putInt("cluster-marker-y", value).apply() }
 
+    var clusterMapWidth: Int
+        get() = prefs.getInt("cluster-map-width", 0)
+        set(value) { prefs.edit().putInt("cluster-map-width", value).apply() }
+
     var showNavigationNotifications: Boolean
         get() = prefs.getBoolean("show-navigation-notifications", false)
         set(value) {
