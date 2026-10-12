@@ -944,6 +944,12 @@
     <string name="rename_notice_button">Got it</string>
     <string name="byd_navigation_title">BYD HUD and instrument cluster</string>
     <string name="byd_navigation_description">Show Android Auto directions on supported BYD displays. Experimental; vehicle compatibility varies.</string>
+    <string name="nav_notification_guidance_title">Directions from navigation apps on this screen</string>
+    <string name="nav_notification_guidance_description">Show turn arrows, distance and street from Waze or Google Maps running on the head unit itself, without a phone. Read from their navigation notification; experimental. Android Auto keeps priority while connected.</string>
+    <string name="nav_notification_access_needed">Allow notification access so DiAuto can read the navigation app\'s directions.</string>
+    <string name="nav_notification_grant_access">Allow notification access</string>
+    <string name="nav_notification_access_adb">This head unit has no notification-access screen. Run this command from a computer connected over ADB:\n\n%1$s</string>
+    <string name="nav_notification_copy_command">Copy command</string>
     <string name="da_connection_setup">Connection setup</string>
     <string name="da_connection_setup_hint">Choose a connection and set up your car hotspot.</string>
     <string name="da_diagnostics">Diagnostics</string>
