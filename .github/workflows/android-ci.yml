@@ -59,7 +59,13 @@ jobs:
       # VpnControl.kt lives solely in app/src/github. When that source-set
       # split is fixed, add an assemblePlaystoreDebug build here.
       - name: Assemble github debug APK
-        run: ./gradlew :app:testGithubDebugUnitTest :app:assembleGithubDebug :app:assembleGithubRelease --stacktrace
+        shell: bash
+        run: |
+          set -o pipefail
+          ./gradlew :app:testGithubDebugUnitTest :app:assembleGithubDebug --continue 2>&1 | tee build.log || {
+            grep -E "^e: |error: |What went wrong" -A3 build.log | head -60 | sed 's/^/::error::/'
+            exit 1
+          }
 
       - name: Upload debug APK
         if: always()
