@@ -963,10 +963,6 @@
     <string name="cluster_marker_horizontal">علامة السيارة: يسار / يمين</string>
     <string name="cluster_marker_vertical">علامة السيارة: أعلى / أسفل</string>
     <string name="cluster_marker_centre">الوسط</string>
-    <string name="cluster_cards_position">موضع البطاقات (تجريبي)</string>
-    <string name="cluster_cards_with_marker">مع مؤشر السيارة</string>
-    <string name="cluster_cards_left">الجهة اليسرى</string>
-    <string name="cluster_cards_right">الجهة اليمنى</string>
     <string name="cluster_map_hint">اضبط لوحة العدادات على وضع الملاحة الصغير أو الكامل من قائمة المقود. تبقى الخريطة ظاهرة ما دام Android Auto متصلاً، حتى خلف الكاميرا أو التطبيقات الأخرى. يدعم Waze وخرائط Google خريطة لوحة العدادات؛ أما بطاقة الانعطاف فتعتمد على التطبيق.</string>
     <string name="cluster_map_overlay_hint">إذا اختفت الخريطة من لوحة العدادات عند فتح الكاميرا أو تطبيق آخر، اسمح لـ DiAuto بالظهور فوق التطبيقات الأخرى. اختياري: كثير من الشاشات تبقيها ظاهرة بدونه.</string>
     <string name="cluster_map_overlay_grant">السماح بالظهور فوق التطبيقات الأخرى</string>

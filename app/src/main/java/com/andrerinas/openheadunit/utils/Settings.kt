@@ -145,10 +145,6 @@ class Settings(private val context: Context) {
         get() = prefs.getInt("cluster-marker-y", 0)
         set(value) { prefs.edit().putInt("cluster-marker-y", value).apply() }
 
-    var clusterCardsPosition: Int
-        get() = prefs.getInt("cluster-cards-position", 0)
-        set(value) { prefs.edit().putInt("cluster-cards-position", value).apply() }
-
     var showNavigationNotifications: Boolean
         get() = prefs.getBoolean("show-navigation-notifications", false)
         set(value) {

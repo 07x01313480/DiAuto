@@ -25,7 +25,6 @@ internal object ClusterDisplayServices {
         ClusterMapConfig.Detail.of(settings.clusterMapDetail),
         settings.clusterMarkerX,
         settings.clusterMarkerY,
-        ClusterMapConfig.Cards.of(settings.clusterCardsPosition),
     )
 
     fun build(settings: Settings): List<Control.Service> {
@@ -33,7 +32,7 @@ internal object ClusterDisplayServices {
         val p = profile(settings)
         AppLog.i("[ServiceDiscovery] Announcing dashboard display: type=${p.displayType} " +
             "codec=${p.codecWidth}x${p.codecHeight} content=${p.contentWidth}x${p.contentHeight} " +
-            "density=${p.density} cards=${p.contentInsets} marker=${p.stableInsets}")
+            "density=${p.density} insets=${p.contentInsets}")
 
         fun insets(i: ClusterMapConfig.Insets) = Media.Insets.newBuilder()
             .setTop(i.top).setBottom(i.bottom).setLeft(i.left).setRight(i.right).build()
@@ -55,7 +54,7 @@ internal object ClusterDisplayServices {
                 Media.UiConfig.newBuilder()
                     .setMargins(insets(p.margins))
                     .setContentInsets(insets(p.contentInsets))
-                    .setStableContentInsets(insets(p.stableInsets))
+                    .setStableContentInsets(insets(p.contentInsets))
                     .setUiTheme(0) // automatic: follow the phone's day/night
                     .build()
             )

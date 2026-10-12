@@ -38,23 +38,6 @@ internal object ClusterMapConfig {
         companion object { fun of(value: Int) = entries.firstOrNull { it.value == value } ?: NORMAL }
     }
 
-    /**
-     * Where the turn card and the trip card go. Android Auto takes two safe areas from the car:
-     * content insets and stable content insets. Both used to carry the marker's box; a side choice
-     * sends a narrow box at that edge as the content insets and keeps the marker's box as the
-     * stable ones, so the cards can move while the car stays put. Experimental: if a navigation
-     * app places both from the same box, the car moves with the cards.
-     */
-    enum class Cards(val value: Int) {
-        WITH_MARKER(0), LEFT(1), RIGHT(2);
-
-        companion object { fun of(value: Int) = entries.firstOrNull { it.value == value } ?: WITH_MARKER }
-    }
-
-    /** Width of the cards' box at a side, and its gap to the panel edge, in percent. */
-    const val CARD_SPAN_PERCENT = 30
-    const val CARD_EDGE_PERCENT = 2
-
     // VideoCodecResolutionType values.
     const val RES_1280x720 = 2
     const val RES_1920x1080 = 3
@@ -100,20 +83,14 @@ internal object ClusterMapConfig {
         val contentWidth: Int,
         val contentHeight: Int,
         val density: Int,
-        /** Content insets: where the cards go. Equal to [stableInsets] unless they sit at a side. */
         val contentInsets: Insets,
-        /** Stable content insets: the box the car marker is kept in. */
-        val stableInsets: Insets = contentInsets,
     ) {
         /** Half of each margin, the UiConfig margins the phone leaves blank on each side. */
         val margins: Insets get() = Insets(heightMargin / 2, heightMargin - heightMargin / 2,
             widthMargin / 2, widthMargin - widthMargin / 2)
     }
 
-    fun profile(
-        content: Content, size: Size, detail: Detail, markerX: Int, markerY: Int,
-        cards: Cards = Cards.WITH_MARKER,
-    ): Profile {
+    fun profile(content: Content, size: Size, detail: Detail, markerX: Int, markerY: Int): Profile {
         // Keep the panel's 8:3 shape inside the codec frame; the rest is margin.
         val contentWidth = size.codecWidth
         val contentHeight = contentWidth * PANEL_HEIGHT / PANEL_WIDTH
@@ -132,20 +109,8 @@ internal object ClusterMapConfig {
             // and shows less area around the car. Left unscaled on the LARGE stream on purpose:
             // its 1.5x enlargement then makes everything 1.5x larger, which is what LARGE is for.
             density = detail.dpi,
-            contentInsets = cardInsets(contentWidth, contentHeight, cards, markerX, markerY),
-            stableInsets = insets(contentWidth, contentHeight, markerX, markerY),
+            contentInsets = insets(contentWidth, contentHeight, markerX, markerY),
         )
-    }
-
-    /** The cards' box: the marker's box, or a [CARD_SPAN_PERCENT] wide column at one edge. */
-    fun cardInsets(contentWidth: Int, contentHeight: Int, cards: Cards, markerX: Int, markerY: Int): Insets {
-        val marker = insets(contentWidth, contentHeight, markerX, markerY)
-        val far = 100 - CARD_EDGE_PERCENT - CARD_SPAN_PERCENT
-        return when (cards) {
-            Cards.WITH_MARKER -> marker
-            Cards.LEFT -> marker.copy(left = contentWidth * CARD_EDGE_PERCENT / 100, right = contentWidth * far / 100)
-            Cards.RIGHT -> marker.copy(left = contentWidth * far / 100, right = contentWidth * CARD_EDGE_PERCENT / 100)
-        }
     }
 
     /** The safe area in content pixels for marker steps [markerX] and [markerY]. */
