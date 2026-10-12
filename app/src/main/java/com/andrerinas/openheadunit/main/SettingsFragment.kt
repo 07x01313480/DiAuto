@@ -82,6 +82,7 @@ class SettingsFragment : Fragment() {
     // Local state to hold changes before saving
     private var pendingUseGps: Boolean? = null
     private var pendingBydNavigationEnabled: Boolean? = null
+    private var pendingNavNotificationGuidance: Boolean? = null
     private var pendingShowNavigationNotifications: Boolean? = null
     private var pendingSyncMediaSessionAaMetadata: Boolean? = null
     private var pendingResolution: Int? = null
@@ -208,6 +209,7 @@ class SettingsFragment : Fragment() {
         // Initialize local state with current values
         pendingUseGps = settings.useGpsForNavigation
         pendingBydNavigationEnabled = settings.bydNavigationEnabled
+        pendingNavNotificationGuidance = settings.navNotificationGuidance
         pendingShowNavigationNotifications = settings.showNavigationNotifications
         pendingSyncMediaSessionAaMetadata = settings.syncMediaSessionWithAaMetadata
         pendingResolution = settings.resolutionId
@@ -323,6 +325,7 @@ class SettingsFragment : Fragment() {
     private fun reloadPendingStateFromSettings() {
         pendingUseGps = settings.useGpsForNavigation
         pendingBydNavigationEnabled = settings.bydNavigationEnabled
+        pendingNavNotificationGuidance = settings.navNotificationGuidance
         pendingShowNavigationNotifications = settings.showNavigationNotifications
         pendingSyncMediaSessionAaMetadata = settings.syncMediaSessionWithAaMetadata
         pendingResolution = settings.resolutionId
@@ -445,6 +448,7 @@ class SettingsFragment : Fragment() {
 
         pendingUseGps?.let { settings.useGpsForNavigation = it }
         pendingBydNavigationEnabled?.let { settings.bydNavigationEnabled = it }
+        pendingNavNotificationGuidance?.let { settings.navNotificationGuidance = it }
         pendingShowNavigationNotifications?.let { settings.showNavigationNotifications = it }
         pendingSyncMediaSessionAaMetadata?.let { settings.syncMediaSessionWithAaMetadata = it }
         pendingResolution?.let { settings.resolutionId = it }
@@ -568,6 +572,7 @@ class SettingsFragment : Fragment() {
         // Check for any changes
         val anyChange = pendingUseGps != settings.useGpsForNavigation ||
                         pendingBydNavigationEnabled != settings.bydNavigationEnabled ||
+                        pendingNavNotificationGuidance != settings.navNotificationGuidance ||
                         pendingShowNavigationNotifications != settings.showNavigationNotifications ||
                         pendingSyncMediaSessionAaMetadata != settings.syncMediaSessionWithAaMetadata ||
                         pendingResolution != settings.resolutionId ||
@@ -1190,6 +1195,33 @@ class SettingsFragment : Fragment() {
                     updateSettingsList()
                 }
             ))
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                items.add(SettingItem.ToggleSettingEntry(
+                    stableId = "navNotificationGuidance",
+                    nameResId = R.string.nav_notification_guidance_title,
+                    descriptionResId = R.string.nav_notification_guidance_description,
+                    isChecked = pendingNavNotificationGuidance ?: false,
+                    isEnabled = pendingBydNavigationEnabled == true,
+                    onCheckedChanged = { enabled ->
+                        pendingNavNotificationGuidance = enabled
+                        checkChanges()
+                        updateSettingsList()
+                    }
+                ))
+                if (pendingNavNotificationGuidance == true &&
+                    !com.andrerinas.openheadunit.hud.NavNotificationListener.hasAccess(requireContext())) {
+                    items.add(SettingItem.InfoBanner(
+                        stableId = "navNotificationAccessNeeded",
+                        textResId = R.string.nav_notification_access_needed
+                    ))
+                    items.add(SettingItem.ActionButton(
+                        stableId = "navNotificationGrantAccess",
+                        textResId = R.string.nav_notification_grant_access,
+                        onClick = { openNotificationAccessSettings() }
+                    ))
+                }
+            }
         }
 
         items.add(SettingItem.ToggleSettingEntry(
@@ -2250,6 +2282,29 @@ class SettingsFragment : Fragment() {
         settingsAdapter.submitList(filterSettings(fullSettingsList)) {
             scrollState?.let { settingsRecyclerView.layoutManager?.onRestoreInstanceState(it) }
         }
+    }
+
+    /**
+     * Opens Android's notification-access screen. Car firmware often has none, so the fallback
+     * shows the adb command that grants the same access, with a copy button.
+     */
+    private fun openNotificationAccessSettings() {
+        val context = requireContext()
+        val opened = runCatching {
+            startActivity(Intent(SystemSettings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+        }.isSuccess
+        if (opened) return
+        val command = com.andrerinas.openheadunit.hud.NavNotificationListener.adbGrantCommand(context)
+        MaterialAlertDialogBuilder(context, R.style.DarkAlertDialog)
+            .setTitle(R.string.nav_notification_grant_access)
+            .setMessage(getString(R.string.nav_notification_access_adb, command))
+            .setPositiveButton(R.string.nav_notification_copy_command) { _, _ ->
+                val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE)
+                    as? android.content.ClipboardManager
+                clipboard?.setPrimaryClip(android.content.ClipData.newPlainText("adb", command))
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     private fun openCarClientWifiSettings() {

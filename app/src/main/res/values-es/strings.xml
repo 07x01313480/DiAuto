@@ -950,6 +950,12 @@
     <string name="no_files_found">No se encontraron archivos</string>
     <string name="byd_navigation_title">HUD y cuadro de instrumentos BYD</string>
     <string name="byd_navigation_description">Muestra las indicaciones de Android Auto en pantallas BYD compatibles. Experimental; la compatibilidad varía según el coche.</string>
+    <string name="nav_notification_guidance_title">Indicaciones de apps de navegación en esta pantalla</string>
+    <string name="nav_notification_guidance_description">Muestra flechas de giro, distancia y calle de Waze o Google Maps ejecutándose en la propia unidad, sin teléfono. Se leen de su notificación de navegación; experimental. Android Auto tiene prioridad mientras está conectado.</string>
+    <string name="nav_notification_access_needed">Permite el acceso a notificaciones para que DiAuto pueda leer las indicaciones de la app de navegación.</string>
+    <string name="nav_notification_grant_access">Permitir acceso a notificaciones</string>
+    <string name="nav_notification_access_adb">Esta unidad no tiene pantalla de acceso a notificaciones. Ejecuta este comando desde un ordenador conectado por ADB:\n\n%1$s</string>
+    <string name="nav_notification_copy_command">Copiar comando</string>
     <string name="da_connection_setup">Configuración de conexión</string>
     <string name="da_connection_setup_hint">Elige una conexión y configura el punto de acceso del coche.</string>
     <string name="da_diagnostics">Diagnóstico</string>

@@ -941,6 +941,12 @@
     <string name="no_files_found">Файлы не найдены</string>
     <string name="byd_navigation_title">HUD и приборная панель BYD</string>
     <string name="byd_navigation_description">Показывать указания Android Auto на поддерживаемых дисплеях BYD. Экспериментально; совместимость зависит от автомобиля.</string>
+    <string name="nav_notification_guidance_title">Подсказки навигационных приложений на этом экране</string>
+    <string name="nav_notification_guidance_description">Показывать стрелки поворотов, расстояние и улицу из Waze или Google Карт, запущенных на самом головном устройстве, без телефона. Читается из уведомления навигации; экспериментально. Пока подключён Android Auto, приоритет у него.</string>
+    <string name="nav_notification_access_needed">Разрешите доступ к уведомлениям, чтобы DiAuto мог читать подсказки навигационного приложения.</string>
+    <string name="nav_notification_grant_access">Разрешить доступ к уведомлениям</string>
+    <string name="nav_notification_access_adb">На этом устройстве нет экрана доступа к уведомлениям. Выполните команду с компьютера, подключённого по ADB:\n\n%1$s</string>
+    <string name="nav_notification_copy_command">Копировать команду</string>
     <string name="da_connection_setup">Настройка подключения</string>
     <string name="da_connection_setup_hint">Выберите подключение и настройте точку доступа автомобиля.</string>
     <string name="da_diagnostics">Диагностика</string>
