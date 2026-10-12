@@ -3,7 +3,6 @@ package com.andrerinas.openheadunit.aap
 import android.content.Context
 import android.os.SystemClock
 import com.andrerinas.openheadunit.connection.AccessoryConnection
-import com.andrerinas.openheadunit.connection.SocketAccessoryConnection
 import com.andrerinas.openheadunit.decoder.MicRecorder
 import com.andrerinas.openheadunit.utils.AppLog
 import com.andrerinas.openheadunit.aap.protocol.Channel
@@ -171,13 +170,8 @@ internal interface AapRead {
                 onAaPlaybackStatus
             )
 
-            // Read framing is a transport-shape question, not a handshake-timing one:
-            // every socket-backed connection (Nearby, WiFi Direct, Hotspot, manual IP) frames
-            // one AA message per blocking read, same as it always has. Only USB/libusb bulk
-            // transfers can batch multiple messages into one read and need the FIFO reassembly
-            // in AapReadMultipleMessages. Do NOT key this off isSingleMessage - that flag only
-            // controls the Nearby-specific handshake settle-delay/drain skip in
-            // AapTransport.handshake() and is unrelated to read framing.
+            // USB and libusb bulk transfers can batch several messages into one read, so every
+            // session uses the FIFO reassembly in AapReadMultipleMessages.
             // Only ever non-null for a Stage.READER mode; Stage.ASSEMBLER modes stay with AapVideo,
             // and VideoFaultInjector.isActiveAt is what keeps the two from both claiming one mode.
             val readerFaults = VideoFaultInjector(
@@ -188,10 +182,7 @@ internal interface AapRead {
 
             val onVideoRunHoled = { aapVideo.onFragmentRunHoled() }
 
-            return if (connection is SocketAccessoryConnection)
-                AapReadSingleMessage(connection, transport.ssl, handler, onVideoRunHoled, readerFaults)
-            else
-                AapReadMultipleMessages(connection, transport.ssl, handler, onVideoRunHoled, readerFaults)
+            return AapReadMultipleMessages(connection, transport.ssl, handler, onVideoRunHoled, readerFaults)
         }
     }
 }

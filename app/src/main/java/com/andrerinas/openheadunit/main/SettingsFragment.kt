@@ -45,7 +45,6 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.activity.result.contract.ActivityResultContracts
 import android.content.pm.PackageManager
-import com.andrerinas.openheadunit.connection.NativeAaHandshakeManager
 import com.andrerinas.openheadunit.utils.BluetoothHelper
 import androidx.lifecycle.lifecycleScope
 import java.io.File
@@ -167,14 +166,6 @@ class SettingsFragment : Fragment() {
     private val RESET_ITEM_ID = 1002
     private var pendingStorageAction: (() -> Unit)? = null
 
-    private val bluetoothPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-        if (isGranted) {
-            handleNativeAaSelection()
-        } else {
-            Toast.makeText(requireContext(), R.string.bt_permission_denied, Toast.LENGTH_LONG).show()
-        }
-    }
-
     private val storagePermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
         val action = pendingStorageAction
         pendingStorageAction = null
@@ -197,16 +188,6 @@ class SettingsFragment : Fragment() {
 
     private val legacyImportSettingsLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let { importSettingsFromUri(it) }
-    }
-
-    // Re-running the onboarding wizard can change restart-sensitive display settings;
-    // reload pending state and recreate on return, mirroring the old SetupWizard callback.
-    private val onboardingLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (isAdded) {
-            reloadPendingStateFromSettings()
-            checkChanges()
-            requireActivity().recreate()
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -582,17 +563,6 @@ class SettingsFragment : Fragment() {
             )
         }
 
-        if (oldWifiMode != settings.wifiConnectionMode ||
-            oldHelperStrategy != settings.helperConnectionStrategy ||
-            oldBluetoothManagerServiceName != settings.bluetoothManagerServiceName) {
-            val intent = Intent(requireContext(), AapService::class.java).apply {
-                val mode = settings.wifiConnectionMode
-                action = if (mode == 1 || mode == 2 || mode == 3)
-                    AapService.ACTION_START_WIRELESS else AapService.ACTION_STOP_WIRELESS
-            }
-            requireContext().startService(intent)
-        }
-
         if (requiresRestart) {
             if (App.provide(requireContext()).commManager.isConnected) {
                 Toast.makeText(context, getString(R.string.stopping_service), Toast.LENGTH_SHORT).show()
@@ -741,7 +711,11 @@ class SettingsFragment : Fragment() {
             nameResId = R.string.auto_optimize,
             value = getString(R.string.auto_optimize_desc),
             onClick = { _ ->
-                onboardingLauncher.launch(Intent(requireContext(), OnboardingActivity::class.java))
+                // Applies the recommended display setup for this panel, as the first start did.
+                LiteSetup.applyRecommendedDisplay(requireActivity(), settings)
+                reloadPendingStateFromSettings()
+                checkChanges()
+                requireActivity().recreate()
             }
         ))
 
@@ -757,14 +731,6 @@ class SettingsFragment : Fragment() {
                     // Failover
                 }
             }
-        ))
-
-        // Connection mode (Feature B): drives which options appear in the Basic tab.
-        items.add(SettingItem.SettingEntry(
-            stableId = "connectionMode",
-            nameResId = R.string.connection_mode,
-            value = connectionModesLabel(),
-            onClick = { showConnectionModeDialog() }
         ))
 
         // Language Selector
@@ -849,297 +815,6 @@ class SettingsFragment : Fragment() {
                 }
             ))
         }
-
-        // --- Wireless Connection ---
-        items.add(SettingItem.CategoryHeader("wirelessConnection", R.string.category_wireless))
-
-        // Add 2.4GHz Warning Banner
-        items.add(SettingItem.InfoBanner(
-            stableId = "wireless24ghzWarning",
-            textResId = R.string.wireless_24ghz_warning
-        ))
-
-        val wirelessModeOptions = listOf(
-            getString(R.string.wireless_mode_helper),
-            getString(R.string.wireless_mode_native),
-            getString(R.string.wireless_mode_server)
-        )
-
-        val wirelessSelectedIndex = when (pendingWifiConnectionMode) {
-            2 -> 0 // Helper
-            3 -> 1 // Native
-            0, 1 -> 2 // Server
-            else -> 2
-        }
-
-        items.add(SettingItem.SegmentedButtonSettingEntry(
-            stableId = "wifiConnectionMode",
-            nameResId = R.string.wireless_mode,
-            options = wirelessModeOptions,
-            selectedIndex = wirelessSelectedIndex,
-            onOptionSelected = { index ->
-                val newMode = when (index) {
-                    0 -> 2 // Helper
-                    1 -> 3 // Native
-                    2 -> if (pendingWifiConnectionMode == 0) 0 else 1 // Keep manual/auto choice if already in server mode
-                    else -> 1
-                }
-
-                if (newMode == 3) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-                        ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                        bluetoothPermissionLauncher.launch(android.Manifest.permission.BLUETOOTH_CONNECT)
-                    } else {
-                        handleNativeAaSelection()
-                    }
-                } else {
-                    pendingWifiConnectionMode = newMode
-                    checkChanges()
-                    updateSettingsList()
-                }
-            }
-        ))
-
-        if (pendingWifiConnectionMode == 3) {
-            items.add(SettingItem.SegmentedButtonSettingEntry(
-                stableId = "nativeApTransport",
-                nameResId = R.string.native_ap_transport,
-                options = listOf(
-                    getString(R.string.native_ap_transport_wifi_direct),
-                    getString(R.string.native_ap_transport_hotspot)
-                ),
-                selectedIndex = (pendingNativeApTransport ?: 0).takeIf { it in 0..1 } ?: 0,
-                onOptionSelected = { index ->
-                    pendingNativeApTransport = index
-                    checkChanges()
-                    updateSettingsList()
-                }
-            ))
-
-            if ((pendingNativeApTransport ?: 0) == 1) {
-                items.add(SettingItem.InfoBanner(
-                    stableId = "nativeApTransportHint",
-                    textResId = R.string.native_ap_transport_hint
-                ))
-
-                // The automatic read goes through the same non-public API that a locked-down
-                // device refuses outright, so on those units this override is the only way the
-                // route can learn the network name at all.
-                val manualSsid = pendingHotspotSsid.orEmpty()
-                items.add(SettingItem.SettingEntry(
-                    stableId = "hotspotSsidOverride",
-                    nameResId = R.string.hotspot_ssid_override,
-                    value = manualSsid.ifEmpty { getString(R.string.auto) },
-                    onClick = { _ ->
-                        DialogUtils.showTextInputDialogWithMessage(
-                            requireContext(),
-                            R.string.hotspot_ssid_override,
-                            R.string.hotspot_ssid_override_message,
-                            manualSsid,
-                            { newVal ->
-                                pendingHotspotSsid = newVal.trim()
-                                checkChanges()
-                                updateSettingsList()
-                            }
-                        )
-                    }
-                ))
-
-                val manualPassword = pendingHotspotPassword.orEmpty()
-                items.add(SettingItem.SettingEntry(
-                    stableId = "hotspotPasswordOverride",
-                    nameResId = R.string.hotspot_password_override,
-                    value = if (manualPassword.isEmpty()) getString(R.string.auto) else "\u2022".repeat(manualPassword.length),
-                    onClick = { _ ->
-                        DialogUtils.showTextInputDialogWithMessage(
-                            requireContext(),
-                            R.string.hotspot_password_override,
-                            R.string.hotspot_password_override_message,
-                            manualPassword,
-                            { newVal ->
-                                pendingHotspotPassword = newVal.trim()
-                                checkChanges()
-                                updateSettingsList()
-                            }
-                        )
-                    }
-                ))
-
-                val manualInterface = pendingHotspotInterface.orEmpty()
-                items.add(SettingItem.SettingEntry(
-                    stableId = "hotspotInterfaceOverride",
-                    nameResId = R.string.hotspot_interface_override,
-                    value = manualInterface.ifEmpty { getString(R.string.auto) },
-                    onClick = { _ ->
-                        DialogUtils.showTextInputDialogWithMessage(
-                            requireContext(),
-                            R.string.hotspot_interface_override,
-                            R.string.hotspot_interface_override_message,
-                            manualInterface,
-                            { newVal ->
-                                pendingHotspotInterface = newVal.trim()
-                                checkChanges()
-                                updateSettingsList()
-                            }
-                        )
-                    }
-                ))
-            }
-
-            val currentServiceName = pendingBluetoothManagerServiceName ?: "bluetooth_manager"
-            items.add(SettingItem.SettingEntry(
-                stableId = "bluetoothAdapterServiceName",
-                nameResId = R.string.bluetooth_adapter_label,
-                value = BluetoothHelper.getAdapterDescription(requireContext(), currentServiceName),
-                onClick = { _ ->
-                    val serviceNames = BluetoothHelper.listBluetoothServices()
-                    val displayNames = serviceNames.map { name ->
-                        BluetoothHelper.getAdapterDescription(requireContext(), name)
-                    }.toTypedArray()
-
-                    val selectedIndex = serviceNames.indexOf(currentServiceName).coerceAtLeast(0)
-
-                    MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
-                        .setTitle(R.string.select_bt_adapter)
-                        .setSingleChoiceItems(displayNames, selectedIndex) { dialog, which ->
-                            dialog.dismiss()
-                            pendingBluetoothManagerServiceName = serviceNames[which]
-                            checkChanges()
-                            updateSettingsList()
-                        }
-                        .show()
-                }
-            ))
-
-            val manualSecondary = pendingManualSecondaryBluetoothServiceName
-            items.add(SettingItem.SettingEntry(
-                stableId = "manualSecondaryBluetoothService",
-                nameResId = R.string.manual_secondary_bt_service_title,
-                value = if (manualSecondary.isNullOrEmpty()) getString(R.string.auto)
-                         else BluetoothHelper.getAdapterDescription(requireContext(), manualSecondary),
-                onClick = { _ ->
-                    DialogUtils.showTextInputDialogWithMessage(
-                        requireContext(),
-                        R.string.manual_secondary_bt_service_title,
-                        R.string.manual_secondary_bt_service_message,
-                        manualSecondary ?: "",
-                        { newVal ->
-                            pendingManualSecondaryBluetoothServiceName = newVal.trim()
-                            checkChanges()
-                            updateSettingsList()
-                        }
-                    )
-                }
-            ))
-
-            items.add(SettingItem.ToggleSettingEntry(
-                stableId = "nativeWifiVersionExchange",
-                nameResId = R.string.native_wifi_version_exchange,
-                descriptionResId = R.string.native_wifi_version_exchange_description,
-                isChecked = pendingNativeWifiVersionExchange ?: false,
-                onCheckedChanged = { isChecked ->
-                    pendingNativeWifiVersionExchange = isChecked
-                    checkChanges()
-                    updateSettingsList()
-                }
-            ))
-        }
-
-        // Sub-setting for Headunit Server (Manual vs Auto)
-        if (pendingWifiConnectionMode == 0 || pendingWifiConnectionMode == 1) {
-            items.add(SettingItem.SegmentedButtonSettingEntry(
-                stableId = "serverModeSelection",
-                nameResId = R.string.server_mode_label,
-                options = listOf(getString(R.string.server_mode_manual), getString(R.string.server_mode_auto)),
-                selectedIndex = if (pendingWifiConnectionMode == 0) 0 else 1,
-                onOptionSelected = { index ->
-                    pendingWifiConnectionMode = if (index == 0) 0 else 1
-                    checkChanges()
-                    updateSettingsList()
-                }
-            ))
-
-            // Mode 1 (Auto Server) can also use the auto-hotspot feature
-            if (pendingWifiConnectionMode == 1) {
-                addHotspotToggle(items)
-            }
-        }
-
-        // Sub-setting for Wireless Helper Strategy
-        if (pendingWifiConnectionMode == 2) {
-            val helperStrategies = resources.getStringArray(R.array.helper_strategies)
-            items.add(SettingItem.SettingEntry(
-                stableId = "helperStrategy",
-                nameResId = R.string.helper_strategy_label,
-                value = helperStrategies.getOrElse(pendingHelperConnectionStrategy!!) { "" },
-                onClick = {
-                    MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
-                        .setTitle(R.string.helper_strategy_label)
-                        .setSingleChoiceItems(helperStrategies, pendingHelperConnectionStrategy!!) { dialog, which ->
-                            pendingHelperConnectionStrategy = which
-                            checkChanges()
-                            dialog.dismiss()
-                            updateSettingsList()
-                        }
-                        .show()
-                }
-            ))
-
-            // Mode 2 only shows Hotspot toggle for Strategy 4 (Headunit Hotspot)
-            if (pendingHelperConnectionStrategy == 4) {
-                addHotspotToggle(items)
-            }
-
-            if (pendingHelperConnectionStrategy == 1) { // WiFi Direct (P2P)
-                items.add(SettingItem.ToggleSettingEntry(
-                    stableId = "waitForWifi",
-                    nameResId = R.string.wait_for_wifi,
-                    descriptionResId = R.string.wait_for_wifi_description,
-                    isChecked = pendingWaitForWifi ?: false,
-                    onCheckedChanged = { isChecked ->
-                        pendingWaitForWifi = isChecked
-                        checkChanges()
-                        updateSettingsList()
-                    }
-                ))
-
-                if (pendingWaitForWifi == true) {
-                    items.add(SettingItem.SliderSettingEntry(
-                        stableId = "waitForWifiTimeout",
-                        nameResId = R.string.wait_for_wifi_timeout,
-                        value = "${pendingWaitForWifiTimeout}s",
-                        sliderValue = (pendingWaitForWifiTimeout ?: 10).toFloat(),
-                        valueFrom = 5f,
-                        valueTo = 30f,
-                        stepSize = 1f,
-                        onValueChanged = { value ->
-                            pendingWaitForWifiTimeout = value.toInt()
-                            checkChanges()
-                            updateSettingsList()
-                        }
-                    ))
-                }
-            }
-        }
-
-        val bssid = pendingStaticBSSID
-        items.add(SettingItem.SettingEntry(
-            stableId = "staticBSSID",
-            nameResId = R.string.static_bssid_title,
-            value = if (bssid == "0" || bssid == null) getString(R.string.auto) else bssid,
-            onClick = { _ ->
-                DialogUtils.showTextInputDialog(
-                    requireContext(),
-                    R.string.static_bssid_enter_value,
-                    if (bssid == "0" || bssid == null) "" else bssid,
-                    { newVal ->
-                        pendingStaticBSSID = if (newVal.isNullOrBlank()) "0" else newVal.trim()
-                        checkChanges()
-                        updateSettingsList()
-                    }
-                )
-            }
-        ))
 
         // --- Dark Mode ---
         items.add(SettingItem.CategoryHeader("darkMode", R.string.category_dark_mode))
@@ -1687,7 +1362,8 @@ class SettingsFragment : Fragment() {
             }
         ))
 
-        if (pendingForceSoftware == true) {
+        // DiAuto Lite has no bundled decoder to choose, so the device's own is the only option.
+        if (pendingForceSoftware == true && com.andrerinas.openheadunit.decoder.FfmpegHevcDecoder.isAvailable()) {
             items.add(SettingItem.SettingEntry(
                 stableId = "softwareVideoDecoder",
                 nameResId = R.string.software_video_decoder,
@@ -2061,19 +1737,7 @@ class SettingsFragment : Fragment() {
         // --- Backup Settings ---
         items.add(SettingItem.CategoryHeader("backup", R.string.category_backup))
 
-        items.add(SettingItem.SettingEntry(
-            stableId = "exportSettings",
-            nameResId = R.string.export_settings,
-            value = getString(R.string.export_settings_description),
-            onClick = { _ -> startExportSettings() }
-        ))
 
-        items.add(SettingItem.SettingEntry(
-            stableId = "importSettings",
-            nameResId = R.string.import_settings,
-            value = getString(R.string.import_settings_description),
-            onClick = { _ -> startImportSettings() }
-        ))
 
         // --- Reset Settings ---
         items.add(SettingItem.CategoryHeader("resetSettingsCategory", R.string.reset))
@@ -2101,167 +1765,6 @@ class SettingsFragment : Fragment() {
 
         // --- Debug Settings ---
         items.add(SettingItem.CategoryHeader("debug", R.string.category_debug))
-
-        items.add(SettingItem.ToggleSettingEntry(
-            stableId = "showFpsCounter",
-            nameResId = R.string.show_fps_counter,
-            descriptionResId = R.string.show_fps_counter_description,
-            isChecked = pendingShowFpsCounter!!,
-            onCheckedChanged = { isChecked ->
-                pendingShowFpsCounter = isChecked
-                checkChanges()
-                updateSettingsList()
-            }
-        ))
-
-        // Applied immediately, like the two below it: the configure ladder falls back on its own if
-        // the decoder rejects the key, so there is nothing to confirm before trying it.
-        items.add(SettingItem.ToggleSettingEntry(
-            stableId = "debugVideoLowLatency",
-            nameResId = R.string.debug_video_low_latency,
-            descriptionResId = R.string.debug_video_low_latency_description,
-            isChecked = settings.debugVideoLowLatency,
-            searchKeywords = "low latency vendor key decoder mediatek amlogic qualcomm exynos",
-            onCheckedChanged = { isChecked ->
-                settings.debugVideoLowLatency = isChecked
-                updateSettingsList()
-            }
-        ))
-
-        // Lets a well-provisioned rig run the constrained video pipeline, which is otherwise only
-        // reachable on 1GB hardware we do not have. Applies on the next connection; the configure
-        // line reports the profile and marks it FORCED.
-        val memoryProfileNames = listOf("Measure") +
-            DeviceMemoryProfile.entries.map { it.name.lowercase().replaceFirstChar { c -> c.uppercase() } }
-        val memoryProfileValues = listOf<DeviceMemoryProfile?>(null) + DeviceMemoryProfile.entries
-        items.add(SettingItem.SettingEntry(
-            stableId = "debugForceMemoryProfile",
-            nameResId = R.string.debug_force_memory_profile,
-            value = memoryProfileNames[memoryProfileValues.indexOf(settings.debugForceMemoryProfile).coerceAtLeast(0)],
-            searchKeywords = "memory profile low ram constrained buffers queue",
-            onClick = {
-                val currentIndex = memoryProfileValues.indexOf(settings.debugForceMemoryProfile).coerceAtLeast(0)
-                MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
-                    .setTitle(R.string.debug_force_memory_profile)
-                    .setSingleChoiceItems(memoryProfileNames.toTypedArray(), currentIndex) { dialog, which ->
-                        settings.debugForceMemoryProfile = memoryProfileValues[which]
-                        dialog.dismiss()
-                        updateSettingsList()
-                    }
-                    .show()
-            }
-        ))
-
-        // Puts the Native AA P2P group on 2.4 GHz, which the rig can otherwise never run: the group
-        // is requested as 5 GHz and any group that lands on 2.4 GHz is torn down and remade. Both of
-        // those come off together - see NativeGroupBandPolicy. Applies on the next connection.
-        items.add(SettingItem.ToggleSettingEntry(
-            stableId = "debugForceP2pBand24",
-            nameResId = R.string.debug_force_p2p_band_24,
-            descriptionResId = R.string.debug_force_p2p_band_24_description,
-            isChecked = settings.debugForceP2pBand24,
-            searchKeywords = "2.4 ghz band wifi direct p2p group native link outage",
-            onCheckedChanged = { isChecked ->
-                settings.debugForceP2pBand24 = isChecked
-                updateSettingsList()
-            }
-        ))
-
-        // Below Android 10 there is no band request at all, so this is the only lever those units
-        // have. Off by default: the request is a frequency whitelist, so a unit that cannot host a
-        // 5 GHz group owner fails to create one rather than falling back - see the retry in
-        // WifiDirectManager. Applies on the next connection.
-        items.add(SettingItem.ToggleSettingEntry(
-            stableId = "p2pLegacyFiveGhz",
-            nameResId = R.string.p2p_legacy_5ghz,
-            descriptionResId = R.string.p2p_legacy_5ghz_description,
-            isChecked = settings.p2pLegacyFiveGhz,
-            searchKeywords = "5 ghz band wifi direct legacy android 9 channel 36 stutter",
-            onCheckedChanged = { isChecked ->
-                settings.p2pLegacyFiveGhz = isChecked
-                updateSettingsList()
-            }
-        ))
-
-        if (settings.p2pLegacyFiveGhz) {
-            items.add(SettingItem.ToggleSettingEntry(
-                stableId = "p2pLegacyFiveGhzUpperBand",
-                nameResId = R.string.p2p_legacy_5ghz_upper,
-                descriptionResId = R.string.p2p_legacy_5ghz_upper_description,
-                isChecked = settings.p2pLegacyFiveGhzUpperBand,
-                searchKeywords = "channel 149 upper 5 ghz unii region",
-                onCheckedChanged = { isChecked ->
-                    settings.p2pLegacyFiveGhzUpperBand = isChecked
-                    updateSettingsList()
-                }
-            ))
-        }
-
-        // Deliberately corrupts the video stream so the reassembler's failure paths can be
-        // exercised on a working unit. Applies on the next connection, and every injected fault is
-        // logged loudly - see VideoFaultInjector. Applied immediately rather than through the
-        // pending/save flow, like the log level below: this is a tool, not a preference.
-        val faultModes = VideoFaultInjector.Mode.entries
-        val faultModeNames = faultModes
-            .map { it.name.lowercase().replace('_', ' ').replaceFirstChar { c -> c.uppercase() } }
-            .toTypedArray()
-        items.add(SettingItem.SettingEntry(
-            stableId = "debugVideoFaultInjection",
-            nameResId = R.string.debug_video_fault_injection,
-            value = faultModeNames[faultModes.indexOf(settings.debugVideoFaultInjection).coerceAtLeast(0)],
-            searchKeywords = "fault injection corrupt fragment reassembly test",
-            onClick = {
-                val currentIndex = faultModes.indexOf(settings.debugVideoFaultInjection).coerceAtLeast(0)
-                MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
-                    .setTitle(R.string.debug_video_fault_injection)
-                    .setSingleChoiceItems(faultModeNames, currentIndex) { dialog, which ->
-                        settings.debugVideoFaultInjection = faultModes[which]
-                        dialog.dismiss()
-                        updateSettingsList()
-                    }
-                    .show()
-            }
-        ))
-
-        if (settings.debugVideoFaultInjection != VideoFaultInjector.Mode.OFF) {
-            val faultRates = listOf(10, 30, 100, 300, 1000, 3000)
-            val faultRateNames = faultRates.map { "1 in " + it }.toTypedArray()
-            items.add(SettingItem.SettingEntry(
-                stableId = "debugVideoFaultRate",
-                nameResId = R.string.debug_video_fault_rate,
-                value = "1 in " + settings.debugVideoFaultRate,
-                onClick = {
-                    val currentIndex = faultRates.indexOf(settings.debugVideoFaultRate).coerceAtLeast(0)
-                    MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
-                        .setTitle(R.string.debug_video_fault_rate)
-                        .setSingleChoiceItems(faultRateNames, currentIndex) { dialog, which ->
-                            settings.debugVideoFaultRate = faultRates[which]
-                            dialog.dismiss()
-                            updateSettingsList()
-                        }
-                        .show()
-                }
-            ))
-
-            val faultBudgets = listOf(VideoFaultInjector.UNLIMITED_BUDGET, 5, 10, 30, 100)
-            val faultBudgetNames = faultBudgets.map { describeFaultBudget(it) }.toTypedArray()
-            items.add(SettingItem.SettingEntry(
-                stableId = "debugVideoFaultBudget",
-                nameResId = R.string.debug_video_fault_budget,
-                value = describeFaultBudget(settings.debugVideoFaultBudget),
-                onClick = {
-                    val currentIndex = faultBudgets.indexOf(settings.debugVideoFaultBudget).coerceAtLeast(0)
-                    MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
-                        .setTitle(R.string.debug_video_fault_budget)
-                        .setSingleChoiceItems(faultBudgetNames, currentIndex) { dialog, which ->
-                            settings.debugVideoFaultBudget = faultBudgets[which]
-                            dialog.dismiss()
-                            updateSettingsList()
-                        }
-                        .show()
-                }
-            ))
-        }
 
         val logLevels = LogExporter.LogLevel.entries
         val logLevelNames = logLevels.map { it.name.lowercase().replaceFirstChar { c -> c.uppercase() } }.toTypedArray()
@@ -3264,17 +2767,9 @@ class SettingsFragment : Fragment() {
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun applyWirelessSideEffects(snapshot: ImportSnapshot, context: Context = requireContext()) {
-        if (snapshot.wifiConnectionMode != settings.wifiConnectionMode ||
-            snapshot.helperConnectionStrategy != settings.helperConnectionStrategy ||
-            snapshot.bluetoothManagerServiceName != settings.bluetoothManagerServiceName) {
-            val intent = Intent(context, AapService::class.java).apply {
-                val mode = settings.wifiConnectionMode
-                action = if (mode == 1 || mode == 2 || mode == 3)
-                    AapService.ACTION_START_WIRELESS else AapService.ACTION_STOP_WIRELESS
-            }
-            context.startService(intent)
-        }
+        // DiAuto Lite has no wireless modes to restart.
     }
 
     private fun shouldRecreateAfterImport(snapshot: ImportSnapshot): Boolean {
@@ -3871,55 +3366,6 @@ class SettingsFragment : Fragment() {
         )
         dialog.show()
         editView.requestFocus()
-    }
-
-    private fun handleNativeAaSelection() {
-        // An external Bluetooth module is not a "might not work" — the phone is bonded to a chip
-        // this app cannot write to, so say so plainly and name the evidence instead of offering
-        // the generic "try it anyway".
-        val externalBtEvidence = BluetoothHelper.externalBtEvidence
-        if (externalBtEvidence != null) {
-            MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
-                .setTitle(R.string.external_bt_nativeaa)
-                .setMessage(getString(R.string.external_bt_nativeaa_desc, externalBtEvidence))
-                // Selecting the mode is still allowed: on a unit with a second, reachable radio
-                // the user can name it under the secondary-Bluetooth setting, and Native mode
-                // will then run. Without that it stays switched off, and the log says why.
-                .setPositiveButton(android.R.string.ok) { dialog, _ ->
-                    pendingWifiConnectionMode = 3
-                    checkChanges()
-                    updateSettingsList()
-                    dialog.dismiss()
-                }
-                .setNegativeButton(android.R.string.cancel, null)
-                .show()
-            return
-        }
-        if (NativeAaHandshakeManager.checkCompatibility(requireContext())) {
-            MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
-                .setTitle(R.string.supported_nativeaa)
-                .setMessage(R.string.supported_nativeaa_desc)
-                .setPositiveButton(android.R.string.ok) { dialog, _ ->
-                    pendingWifiConnectionMode = 3
-                    checkChanges()
-                    updateSettingsList()
-                    dialog.dismiss()
-                }
-                .setNegativeButton(android.R.string.cancel, null)
-                .show()
-        } else {
-            MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
-                .setTitle(R.string.not_supported_nativeaa)
-                .setMessage(R.string.not_supported_nativeaa_desc)
-                .setPositiveButton(android.R.string.ok) { dialog, _ ->
-                    pendingWifiConnectionMode = 3
-                    checkChanges()
-                    updateSettingsList()
-                    dialog.dismiss()
-                }
-                .setNegativeButton(android.R.string.cancel, null)
-                .show()
-        }
     }
 
     companion object {

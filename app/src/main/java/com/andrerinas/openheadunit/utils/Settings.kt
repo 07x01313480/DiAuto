@@ -521,23 +521,9 @@ class Settings(private val context: Context) {
         get() = prefs.getString("head-unit-model", "Desktop Head Unit")!!
         set(value) { prefs.edit().putString("head-unit-model", value).apply() }
 
-    // 0 = Manual, 1 = Auto (Headunit Server), 2 = Helper (Wifi Launcher), 3 = Native AA
+    // DiAuto Lite has no wireless modes: always 0 (manual / off), whatever an older install stored.
     var wifiConnectionMode: Int
-        get() {
-            // Migration: Check if old helper boolean exists
-            if (prefs.contains("wifi-launcher-mode")) {
-                val old = prefs.getBoolean("wifi-launcher-mode", false)
-                val newMode = if (old) 2 else 1
-                prefs.edit().putInt("wifi-connection-mode", newMode).remove("wifi-launcher-mode").apply()
-                return newMode
-            }
-            // Migration: Check if native-aa-wireless was true
-            if (prefs.getBoolean("native-aa-wireless", false)) {
-                prefs.edit().putInt("wifi-connection-mode", 3).remove("native-aa-wireless").apply()
-                return 3
-            }
-            return prefs.getInt("wifi-connection-mode", 3) // Native Android Auto; no companion app
-        }
+        get() = 0
         set(value) { prefs.edit().putInt("wifi-connection-mode", value).apply() }
 
     var videoCodec: String
@@ -609,9 +595,10 @@ class Settings(private val context: Context) {
     }
 
     /** Whether USB-related settings should be shown (empty selection shows everything). */
-    fun showsUsb(): Boolean = connectionModes.isEmpty() || ConnectionMode.USB in connectionModes
+    /** DiAuto Lite connects over USB only. */
+    fun showsUsb(): Boolean = true
     /** Whether WiFi/wireless settings should be shown (empty selection shows everything). */
-    fun showsWifi(): Boolean = connectionModes.isEmpty() || ConnectionMode.WIFI in connectionModes
+    fun showsWifi(): Boolean = false
     /** The external-GPS choice only applies when a phone is connected; false only for Self-only. */
     fun showsExternalGps(): Boolean = showsUsb() || showsWifi()
 
@@ -764,15 +751,15 @@ class Settings(private val context: Context) {
         set(value) { prefs.edit().putBoolean("auto-start-on-usb", value).apply() }
 
     var autoStartOnBoot: Boolean
-        get() = prefs.getBoolean("auto-start-on-boot", true)
+        get() = false // DiAuto Lite only auto-starts on USB
         set(value) { prefs.edit().putBoolean("auto-start-on-boot", value).apply() }
 
     var autoStartOnScreenOn: Boolean
-        get() = prefs.getBoolean("auto-start-on-screen-on", false)
+        get() = false // DiAuto Lite only auto-starts on USB
         set(value) { prefs.edit().putBoolean("auto-start-on-screen-on", value).apply() }
 
     var autoStartOnWifi: Boolean
-        get() = prefs.getBoolean("auto-start-on-wifi", false)
+        get() = false // DiAuto Lite only auto-starts on USB
         set(value) { prefs.edit().putBoolean("auto-start-on-wifi", value).apply() }
 
     var autoStartWifiSsid: String

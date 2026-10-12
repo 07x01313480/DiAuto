@@ -9,8 +9,8 @@
     <string name="da_ready">Listo cuando tú lo estés</string>
     <string name="da_connecting">Conectando con tu teléfono…</string>
     <string name="da_connected">Android Auto está conectado</string>
-    <string name="da_hint">Empareja el teléfono en los ajustes Bluetooth del coche y elige Conectar teléfono. Mantén Bluetooth y Wi-Fi activados.</string>
-    <string name="da_wireless">ANDROID AUTO INALÁMBRICO</string>
+    <string name="da_hint">Conecta el teléfono al puerto USB del coche con un cable de datos y elige Conectar teléfono.</string>
+    <string name="da_wireless">ANDROID AUTO POR USB</string>
     <string name="da_usb">Conectar por USB</string>
     <string name="da_usb_hint">¿Prefieres un cable? Conecta tu teléfono.</string>
     <string name="da_settings">Ajustes</string>
