@@ -960,6 +960,7 @@
     <string name="no_files_found">No se encontraron archivos</string>
     <string name="byd_navigation_title">HUD y cuadro de instrumentos BYD</string>
     <string name="byd_navigation_description">Muestra las indicaciones de Android Auto en pantallas BYD compatibles. Experimental; la compatibilidad varía según el coche.</string>
+    <string name="nav_notification_access_path">Abre Aplicaciones → Acceso especial de apps → Acceso a notificaciones y activa DiAuto.</string>
     <string name="cluster_map_title">Mapa de Android Auto en el cuadro (experimental)</string>
     <string name="cluster_map_description">Muestra el mapa de cuadro de la app de navegación (Waze, Google Maps) en el cuadro de instrumentos BYD. Se aplica en la próxima conexión.</string>
     <string name="cluster_map_size">Tamaño del mapa</string>

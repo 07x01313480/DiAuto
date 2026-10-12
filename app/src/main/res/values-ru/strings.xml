@@ -951,6 +951,7 @@
     <string name="no_files_found">Файлы не найдены</string>
     <string name="byd_navigation_title">HUD и приборная панель BYD</string>
     <string name="byd_navigation_description">Показывать указания Android Auto на поддерживаемых дисплеях BYD. Экспериментально; совместимость зависит от автомобиля.</string>
+    <string name="nav_notification_access_path">Откройте «Приложения» → «Специальный доступ» → «Доступ к уведомлениям» и включите DiAuto.</string>
     <string name="cluster_map_title">Карта Android Auto на приборной панели (экспериментально)</string>
     <string name="cluster_map_description">Показывать карту навигационного приложения для приборной панели (Waze, Google Карты) на приборной панели BYD. Применяется при следующем подключении.</string>
     <string name="cluster_map_size">Размер карты</string>

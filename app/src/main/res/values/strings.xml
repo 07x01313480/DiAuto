@@ -954,6 +954,7 @@
     <string name="rename_notice_button">Got it</string>
     <string name="byd_navigation_title">BYD HUD and instrument cluster</string>
     <string name="byd_navigation_description">Show Android Auto directions on supported BYD displays. Experimental; vehicle compatibility varies.</string>
+    <string name="nav_notification_access_path">Open Apps → Special app access → Notification access, then turn on DiAuto.</string>
     <string name="cluster_map_title">Android Auto map on the dashboard (experimental)</string>
     <string name="cluster_map_description">Show the navigation app\'s own cluster map (Waze, Google Maps) on the BYD instrument cluster. Applies on the next connection.</string>
     <string name="cluster_map_size">Map size</string>

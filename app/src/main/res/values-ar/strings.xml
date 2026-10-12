@@ -950,6 +950,7 @@
     <string name="no_files_found">لم يتم العثور على ملفات</string>
     <string name="byd_navigation_title">شاشة BYD الأمامية ولوحة العدادات</string>
     <string name="byd_navigation_description">عرض إرشادات Android Auto على شاشات BYD المدعومة. تجريبي؛ يختلف التوافق حسب السيارة.</string>
+    <string name="nav_notification_access_path">افتح التطبيقات ← وصول خاص للتطبيقات ← الوصول إلى الإشعارات، ثم فعّل DiAuto.</string>
     <string name="cluster_map_title">خريطة Android Auto على لوحة العدادات (تجريبي)</string>
     <string name="cluster_map_description">عرض خريطة تطبيق الملاحة الخاصة بلوحة العدادات (Waze وخرائط Google) على لوحة عدادات BYD. يُطبَّق عند الاتصال التالي.</string>
     <string name="cluster_map_size">حجم الخريطة</string>
