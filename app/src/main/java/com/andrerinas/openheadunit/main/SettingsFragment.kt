@@ -83,6 +83,12 @@ class SettingsFragment : Fragment() {
     private var pendingUseGps: Boolean? = null
     private var pendingBydNavigationEnabled: Boolean? = null
     private var pendingNavNotificationGuidance: Boolean? = null
+    private var pendingClusterMapEnabled: Boolean? = null
+    private var pendingClusterMapContent: Int? = null
+    private var pendingClusterMapSize: Int? = null
+    private var pendingClusterMapDetail: Int? = null
+    private var pendingClusterMarkerX: Int? = null
+    private var pendingClusterMarkerY: Int? = null
     private var pendingShowNavigationNotifications: Boolean? = null
     private var pendingSyncMediaSessionAaMetadata: Boolean? = null
     private var pendingResolution: Int? = null
@@ -210,6 +216,12 @@ class SettingsFragment : Fragment() {
         pendingUseGps = settings.useGpsForNavigation
         pendingBydNavigationEnabled = settings.bydNavigationEnabled
         pendingNavNotificationGuidance = settings.navNotificationGuidance
+        pendingClusterMapEnabled = settings.clusterMapEnabled
+        pendingClusterMapContent = settings.clusterMapContent
+        pendingClusterMapSize = settings.clusterMapSize
+        pendingClusterMapDetail = settings.clusterMapDetail
+        pendingClusterMarkerX = settings.clusterMarkerX
+        pendingClusterMarkerY = settings.clusterMarkerY
         pendingShowNavigationNotifications = settings.showNavigationNotifications
         pendingSyncMediaSessionAaMetadata = settings.syncMediaSessionWithAaMetadata
         pendingResolution = settings.resolutionId
@@ -326,6 +338,12 @@ class SettingsFragment : Fragment() {
         pendingUseGps = settings.useGpsForNavigation
         pendingBydNavigationEnabled = settings.bydNavigationEnabled
         pendingNavNotificationGuidance = settings.navNotificationGuidance
+        pendingClusterMapEnabled = settings.clusterMapEnabled
+        pendingClusterMapContent = settings.clusterMapContent
+        pendingClusterMapSize = settings.clusterMapSize
+        pendingClusterMapDetail = settings.clusterMapDetail
+        pendingClusterMarkerX = settings.clusterMarkerX
+        pendingClusterMarkerY = settings.clusterMarkerY
         pendingShowNavigationNotifications = settings.showNavigationNotifications
         pendingSyncMediaSessionAaMetadata = settings.syncMediaSessionWithAaMetadata
         pendingResolution = settings.resolutionId
@@ -449,6 +467,12 @@ class SettingsFragment : Fragment() {
         pendingUseGps?.let { settings.useGpsForNavigation = it }
         pendingBydNavigationEnabled?.let { settings.bydNavigationEnabled = it }
         pendingNavNotificationGuidance?.let { settings.navNotificationGuidance = it }
+        pendingClusterMapEnabled?.let { settings.clusterMapEnabled = it }
+        pendingClusterMapContent?.let { settings.clusterMapContent = it }
+        pendingClusterMapSize?.let { settings.clusterMapSize = it }
+        pendingClusterMapDetail?.let { settings.clusterMapDetail = it }
+        pendingClusterMarkerX?.let { settings.clusterMarkerX = it }
+        pendingClusterMarkerY?.let { settings.clusterMarkerY = it }
         pendingShowNavigationNotifications?.let { settings.showNavigationNotifications = it }
         pendingSyncMediaSessionAaMetadata?.let { settings.syncMediaSessionWithAaMetadata = it }
         pendingResolution?.let { settings.resolutionId = it }
@@ -573,6 +597,12 @@ class SettingsFragment : Fragment() {
         val anyChange = pendingUseGps != settings.useGpsForNavigation ||
                         pendingBydNavigationEnabled != settings.bydNavigationEnabled ||
                         pendingNavNotificationGuidance != settings.navNotificationGuidance ||
+                        pendingClusterMapEnabled != settings.clusterMapEnabled ||
+                        pendingClusterMapContent != settings.clusterMapContent ||
+                        pendingClusterMapSize != settings.clusterMapSize ||
+                        pendingClusterMapDetail != settings.clusterMapDetail ||
+                        pendingClusterMarkerX != settings.clusterMarkerX ||
+                        pendingClusterMarkerY != settings.clusterMarkerY ||
                         pendingShowNavigationNotifications != settings.showNavigationNotifications ||
                         pendingSyncMediaSessionAaMetadata != settings.syncMediaSessionWithAaMetadata ||
                         pendingResolution != settings.resolutionId ||
@@ -1221,6 +1251,91 @@ class SettingsFragment : Fragment() {
                         onClick = { openNotificationAccessSettings() }
                     ))
                 }
+            }
+        }
+
+
+        // Android Auto's own cluster map on the BYD dashboard. Declared to the phone at connection
+        // time, so every change here applies on the next connection.
+        val dashboardAvailable = com.andrerinas.openheadunit.hud.BydNavigationOutputs.available(requireContext()) ||
+            (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+                com.andrerinas.openheadunit.hud.ClusterMapScreen.findDisplay(requireContext()) != null)
+        if (dashboardAvailable) {
+            items.add(SettingItem.ToggleSettingEntry(
+                stableId = "clusterMap",
+                nameResId = R.string.cluster_map_title,
+                descriptionResId = R.string.cluster_map_description,
+                isChecked = pendingClusterMapEnabled ?: false,
+                onCheckedChanged = { enabled ->
+                    pendingClusterMapEnabled = enabled
+                    checkChanges()
+                    updateSettingsList()
+                }
+            ))
+            if (pendingClusterMapEnabled == true) {
+                fun choice(id: String, titleRes: Int, labels: Array<String>, current: Int, set: (Int) -> Unit) {
+                    val index = current.coerceIn(0, labels.size - 1)
+                    items.add(SettingItem.SettingEntry(
+                        stableId = id,
+                        nameResId = titleRes,
+                        value = labels[index],
+                        onClick = { _ ->
+                            MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
+                                .setTitle(titleRes)
+                                .setSingleChoiceItems(labels, index) { dialog, which ->
+                                    set(which)
+                                    checkChanges()
+                                    dialog.dismiss()
+                                    updateSettingsList()
+                                }
+                                .show()
+                        }
+                    ))
+                }
+                choice("clusterMapContent", R.string.cluster_map_content,
+                    arrayOf(getString(R.string.cluster_map_content_map), getString(R.string.cluster_map_content_turn_card)),
+                    pendingClusterMapContent ?: 0) { pendingClusterMapContent = it }
+                choice("clusterMapSize", R.string.cluster_map_size,
+                    arrayOf(getString(R.string.cluster_map_size_normal), getString(R.string.cluster_map_size_large)),
+                    pendingClusterMapSize ?: 0) { pendingClusterMapSize = it }
+                choice("clusterMapDetail", R.string.cluster_map_detail,
+                    arrayOf(getString(R.string.cluster_map_detail_small), getString(R.string.cluster_map_detail_normal),
+                        getString(R.string.cluster_map_detail_large), getString(R.string.cluster_map_detail_extra_large)),
+                    pendingClusterMapDetail ?: 1) { pendingClusterMapDetail = it }
+                val x = pendingClusterMarkerX ?: 0
+                items.add(SettingItem.SliderSettingEntry(
+                    stableId = "clusterMarkerX",
+                    nameResId = R.string.cluster_marker_horizontal,
+                    value = if (x == 0) getString(R.string.cluster_marker_centre) else "%+d".format(x),
+                    sliderValue = x.toFloat(),
+                    valueFrom = com.andrerinas.openheadunit.hud.ClusterMapConfig.HORIZONTAL_STEPS.first.toFloat(),
+                    valueTo = com.andrerinas.openheadunit.hud.ClusterMapConfig.HORIZONTAL_STEPS.last.toFloat(),
+                    stepSize = 1f,
+                    onValueChanged = { value ->
+                        pendingClusterMarkerX = value.toInt()
+                        checkChanges()
+                        updateSettingsList()
+                    }
+                ))
+                val y = pendingClusterMarkerY ?: 0
+                items.add(SettingItem.SliderSettingEntry(
+                    stableId = "clusterMarkerY",
+                    nameResId = R.string.cluster_marker_vertical,
+                    value = if (y == 0) getString(R.string.cluster_marker_centre) else "%+d".format(y),
+                    sliderValue = y.toFloat(),
+                    valueFrom = com.andrerinas.openheadunit.hud.ClusterMapConfig.VERTICAL_STEPS.first.toFloat(),
+                    valueTo = com.andrerinas.openheadunit.hud.ClusterMapConfig.VERTICAL_STEPS.last.toFloat(),
+                    stepSize = 1f,
+                    onValueChanged = { value ->
+                        pendingClusterMarkerY = value.toInt()
+                        checkChanges()
+                        updateSettingsList()
+                    }
+                ))
+                items.add(SettingItem.InfoBanner(
+                    stableId = "clusterMapHint",
+                    textResId = R.string.cluster_map_hint
+                ))
             }
         }
 

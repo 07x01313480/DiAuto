@@ -73,6 +73,20 @@ class AapTransport(
 
     internal val aapAudio: AapAudio
     internal val aapVideo: AapVideo
+
+    /**
+     * The dashboard stream. Lost or broken frames ask the phone for a fresh keyframe with an
+     * unsolicited focus notification on that channel only, never the main screen's recovery.
+     */
+    internal val clusterVideo: AapVideo by lazy {
+        AapVideo(
+            com.andrerinas.openheadunit.App.provide(context).clusterVideoDecoder, settings,
+            codecName = VideoDecoder.CodecType.H264.settingsValue, forceSoftware = false,
+        ) {
+            send(VideoFocusEvent(gain = true, unsolicited = true, channel = Channel.ID_CLUSTER_VID))
+        }
+    }
+    private val clusterVideoUsed: Boolean get() = settings.clusterMapEnabled
     private var sendThread: HandlerThread? = null
     private var pollThread: HandlerThread? = null
     private val micRecorder: MicRecorder = MicRecorder(settings.micSampleRate, context)
@@ -490,6 +504,11 @@ class AapTransport(
         sendThread?.quit()
         aapAudio.releaseAllFocus()
         aapVideo.release()
+        if (clusterVideoUsed) {
+            clusterVideo.release()
+            // The dashboard keeps its surface between sessions; only the codec is released.
+            com.andrerinas.openheadunit.App.provide(context).clusterVideoDecoder.stop("session ended")
+        }
 
         // Never let a half-finished cycle outlive the transport that owed the regain: the claim is
         // session state, and a stuck one would refuse every cycle of the next session.
@@ -790,6 +809,9 @@ class AapTransport(
     internal fun setSessionId(channel: Int, sessionId: Int) {
         sessionIds.put(channel, sessionId)
     }
+
+    /** Whether the phone has started a media session on [channel] in this connection. */
+    internal fun isChannelStarted(channel: Int): Boolean = sessionIds.indexOfKey(channel) >= 0
 
     override fun onMicDataAvailable(mic_buf: ByteArray, mic_audio_len: Int) {
         if (mic_audio_len > 64) {  // If we read at least 64 bytes of audio data

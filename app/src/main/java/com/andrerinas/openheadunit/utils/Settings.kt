@@ -119,6 +119,31 @@ class Settings(private val context: Context) {
     var navNotificationGuidance: Boolean
         get() = prefs.getBoolean("nav-notification-guidance", false)
         set(value) { prefs.edit().putBoolean("nav-notification-guidance", value).apply() }
+    // Instrument-cluster ("dashboard") map from Android Auto. Declared to the phone at connection
+    // time, so changes apply on the next connection. See hud/ClusterMapConfig.
+    var clusterMapEnabled: Boolean
+        get() = prefs.getBoolean("cluster-map-enabled", false)
+        set(value) { prefs.edit().putBoolean("cluster-map-enabled", value).apply() }
+
+    var clusterMapContent: Int
+        get() = prefs.getInt("cluster-map-content", 0)
+        set(value) { prefs.edit().putInt("cluster-map-content", value).apply() }
+
+    var clusterMapSize: Int
+        get() = prefs.getInt("cluster-map-size", 0)
+        set(value) { prefs.edit().putInt("cluster-map-size", value).apply() }
+
+    var clusterMapDetail: Int
+        get() = prefs.getInt("cluster-map-detail", 1)
+        set(value) { prefs.edit().putInt("cluster-map-detail", value).apply() }
+
+    var clusterMarkerX: Int
+        get() = prefs.getInt("cluster-marker-x", 0)
+        set(value) { prefs.edit().putInt("cluster-marker-x", value).apply() }
+
+    var clusterMarkerY: Int
+        get() = prefs.getInt("cluster-marker-y", 0)
+        set(value) { prefs.edit().putInt("cluster-marker-y", value).apply() }
 
     var showNavigationNotifications: Boolean
         get() = prefs.getBoolean("show-navigation-notifications", false)

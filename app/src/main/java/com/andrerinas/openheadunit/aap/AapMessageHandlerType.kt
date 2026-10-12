@@ -44,6 +44,18 @@ internal class AapMessageHandlerType(
              }
         }
 
+        // 1b. The dashboard's own video stream, decoded separately from the main screen. Same
+        // contract as the main stream: fragments carry no type of their own, so every message is
+        // offered and only what the assembler does not consume falls through to control.
+        if (message.channel == Channel.ID_CLUSTER_VID) {
+            if (transport.clusterVideo.process(message)) {
+                if (msgType == 0 || msgType == 1) {
+                    transport.sendMediaAck(message.channel)
+                }
+                return
+            }
+        }
+
         // 2. Try processing as Audio stream (Speech, System, Media)
         if (message.isAudio) {
             if (aapAudio.process(message)) {

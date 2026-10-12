@@ -700,6 +700,19 @@ class CommManager(
         }
     }
 
+    /**
+     * Asks the phone for a fresh dashboard keyframe, e.g. after the dashboard surface was
+     * recreated. Sent only once the phone has started that stream: a media message on a channel it
+     * never opened is not something to risk the session on.
+     */
+    fun requestClusterKeyframe() {
+        val transport = _transport ?: return
+        val channel = com.andrerinas.openheadunit.aap.protocol.Channel.ID_CLUSTER_VID
+        if (!transport.isChannelStarted(channel)) return
+        transport.send(com.andrerinas.openheadunit.aap.protocol.messages.VideoFocusEvent(
+            gain = true, unsolicited = true, channel = channel))
+    }
+
     /** Sends a raw [AapMessage] (e.g. touch event, video focus request) to the phone. */
     fun send(message: AapMessage) {
         if (_connectionState.value is ConnectionState.TransportStarted) {
