@@ -104,9 +104,10 @@ internal class AapControlMedia(
             aapTransport.gainVideoFocus()
         }
         if (channel == Channel.ID_CLUSTER_VID) {
-            // The dashboard has no activity of its own to take focus; it is projected as soon as
-            // the phone sets it up, and the picture appears once DiAuto's screen hands it a surface.
-            aapTransport.send(VideoFocusEvent(gain = true, unsolicited = true, channel = Channel.ID_CLUSTER_VID))
+            // The dashboard has no activity of its own to take focus. It is projected once the main
+            // screen is streaming (see AapTransport.requestClusterFocus), and the picture appears
+            // when DiAuto's screen hands it a surface.
+            aapTransport.requestClusterFocus()
         }
 
         // Pushing AudioFocusNotification
