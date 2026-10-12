@@ -67,8 +67,8 @@ android {
     }
 
     defaultConfig {
-        // Preserve upgrade compatibility and existing DiLink pairing/calibration.
-        applicationId = "com.andrerinas.headunitrevived"
+        // DiAuto Lite: its own app, so it installs next to DiAuto.
+        applicationId = "com.andrerinas.diautolite"
         minSdk = 16
         targetSdk = 36
         versionCode = 112
@@ -161,8 +161,7 @@ android {
         }
 
         getByName("debug") {
-            applicationIdSuffix = ".bydhudtest"
-            versionNameSuffix = "-hud-test"
+            versionNameSuffix = "-lite-test"
         }
     }
 
