@@ -966,7 +966,10 @@
     <string name="cluster_marker_horizontal">Marcador: izquierda / derecha</string>
     <string name="cluster_marker_vertical">Marcador: arriba / abajo</string>
     <string name="cluster_marker_centre">Centro</string>
-    <string name="cluster_map_hint">Pon el cuadro en navegación pequeña o completa desde el menú del volante. El mapa se muestra mientras la pantalla de DiAuto está abierta. Waze y Google Maps admiten el mapa de cuadro; la tarjeta de giro depende de la app.</string>
+    <string name="cluster_map_hint">Pon el tablero en navegación pequeña o a pantalla completa con el menú del volante. El mapa se mantiene mientras Android Auto esté conectado, también detrás de la cámara u otras apps. Waze y Google Maps admiten el mapa del tablero; la tarjeta de giro depende de la app.</string>
+    <string name="cluster_map_overlay_hint">Si el mapa del tablero se cierra al abrir la cámara u otra app, permite que DiAuto se muestre sobre otras apps. Opcional: muchas unidades lo mantienen sin esto.</string>
+    <string name="cluster_map_overlay_grant">Permitir mostrar sobre otras apps</string>
+    <string name="cluster_map_overlay_unavailable">Esta unidad no tiene pantalla para este permiso.</string>
     <string name="da_connection_setup">Configuración de conexión</string>
     <string name="da_connection_setup_hint">Elige una conexión y configura el punto de acceso del coche.</string>
     <string name="da_diagnostics">Diagnóstico</string>

@@ -960,7 +960,10 @@
     <string name="cluster_marker_horizontal">Car marker: left / right</string>
     <string name="cluster_marker_vertical">Car marker: up / down</string>
     <string name="cluster_marker_centre">Centre</string>
-    <string name="cluster_map_hint">Set the dashboard to Small or Full screen navi with the steering-wheel menu. The map shows while DiAuto\'s screen is open. Waze and Google Maps support the cluster map; the turn card depends on the app.</string>
+    <string name="cluster_map_hint">Set the dashboard to Small or Full screen navi with the steering-wheel menu. The map stays up while Android Auto is connected, also behind the camera or other apps. Waze and Google Maps support the cluster map; the turn card depends on the app.</string>
+    <string name="cluster_map_overlay_hint">If the dashboard map closes when the camera or another app opens, allow DiAuto to display over other apps. Optional: many head units keep it up without this.</string>
+    <string name="cluster_map_overlay_grant">Allow display over other apps</string>
+    <string name="cluster_map_overlay_unavailable">This head unit has no screen for this permission.</string>
     <string name="da_connection_setup">Connection setup</string>
     <string name="da_connection_setup_hint">Choose a connection and set up your car hotspot.</string>
     <string name="da_diagnostics">Diagnostics</string>
