@@ -102,7 +102,29 @@ class ClusterMapConfigTest {
     }
 
     @Test
+    fun `cards follow the marker by default`() {
+        val p = profile(x = 1, y = -1)
+        assertEquals(p.stableInsets, p.contentInsets)
+        assertEquals(ClusterMapConfig.insets(1920, 720, 1, -1), p.stableInsets)
+    }
+
+    @Test
+    fun `cards at a side move only the content insets`() {
+        val left = ClusterMapConfig.profile(Content.MAP, Size.NORMAL, Detail.NORMAL, 0, 1, ClusterMapConfig.Cards.LEFT)
+        assertEquals(ClusterMapConfig.insets(1920, 720, 0, 1), left.stableInsets)
+        assertEquals(1920 * 2 / 100, left.contentInsets.left)
+        assertEquals(1920 * 68 / 100, left.contentInsets.right)
+        // The cards keep the marker box's height, so the vertical slider still moves them.
+        assertEquals(left.stableInsets.top, left.contentInsets.top)
+        assertEquals(left.stableInsets.bottom, left.contentInsets.bottom)
+        val right = ClusterMapConfig.profile(Content.MAP, Size.LARGE, Detail.NORMAL, 0, 0, ClusterMapConfig.Cards.RIGHT)
+        assertEquals(1280 * 68 / 100, right.contentInsets.left)
+        assertEquals(1280 * 2 / 100, right.contentInsets.right)
+    }
+
+    @Test
     fun `unknown stored values fall back to defaults`() {
+        assertEquals(ClusterMapConfig.Cards.WITH_MARKER, ClusterMapConfig.Cards.of(5))
         assertEquals(Content.MAP, Content.of(9))
         assertEquals(Size.NORMAL, Size.of(-1))
         assertEquals(Detail.NORMAL, Detail.of(7))

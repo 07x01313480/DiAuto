@@ -89,6 +89,7 @@ class SettingsFragment : Fragment() {
     private var pendingClusterMapDetail: Int? = null
     private var pendingClusterMarkerX: Int? = null
     private var pendingClusterMarkerY: Int? = null
+    private var pendingClusterCardsPosition: Int? = null
     private var pendingShowNavigationNotifications: Boolean? = null
     private var pendingSyncMediaSessionAaMetadata: Boolean? = null
     private var pendingResolution: Int? = null
@@ -222,6 +223,7 @@ class SettingsFragment : Fragment() {
         pendingClusterMapDetail = settings.clusterMapDetail
         pendingClusterMarkerX = settings.clusterMarkerX
         pendingClusterMarkerY = settings.clusterMarkerY
+        pendingClusterCardsPosition = settings.clusterCardsPosition
         pendingShowNavigationNotifications = settings.showNavigationNotifications
         pendingSyncMediaSessionAaMetadata = settings.syncMediaSessionWithAaMetadata
         pendingResolution = settings.resolutionId
@@ -344,6 +346,7 @@ class SettingsFragment : Fragment() {
         pendingClusterMapDetail = settings.clusterMapDetail
         pendingClusterMarkerX = settings.clusterMarkerX
         pendingClusterMarkerY = settings.clusterMarkerY
+        pendingClusterCardsPosition = settings.clusterCardsPosition
         pendingShowNavigationNotifications = settings.showNavigationNotifications
         pendingSyncMediaSessionAaMetadata = settings.syncMediaSessionWithAaMetadata
         pendingResolution = settings.resolutionId
@@ -473,6 +476,7 @@ class SettingsFragment : Fragment() {
         pendingClusterMapDetail?.let { settings.clusterMapDetail = it }
         pendingClusterMarkerX?.let { settings.clusterMarkerX = it }
         pendingClusterMarkerY?.let { settings.clusterMarkerY = it }
+        pendingClusterCardsPosition?.let { settings.clusterCardsPosition = it }
         pendingShowNavigationNotifications?.let { settings.showNavigationNotifications = it }
         pendingSyncMediaSessionAaMetadata?.let { settings.syncMediaSessionWithAaMetadata = it }
         pendingResolution?.let { settings.resolutionId = it }
@@ -603,6 +607,7 @@ class SettingsFragment : Fragment() {
                         pendingClusterMapDetail != settings.clusterMapDetail ||
                         pendingClusterMarkerX != settings.clusterMarkerX ||
                         pendingClusterMarkerY != settings.clusterMarkerY ||
+                        pendingClusterCardsPosition != settings.clusterCardsPosition ||
                         pendingShowNavigationNotifications != settings.showNavigationNotifications ||
                         pendingSyncMediaSessionAaMetadata != settings.syncMediaSessionWithAaMetadata ||
                         pendingResolution != settings.resolutionId ||
@@ -1332,6 +1337,10 @@ class SettingsFragment : Fragment() {
                         updateSettingsList()
                     }
                 ))
+                choice("clusterCardsPosition", R.string.cluster_cards_position,
+                    arrayOf(getString(R.string.cluster_cards_with_marker), getString(R.string.cluster_cards_left),
+                        getString(R.string.cluster_cards_right)),
+                    pendingClusterCardsPosition ?: 0) { pendingClusterCardsPosition = it }
                 items.add(SettingItem.InfoBanner(
                     stableId = "clusterMapHint",
                     textResId = R.string.cluster_map_hint

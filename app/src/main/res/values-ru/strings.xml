@@ -964,6 +964,10 @@
     <string name="cluster_marker_horizontal">Метка автомобиля: влево / вправо</string>
     <string name="cluster_marker_vertical">Метка автомобиля: вверх / вниз</string>
     <string name="cluster_marker_centre">По центру</string>
+    <string name="cluster_cards_position">Положение карточек (экспериментально)</string>
+    <string name="cluster_cards_with_marker">Вместе с маркером автомобиля</string>
+    <string name="cluster_cards_left">Слева</string>
+    <string name="cluster_cards_right">Справа</string>
     <string name="cluster_map_hint">Включите на приборной панели малый или полноэкранный режим навигации через меню на руле. Карта остаётся, пока подключён Android Auto, в том числе под камерой и другими приложениями. Waze и Google Карты поддерживают карту на панели; карточка поворота зависит от приложения.</string>
     <string name="cluster_map_overlay_hint">Если карта на приборной панели закрывается при открытии камеры или другого приложения, разрешите DiAuto показ поверх других приложений. Необязательно: многие головные устройства сохраняют её и без этого.</string>
     <string name="cluster_map_overlay_grant">Разрешить показ поверх других приложений</string>
