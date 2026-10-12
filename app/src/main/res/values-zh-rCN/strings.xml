@@ -961,6 +961,10 @@
     <string name="cluster_map_detail_normal">标准</string>
     <string name="cluster_map_detail_large">大</string>
     <string name="cluster_map_detail_extra_large">特大</string>
+    <string name="cluster_map_width">布局宽度</string>
+    <string name="cluster_map_width_compact">紧凑（卡片位于车辆上下方）</string>
+    <string name="cluster_map_width_wide">宽（卡片可能移到角落）</string>
+    <string name="cluster_map_width_full">全宽</string>
     <string name="cluster_marker_horizontal">车辆标记：左 / 右</string>
     <string name="cluster_marker_vertical">车辆标记：上 / 下</string>
     <string name="cluster_marker_centre">居中</string>

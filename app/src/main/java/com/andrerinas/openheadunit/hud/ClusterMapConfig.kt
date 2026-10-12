@@ -38,6 +38,23 @@ internal object ClusterMapConfig {
         companion object { fun of(value: Int) = entries.firstOrNull { it.value == value } ?: NORMAL }
     }
 
+    /**
+     * How wide the safe area is. Android Auto keeps the car marker in its middle and lays the
+     * turn and trip cards out inside it: in a narrow box they stack above and below the car,
+     * covering the road ahead, while on a wide screen it puts them in the left corners, as on
+     * the main screen. The wider choices hand the dashboard map a wide box for that layout.
+     */
+    enum class Width(val value: Int, val left: Int, val right: Int) {
+        /** BYD's small navi window, as before. */
+        COMPACT(0, BASE_LEFT, BASE_RIGHT),
+        /** About two thirds of the panel, LIVI's default cluster safe area. */
+        WIDE(1, 16, 16),
+        /** Nearly the whole panel. */
+        FULL(2, 3, 3);
+
+        companion object { fun of(value: Int) = entries.firstOrNull { it.value == value } ?: COMPACT }
+    }
+
     // VideoCodecResolutionType values.
     const val RES_1280x720 = 2
     const val RES_1920x1080 = 3
@@ -90,7 +107,10 @@ internal object ClusterMapConfig {
             widthMargin / 2, widthMargin - widthMargin / 2)
     }
 
-    fun profile(content: Content, size: Size, detail: Detail, markerX: Int, markerY: Int): Profile {
+    fun profile(
+        content: Content, size: Size, detail: Detail, markerX: Int, markerY: Int,
+        width: Width = Width.COMPACT,
+    ): Profile {
         // Keep the panel's 8:3 shape inside the codec frame; the rest is margin.
         val contentWidth = size.codecWidth
         val contentHeight = contentWidth * PANEL_HEIGHT / PANEL_WIDTH
@@ -109,15 +129,17 @@ internal object ClusterMapConfig {
             // and shows less area around the car. Left unscaled on the LARGE stream on purpose:
             // its 1.5x enlargement then makes everything 1.5x larger, which is what LARGE is for.
             density = detail.dpi,
-            contentInsets = insets(contentWidth, contentHeight, markerX, markerY),
+            contentInsets = insets(contentWidth, contentHeight, markerX, markerY, width),
         )
     }
 
     /** The safe area in content pixels for marker steps [markerX] and [markerY]. */
-    fun insets(contentWidth: Int, contentHeight: Int, markerX: Int, markerY: Int): Insets {
+    fun insets(
+        contentWidth: Int, contentHeight: Int, markerX: Int, markerY: Int, width: Width = Width.COMPACT,
+    ): Insets {
         val dx = markerX.coerceIn(HORIZONTAL_STEPS) * STEP_PERCENT
         val dy = markerY.coerceIn(VERTICAL_STEPS) * STEP_PERCENT
-        val (left, right) = shift(BASE_LEFT, BASE_RIGHT, dx)
+        val (left, right) = shift(width.left, width.right, dx)
         val (top, bottom) = shift(BASE_TOP, BASE_BOTTOM, dy)
         return Insets(
             top = contentHeight * top / 100,

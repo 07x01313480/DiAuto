@@ -960,6 +960,10 @@
     <string name="cluster_map_detail_normal">عادي</string>
     <string name="cluster_map_detail_large">كبير</string>
     <string name="cluster_map_detail_extra_large">كبير جدًا</string>
+    <string name="cluster_map_width">عرض التخطيط</string>
+    <string name="cluster_map_width_compact">مضغوط (البطاقات فوق السيارة وتحتها)</string>
+    <string name="cluster_map_width_wide">عريض (قد تنتقل البطاقات إلى الزوايا)</string>
+    <string name="cluster_map_width_full">كامل العرض</string>
     <string name="cluster_marker_horizontal">علامة السيارة: يسار / يمين</string>
     <string name="cluster_marker_vertical">علامة السيارة: أعلى / أسفل</string>
     <string name="cluster_marker_centre">الوسط</string>

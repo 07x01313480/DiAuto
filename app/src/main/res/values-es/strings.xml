@@ -970,6 +970,10 @@
     <string name="cluster_map_detail_normal">Normal</string>
     <string name="cluster_map_detail_large">Grande</string>
     <string name="cluster_map_detail_extra_large">Muy grande</string>
+    <string name="cluster_map_width">Ancho del diseño</string>
+    <string name="cluster_map_width_compact">Compacto (tarjetas encima y debajo del coche)</string>
+    <string name="cluster_map_width_wide">Ancho (las tarjetas pueden ir a las esquinas)</string>
+    <string name="cluster_map_width_full">Ancho completo</string>
     <string name="cluster_marker_horizontal">Marcador: izquierda / derecha</string>
     <string name="cluster_marker_vertical">Marcador: arriba / abajo</string>
     <string name="cluster_marker_centre">Centro</string>
