@@ -2403,12 +2403,39 @@ class SettingsFragment : Fragment() {
      * Opens Android's notification-access screen. Car firmware often has none, so the fallback
      * shows the adb command that grants the same access, with a copy button.
      */
+    /**
+     * BYD replaces the settings app: the standard notification-access action lands on its own
+     * screen, which only says the feature is not supported. Android's settings app is often still
+     * installed underneath, so its screens are tried directly first and BYD's are skipped.
+     */
     private fun openNotificationAccessSettings() {
         val context = requireContext()
-        val opened = runCatching {
-            startActivity(Intent(SystemSettings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
-        }.isSuccess
-        if (opened) return
+        val pm = context.packageManager
+        val me = android.content.ComponentName(context, com.andrerinas.openheadunit.hud.NavNotificationListener::class.java)
+        val aosp = "com.android.settings"
+        val candidates = mutableListOf<Pair<Intent, Boolean>>() // intent to whether it needs the path hint
+        if (Build.VERSION.SDK_INT >= 30) {
+            fun detail() = Intent(SystemSettings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS)
+                .putExtra(SystemSettings.EXTRA_NOTIFICATION_LISTENER_COMPONENT_NAME, me.flattenToString())
+            candidates += detail().setPackage(aosp) to false
+            candidates += detail().setClassName(aosp, "$aosp.Settings\$NotificationAccessDetailsActivity") to false
+        }
+        candidates += Intent(SystemSettings.ACTION_NOTIFICATION_LISTENER_SETTINGS).setPackage(aosp) to false
+        candidates += Intent().setClassName(aosp, "$aosp.Settings\$NotificationAccessSettingsActivity") to false
+        candidates += Intent(SystemSettings.ACTION_NOTIFICATION_LISTENER_SETTINGS) to false
+        candidates += Intent().setClassName(aosp, "$aosp.Settings") to true
+
+        for ((intent, needsHint) in candidates) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            val target = runCatching { pm.resolveActivity(intent, 0)?.activityInfo }.getOrNull() ?: continue
+            if (target.packageName.startsWith("com.byd")) continue
+            if (runCatching { startActivity(intent) }.isSuccess) {
+                AppLog.i("Notification access: opened ${target.packageName}/${target.name}")
+                if (needsHint) Toast.makeText(context, R.string.nav_notification_access_path, Toast.LENGTH_LONG).show()
+                return
+            }
+        }
+        AppLog.i("Notification access: no settings screen can grant it here")
         val command = com.andrerinas.openheadunit.hud.NavNotificationListener.adbGrantCommand(context)
         MaterialAlertDialogBuilder(context, R.style.DarkAlertDialog)
             .setTitle(R.string.nav_notification_grant_access)
