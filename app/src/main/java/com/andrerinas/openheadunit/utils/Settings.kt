@@ -688,6 +688,11 @@ class Settings(private val context: Context) {
         get() = prefs.getBoolean("separate-audio-streams", false)
         set(value) { prefs.edit().putBoolean("separate-audio-streams", value).apply() }
 
+    /** Label AA audio for the car's own Media / Navi / Voice volume sliders. See aap/CarVolumeGroups. */
+    var carVolumeGroups: Boolean
+        get() = prefs.getBoolean("car-volume-groups", false)
+        set(value) { prefs.edit().putBoolean("car-volume-groups", value).apply() }
+
     var micInputSource: Int
         get() = prefs.getInt("mic-input-source", 0) // Default: DEFAULT
         set(value) { prefs.edit().putInt("mic-input-source", value).apply() }

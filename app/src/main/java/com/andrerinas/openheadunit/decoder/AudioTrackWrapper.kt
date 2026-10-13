@@ -28,7 +28,10 @@ class AudioTrackWrapper(
     private val audioQueueCapacity: Int = 0,
     private val mixer: AudioMixer? = null,
     private val channelId: Int = -1,
-    private val attachHwDspEqualizer: Boolean = false
+    private val attachHwDspEqualizer: Boolean = false,
+    /** When set, the track is labelled by usage alone so the car's volume groups can tell it apart. */
+    private val usage: Int? = null,
+    private val contentType: Int? = null
 ) : Thread() {
 
     private data class AudioChunk(
@@ -391,11 +394,20 @@ class AudioTrackWrapper(
                 )
             }
 
-            val audioAttributes = AudioAttributes.Builder()
-                .setUsage(usage)
-                .setContentType(contentType)
-                .setLegacyStreamType(stream)
-                .build()
+            val explicitUsage = this.usage
+            val audioAttributes = if (explicitUsage != null) {
+                // No legacy stream type: it would override the usage the car routes volume by.
+                AudioAttributes.Builder()
+                    .setUsage(explicitUsage)
+                    .setContentType(this.contentType ?: contentType)
+                    .build()
+            } else {
+                AudioAttributes.Builder()
+                    .setUsage(usage)
+                    .setContentType(contentType)
+                    .setLegacyStreamType(stream)
+                    .build()
+            }
 
             val audioFormat = AudioFormat.Builder()
                 .setSampleRate(sampleRateInHz)
