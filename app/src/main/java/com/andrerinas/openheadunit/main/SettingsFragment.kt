@@ -107,6 +107,7 @@ class SettingsFragment : Fragment() {
     private var pendingStaticAudioFocus: Boolean? = null
     private var pendingPlaybackFocusMode: PlaybackFocusPolicy.Mode? = null
     private var pendingSeparateAudioStreams: Boolean? = null
+    private var pendingCarVolumeGroups: Boolean? = null
     private var pendingUseAacAudio: Boolean? = null
     private var pendingAttachHwDspEqualizer: Boolean? = null
     private var pendingMicInputSource: Int? = null
@@ -223,6 +224,7 @@ class SettingsFragment : Fragment() {
         pendingStaticAudioFocus = settings.staticAudioFocus
         pendingPlaybackFocusMode = settings.playbackFocusMode
         pendingSeparateAudioStreams = settings.separateAudioStreams
+        pendingCarVolumeGroups = settings.carVolumeGroups
         pendingUseAacAudio = settings.useAacAudio
         pendingAttachHwDspEqualizer = settings.attachHwDspEqualizer
         pendingMicInputSource = settings.micInputSource
@@ -345,6 +347,7 @@ class SettingsFragment : Fragment() {
         pendingStaticAudioFocus = settings.staticAudioFocus
         pendingPlaybackFocusMode = settings.playbackFocusMode
         pendingSeparateAudioStreams = settings.separateAudioStreams
+        pendingCarVolumeGroups = settings.carVolumeGroups
         pendingUseAacAudio = settings.useAacAudio
         pendingAttachHwDspEqualizer = settings.attachHwDspEqualizer
         pendingEnableRotary = settings.enableRotary
@@ -477,6 +480,7 @@ class SettingsFragment : Fragment() {
         pendingStaticAudioFocus?.let { settings.staticAudioFocus = it }
         pendingPlaybackFocusMode?.let { settings.playbackFocusMode = it }
         pendingSeparateAudioStreams?.let { settings.separateAudioStreams = it }
+        pendingCarVolumeGroups?.let { settings.carVolumeGroups = it }
         pendingUseAacAudio?.let { settings.useAacAudio = it }
         pendingAttachHwDspEqualizer?.let { settings.attachHwDspEqualizer = it }
         pendingMicInputSource?.let { settings.micInputSource = it }
@@ -596,6 +600,7 @@ class SettingsFragment : Fragment() {
                         pendingStaticAudioFocus != settings.staticAudioFocus ||
                         pendingPlaybackFocusMode != settings.playbackFocusMode ||
                         pendingSeparateAudioStreams != settings.separateAudioStreams ||
+                        pendingCarVolumeGroups != settings.carVolumeGroups ||
                         pendingUseAacAudio != settings.useAacAudio ||
                         pendingAttachHwDspEqualizer != settings.attachHwDspEqualizer ||
                         pendingMicInputSource != settings.micInputSource ||
@@ -651,6 +656,7 @@ class SettingsFragment : Fragment() {
                           pendingStaticAudioFocus != settings.staticAudioFocus ||
                           pendingPlaybackFocusMode != settings.playbackFocusMode ||
                           pendingSeparateAudioStreams != settings.separateAudioStreams ||
+                          pendingCarVolumeGroups != settings.carVolumeGroups ||
                           pendingUseAacAudio != settings.useAacAudio ||
                           pendingAttachHwDspEqualizer != settings.attachHwDspEqualizer ||
                           pendingAudioLatencyMultiplier != settings.audioLatencyMultiplier ||
@@ -1523,6 +1529,24 @@ class SettingsFragment : Fragment() {
                 updateSettingsList()
             }
         ))
+
+        items.add(SettingItem.ToggleSettingEntry(
+            stableId = "carVolumeGroups",
+            nameResId = R.string.car_volume_groups,
+            descriptionResId = R.string.car_volume_groups_description,
+            isChecked = pendingCarVolumeGroups ?: false,
+            onCheckedChanged = { isChecked ->
+                pendingCarVolumeGroups = isChecked
+                checkChanges()
+                updateSettingsList()
+            }
+        ))
+        if (pendingCarVolumeGroups == true && pendingStaticAudioFocus == true) {
+            items.add(SettingItem.InfoBanner(
+                stableId = "carVolumeGroupsStaticHint",
+                textResId = R.string.car_volume_groups_static_hint
+            ))
+        }
 
         items.add(SettingItem.ToggleSettingEntry(
             stableId = "useAacAudio",
