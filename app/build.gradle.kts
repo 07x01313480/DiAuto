@@ -66,7 +66,7 @@ android {
     }
 
     defaultConfig {
-        // DiAuto Lite: its own app, so it installs next to DiAuto.
+        // DiAuto Wire (USB-only build): its own app, so it installs next to DiAuto.
         applicationId = "com.andrerinas.diautolite"
         minSdk = 16
         targetSdk = 36
@@ -160,7 +160,7 @@ android {
         }
 
         getByName("debug") {
-            versionNameSuffix = "-lite-test"
+            versionNameSuffix = "-wire-test"
         }
     }
 

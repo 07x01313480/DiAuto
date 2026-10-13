@@ -4,7 +4,7 @@ import android.view.Surface
 import com.andrerinas.openheadunit.utils.AppLog
 
 /**
- * DiAuto Lite ships without the bundled FFmpeg HEVC decoder, so this is never available and the
+ * DiAuto Wire ships without the bundled FFmpeg HEVC decoder, so this is never available and the
  * head unit's own hardware decoder is always used. The API is kept so the decoder pipeline stays
  * unchanged.
  */
@@ -18,7 +18,7 @@ class FfmpegHevcDecoder(
     val isStarted: Boolean get() = false
 
     fun start(): Boolean {
-        AppLog.w("DiAuto Lite has no software HEVC decoder; using the hardware decoder")
+        AppLog.w("DiAuto Wire has no software HEVC decoder; using the hardware decoder")
         return false
     }
 

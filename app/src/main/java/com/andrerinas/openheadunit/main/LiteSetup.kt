@@ -13,7 +13,7 @@ import kotlin.math.abs
 import kotlin.math.sqrt
 
 /**
- * DiAuto Lite has no setup wizard. What the wizard applied for a fresh install — the display
+ * DiAuto Wire has no setup wizard. What the wizard applied for a fresh install — the display
  * setup the panel warrants and a fitting DPI — is applied once on first start instead, and can be
  * applied again from Settings ("Auto-optimize").
  */

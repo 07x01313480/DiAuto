@@ -314,7 +314,7 @@ class AutoStartFragment : Fragment() {
             ))
         }
 
-        // DiAuto Lite is USB-only, so every remaining option applies.
+        // DiAuto Wire is USB-only, so every remaining option applies.
         val filtered = items
 
         settingsAdapter.submitList(filtered) {

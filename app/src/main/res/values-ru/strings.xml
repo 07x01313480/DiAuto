@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DiAuto Lite</string>
+    <string name="app_name">DiAuto Wire</string>
     <string name="menu">Меню</string>
     <string name="settings">Настройки</string>
 
@@ -12,7 +12,7 @@
     <string name="video">Android Auto</string>
     <string name="self_mode">Автономный режим</string>
     <string name="to_android_auto">В Android Auto</string>
-    <string name="title">DiAuto Lite</string>
+    <string name="title">DiAuto Wire</string>
     <string name="remove">Удалить</string>
     <string name="usb">USB</string>
     <string name="wifi">Wi‑Fi</string>

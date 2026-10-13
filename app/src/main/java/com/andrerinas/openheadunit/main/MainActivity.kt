@@ -680,7 +680,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun setupWifiDirectInfo() {
-        // DiAuto Lite has no WiFi Direct name to show.
+        // DiAuto Wire has no WiFi Direct name to show.
         findViewById<android.widget.TextView>(R.id.wifi_direct_info)?.visibility = View.GONE
     }
 
@@ -854,7 +854,7 @@ class MainActivity : BaseActivity() {
     }
 
     fun checkSetupFlow() {
-        // No setup wizard in DiAuto Lite: the first start applies the recommended display setup.
+        // No setup wizard in DiAuto Wire: the first start applies the recommended display setup.
         LiteSetup.runFirstStart(this, Settings(this))
         // Once per app start, never per resume. The permission prompt pauses this screen, and on
         // head units that close it straight away (or the user backs out of it) asking again in
