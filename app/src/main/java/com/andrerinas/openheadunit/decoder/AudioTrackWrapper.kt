@@ -31,7 +31,9 @@ class AudioTrackWrapper(
     private val attachHwDspEqualizer: Boolean = false,
     /** When set, the track is labelled by usage alone so the car's volume groups can tell it apart. */
     private val usage: Int? = null,
-    private val contentType: Int? = null
+    private val contentType: Int? = null,
+    /** A vendor stream type (BYD's Navi slider is one); only the legacy constructor accepts it. */
+    private val legacyStream: Int? = null
 ) : Thread() {
 
     private data class AudioChunk(
@@ -377,6 +379,22 @@ class AudioTrackWrapper(
         val bufferSize = if (minBufferSize > 0) minBufferSize * multiplier else minBufferSize
 
         AppLog.i("Audio stream: $stream buffer size: $bufferSize (min: $minBufferSize) sampleRateInHz: $sampleRateInHz channelCount: $channelCount")
+
+        legacyStream?.let { vendorStream ->
+            val track = try {
+                @Suppress("DEPRECATION")
+                AudioTrack(vendorStream, sampleRateInHz, channelConfig, dataFormat, bufferSize, AudioTrack.MODE_STREAM)
+            } catch (e: Exception) {
+                AppLog.w("AudioTrack on stream type $vendorStream failed: ${e.message}")
+                null
+            }
+            if (track?.state == AudioTrack.STATE_INITIALIZED) {
+                AppLog.i("Audio channel $channelId plays on stream type $vendorStream")
+                return track
+            }
+            track?.release()
+            AppLog.w("Stream type $vendorStream is not accepted here; using the Android audio label instead")
+        }
 
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val (usage, contentType) = when (stream) {

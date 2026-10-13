@@ -27,6 +27,9 @@ internal class AapAudio(
     // The car's own Media / Navi / Voice sliders. Needs one track per channel, which the static
     // focus mode's shared mixer does not have.
     private val carVolumeGroups = settings.carVolumeGroups && !settings.staticAudioFocus
+    private val carNaviStream = settings.carNaviStream
+    private val carVoiceStream = settings.carVoiceStream
+    private val dilink = if (carVolumeGroups) CarVolumeGroups.detectDiLink() else 0
 
     /** Whether Android Auto has a voice session open, which makes the speech channel the Assistant. */
     @Volatile
@@ -293,8 +296,8 @@ internal class AapAudio(
 
         val config = AudioConfigs.get(channel)
         val stream = AudioConfigs.stream(channel, separateAudioStreams || carVolumeGroups)
-        val labels = if (carVolumeGroups)
-            CarVolumeGroups.attributesFor(channel, assistantActive, Build.VERSION.SDK_INT) else null
+        val route = if (carVolumeGroups) CarVolumeGroups.routeFor(
+            channel, assistantActive, Build.VERSION.SDK_INT, carNaviStream, carVoiceStream, dilink) else null
 
         val offset = when (channel) {
             Channel.ID_AUD -> mediaVolumeOffset
@@ -312,8 +315,8 @@ internal class AapAudio(
         }
 
         AppLog.i("AudioDecoder.start: channel=$channel, stream=$stream, gain=$gain, sampleRate=${config.sampleRate}, numberOfBits=${config.numberOfBits}, numberOfChannels=${config.numberOfChannels}, isAac=$useAacAudio, latencyMultiplier=$effectiveMultiplier, queueCapacity=$audioQueueCapacity, attachHwDspEqualizer=$attachHwDspEqualizer")
-        if (labels != null) AppLog.i("AapAudio: ${Channel.name(channel)} labelled usage=${labels.usage} for the car's volume sliders")
-        audioDecoder.start(channel, stream, config.sampleRate, config.numberOfBits, config.numberOfChannels, useAacAudio, gain, effectiveMultiplier, audioQueueCapacity, staticAudioFocus, attachHwDspEqualizer, labels?.usage, labels?.contentType)
+        if (route != null) AppLog.i("AapAudio: ${Channel.name(channel)} for the car's sliders: usage=${route.usage} streamType=${route.legacyStream ?: "-"} (DiLink $dilink)")
+        audioDecoder.start(channel, stream, config.sampleRate, config.numberOfBits, config.numberOfChannels, useAacAudio, gain, effectiveMultiplier, audioQueueCapacity, staticAudioFocus, attachHwDspEqualizer, route?.usage, route?.contentType, route?.legacyStream)
         onAudioPlaybackStarted(channel)
     }
 
@@ -408,7 +411,7 @@ internal class AapAudio(
     fun onVoiceSessionChanged(active: Boolean) {
         if (assistantActive == active) return
         assistantActive = active
-        if (!carVolumeGroups || !CarVolumeGroups.speechLabelChanges(Build.VERSION.SDK_INT)) return
+        if (!carVolumeGroups || !CarVolumeGroups.speechRouteChanges(Build.VERSION.SDK_INT, carNaviStream, carVoiceStream, dilink)) return
         if (audioDecoder.getTrack(Channel.ID_AU1) != null) {
             AppLog.i("AapAudio: voice session ${if (active) "started" else "ended"} - rebuilding the speech track for the ${if (active) "Voice" else "Navi"} slider")
             audioDecoder.stop(Channel.ID_AU1)
