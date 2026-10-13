@@ -1303,7 +1303,7 @@ class SettingsFragment : Fragment() {
             }
         ))
 
-        // DiAuto Lite has no bundled decoder to choose, so the device's own is the only option.
+        // DiAuto Wire has no bundled decoder to choose, so the device's own is the only option.
         if (pendingForceSoftware == true && com.andrerinas.openheadunit.decoder.FfmpegHevcDecoder.isAvailable()) {
             items.add(SettingItem.SettingEntry(
                 stableId = "softwareVideoDecoder",
@@ -2710,7 +2710,7 @@ class SettingsFragment : Fragment() {
 
     @Suppress("UNUSED_PARAMETER")
     private fun applyWirelessSideEffects(snapshot: ImportSnapshot, context: Context = requireContext()) {
-        // DiAuto Lite has no wireless modes to restart.
+        // DiAuto Wire has no wireless modes to restart.
     }
 
     private fun shouldRecreateAfterImport(snapshot: ImportSnapshot): Boolean {

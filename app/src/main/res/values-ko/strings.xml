@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DiAuto Lite</string>
+    <string name="app_name">DiAuto Wire</string>
     <string name="menu">메뉴</string>
     <string name="settings">설정</string>
 
@@ -12,7 +12,7 @@
     <string name="video">Android Auto</string>
     <string name="self_mode">단독 모드</string>
     <string name="to_android_auto">Android Auto로 전환</string>
-    <string name="title">DiAuto Lite</string>
+    <string name="title">DiAuto Wire</string>
     <string name="remove">제거</string>
     <string name="usb">USB</string>
     <string name="wifi">Wi-Fi</string>

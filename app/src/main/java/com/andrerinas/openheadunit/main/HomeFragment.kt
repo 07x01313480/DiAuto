@@ -18,7 +18,7 @@ import com.andrerinas.openheadunit.connection.CommManager
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.launch
 
-/** The car's standby screen. DiAuto Lite connects over USB only. */
+/** The car's standby screen. DiAuto Wire connects over USB only. */
 class HomeFragment : Fragment() {
     private val app get() = App.provide(requireContext())
 

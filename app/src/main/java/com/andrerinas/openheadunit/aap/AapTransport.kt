@@ -110,7 +110,7 @@ class AapTransport(
     private var aapRead: AapRead? = null
     var isQuittingAllowed: Boolean = false
 
-    /** DiAuto Lite runs over USB only. */
+    /** DiAuto Wire runs over USB only. */
     val isWireless: Boolean get() = false
     var ignoreNextStopRequest: Boolean = false
     /** Why the last [startHandshake] failed, for callers that report it. */

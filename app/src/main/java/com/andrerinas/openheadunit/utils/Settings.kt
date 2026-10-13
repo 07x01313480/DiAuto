@@ -509,7 +509,7 @@ class Settings(private val context: Context) {
         get() = prefs.getString("head-unit-model", "Desktop Head Unit")!!
         set(value) { prefs.edit().putString("head-unit-model", value).apply() }
 
-    // DiAuto Lite has no wireless modes: always 0 (manual / off), whatever an older install stored.
+    // DiAuto Wire has no wireless modes: always 0 (manual / off), whatever an older install stored.
     var wifiConnectionMode: Int
         get() = 0
         set(value) { prefs.edit().putInt("wifi-connection-mode", value).apply() }
@@ -583,7 +583,7 @@ class Settings(private val context: Context) {
     }
 
     /** Whether USB-related settings should be shown (empty selection shows everything). */
-    /** DiAuto Lite connects over USB only. */
+    /** DiAuto Wire connects over USB only. */
     fun showsUsb(): Boolean = true
     /** Whether WiFi/wireless settings should be shown (empty selection shows everything). */
     fun showsWifi(): Boolean = false
@@ -739,15 +739,15 @@ class Settings(private val context: Context) {
         set(value) { prefs.edit().putBoolean("auto-start-on-usb", value).apply() }
 
     var autoStartOnBoot: Boolean
-        get() = false // DiAuto Lite only auto-starts on USB
+        get() = false // DiAuto Wire only auto-starts on USB
         set(value) { prefs.edit().putBoolean("auto-start-on-boot", value).apply() }
 
     var autoStartOnScreenOn: Boolean
-        get() = false // DiAuto Lite only auto-starts on USB
+        get() = false // DiAuto Wire only auto-starts on USB
         set(value) { prefs.edit().putBoolean("auto-start-on-screen-on", value).apply() }
 
     var autoStartOnWifi: Boolean
-        get() = false // DiAuto Lite only auto-starts on USB
+        get() = false // DiAuto Wire only auto-starts on USB
         set(value) { prefs.edit().putBoolean("auto-start-on-wifi", value).apply() }
 
     var autoStartWifiSsid: String
