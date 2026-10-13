@@ -1,6 +1,8 @@
 package com.andrerinas.openheadunit.hud
 
 import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.content.pm.PermissionInfo
 import android.os.Build
@@ -54,8 +56,14 @@ internal object BydVehicleProbe {
         out += lines.map { "  $it" }
     }
 
-    private fun relatedPackages(context: Context): List<String> =
+    // Firmware only: reports are posted publicly, and a user's own apps (a "navi" app, say) are
+    // neither BYD interfaces nor anyone else's business.
+    private fun systemPackages(context: Context): List<PackageInfo> =
         context.packageManager.getInstalledPackages(0)
+            .filter { (it.applicationInfo?.flags ?: 0) and ApplicationInfo.FLAG_SYSTEM != 0 }
+
+    private fun relatedPackages(context: Context): List<String> =
+        systemPackages(context)
             .map { it.packageName to (it.versionName ?: "?") }
             .filter { (name, _) -> packageHints.any { name.contains(it, ignoreCase = true) } }
             .sortedBy { it.first }
@@ -68,7 +76,7 @@ internal object BydVehicleProbe {
         val result = sortedMapOf<String, String>()
         // Per package rather than one GET_PERMISSIONS listing: on a unit with hundreds of system
         // packages the single call can exceed the binder transaction limit.
-        for (name in pm.getInstalledPackages(0).map { it.packageName }) {
+        for (name in systemPackages(context).map { it.packageName }) {
             val pkg = runCatching { pm.getPackageInfo(name, PackageManager.GET_PERMISSIONS) }.getOrNull() ?: continue
             for (perm in pkg.permissions.orEmpty()) {
                 if (!perm.name.contains("BYD", ignoreCase = true)) continue
