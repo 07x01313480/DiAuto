@@ -856,7 +856,14 @@ class MainActivity : BaseActivity() {
     fun checkSetupFlow() {
         // No setup wizard in DiAuto Lite: the first start applies the recommended display setup.
         LiteSetup.runFirstStart(this, Settings(this))
-        requestPermissions()
+        // Once per app start, never per resume. The permission prompt pauses this screen, and on
+        // head units that close it straight away (or the user backs out of it) asking again in
+        // onResume reopened it at once: an endless loop that made the system bars blink and left
+        // Back with nothing to do. Anything still missing is in Settings > Permissions.
+        if (!permissionsRequestedThisRun) {
+            permissionsRequestedThisRun = true
+            requestPermissions()
+        }
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -896,6 +903,8 @@ class MainActivity : BaseActivity() {
     }
 
     companion object {
+        /** Whether this app process has already asked for the missing permissions. */
+        private var permissionsRequestedThisRun = false
         private const val permissionRequestCode = 97
         const val EXTRA_LAUNCH_SOURCE = "launch_source"
 
