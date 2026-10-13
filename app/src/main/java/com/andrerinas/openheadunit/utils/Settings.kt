@@ -115,6 +115,40 @@ class Settings(private val context: Context) {
         get() = prefs.getBoolean("byd-navigation-enabled", false)
         set(value) { prefs.edit().putBoolean("byd-navigation-enabled", value).apply() }
 
+    /** Read turn guidance from Waze / Google Maps running on the head unit for the BYD displays. */
+    var navNotificationGuidance: Boolean
+        get() = prefs.getBoolean("nav-notification-guidance", false)
+        set(value) { prefs.edit().putBoolean("nav-notification-guidance", value).apply() }
+    // Instrument-cluster ("dashboard") map from Android Auto. Declared to the phone at connection
+    // time, so changes apply on the next connection. See hud/ClusterMapConfig.
+    var clusterMapEnabled: Boolean
+        get() = prefs.getBoolean("cluster-map-enabled", false)
+        set(value) { prefs.edit().putBoolean("cluster-map-enabled", value).apply() }
+
+    var clusterMapContent: Int
+        get() = prefs.getInt("cluster-map-content", 0)
+        set(value) { prefs.edit().putInt("cluster-map-content", value).apply() }
+
+    var clusterMapSize: Int
+        get() = prefs.getInt("cluster-map-size", 0)
+        set(value) { prefs.edit().putInt("cluster-map-size", value).apply() }
+
+    var clusterMapDetail: Int
+        get() = prefs.getInt("cluster-map-detail", 1)
+        set(value) { prefs.edit().putInt("cluster-map-detail", value).apply() }
+
+    var clusterMarkerX: Int
+        get() = prefs.getInt("cluster-marker-x", 0)
+        set(value) { prefs.edit().putInt("cluster-marker-x", value).apply() }
+
+    var clusterMarkerY: Int
+        get() = prefs.getInt("cluster-marker-y", 0)
+        set(value) { prefs.edit().putInt("cluster-marker-y", value).apply() }
+
+    var clusterMapWidth: Int
+        get() = prefs.getInt("cluster-map-width", 0)
+        set(value) { prefs.edit().putInt("cluster-map-width", value).apply() }
+
     var showNavigationNotifications: Boolean
         get() = prefs.getBoolean("show-navigation-notifications", false)
         set(value) {
@@ -539,18 +573,19 @@ class Settings(private val context: Context) {
     /**
      * The connection types the user actually uses (multi-select). Drives which settings are shown.
      * Empty = nothing chosen yet, so everything is shown. Migrated once from the legacy
-     * single-choice [primaryConnection].
+     * single-choice [primaryConnection]. Leaving WiFi out also keeps every wireless transport
+     * down, see [com.andrerinas.openheadunit.aap.WirelessScopePolicy].
      */
     var connectionModes: Set<ConnectionMode>
         get() {
-            val stored = prefs.getStringSet("connection-modes", null)
+            val stored = prefs.getStringSet(KEY_CONNECTION_MODES, null)
             if (stored != null) return stored.mapNotNull { ConnectionMode.fromKey(it) }.toSet()
             val migrated = migrateLegacyConnectionModes()
             connectionModes = migrated
             return migrated
         }
         set(value) {
-            prefs.edit().putStringSet("connection-modes", value.map { it.key }.toSet()).apply()
+            prefs.edit().putStringSet(KEY_CONNECTION_MODES, value.map { it.key }.toSet()).apply()
         }
 
     private fun migrateLegacyConnectionModes(): Set<ConnectionMode> = when (primaryConnection) {
@@ -644,6 +679,21 @@ class Settings(private val context: Context) {
     var separateAudioStreams: Boolean
         get() = prefs.getBoolean("separate-audio-streams", false)
         set(value) { prefs.edit().putBoolean("separate-audio-streams", value).apply() }
+
+    /** Label AA audio for the car's own Media / Navi / Voice volume sliders. See aap/CarVolumeGroups. */
+    var carVolumeGroups: Boolean
+        get() = prefs.getBoolean("car-volume-groups", false)
+        set(value) { prefs.edit().putBoolean("car-volume-groups", value).apply() }
+
+    /** Stream for the car's Navi slider: -1 automatic (BYD DiLink default), 0 Android label only, 1..20. */
+    var carNaviStream: Int
+        get() = prefs.getInt("car-navi-stream", -1)
+        set(value) { prefs.edit().putInt("car-navi-stream", value).apply() }
+
+    /** Stream for the Assistant's voice: -1 same as navigation, 0 Android label only, 1..20. */
+    var carVoiceStream: Int
+        get() = prefs.getInt("car-voice-stream", -1)
+        set(value) { prefs.edit().putInt("car-voice-stream", value).apply() }
 
     var micInputSource: Int
         get() = prefs.getInt("mic-input-source", 0) // Default: DEFAULT
@@ -1018,6 +1068,8 @@ class Settings(private val context: Context) {
         const val KEY_MEDIA_VOLUME_OFFSET = "media-volume-offset"
         const val KEY_ASSISTANT_VOLUME_OFFSET = "assistant-volume-offset"
         const val KEY_NAVIGATION_VOLUME_OFFSET = "navigation-volume-offset"
+
+        const val KEY_CONNECTION_MODES = "connection-modes"
 
         const val AUTO_CONNECT_LAST_SESSION = "last-session"
         const val AUTO_CONNECT_SELF_MODE = "self-mode"

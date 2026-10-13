@@ -14,6 +14,8 @@
         <package android:name="com.byd.amapservice" />
         <package android:name="com.ts.car.someip.service" />
         <package android:name="com.google.android.projection.gearhead" />
+        <!-- Android's own settings app, still present under BYD's on many head units. -->
+        <package android:name="com.android.settings" />
     </queries>
 
     <uses-feature
@@ -214,6 +216,16 @@
             </intent-filter>
         </service>
         <service android:name=".location.GpsLocationService" />
+        <!-- Opt-in: reads Waze / Google Maps navigation notifications for the BYD HUD and cluster. -->
+        <service
+            android:name=".hud.NavNotificationListener"
+            android:exported="true"
+            android:label="@string/nav_notification_guidance_title"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
 
         <!-- AndroidX MediaButtonReceiver: Routes MEDIA_BUTTON intents to AapService
              on Android 8+ where implicit broadcasts to manifest-registered receivers

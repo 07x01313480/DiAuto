@@ -82,6 +82,14 @@ class SettingsFragment : Fragment() {
     // Local state to hold changes before saving
     private var pendingUseGps: Boolean? = null
     private var pendingBydNavigationEnabled: Boolean? = null
+    private var pendingNavNotificationGuidance: Boolean? = null
+    private var pendingClusterMapEnabled: Boolean? = null
+    private var pendingClusterMapContent: Int? = null
+    private var pendingClusterMapSize: Int? = null
+    private var pendingClusterMapDetail: Int? = null
+    private var pendingClusterMarkerX: Int? = null
+    private var pendingClusterMarkerY: Int? = null
+    private var pendingClusterMapWidth: Int? = null
     private var pendingShowNavigationNotifications: Boolean? = null
     private var pendingSyncMediaSessionAaMetadata: Boolean? = null
     private var pendingResolution: Int? = null
@@ -100,6 +108,9 @@ class SettingsFragment : Fragment() {
     private var pendingStaticAudioFocus: Boolean? = null
     private var pendingPlaybackFocusMode: PlaybackFocusPolicy.Mode? = null
     private var pendingSeparateAudioStreams: Boolean? = null
+    private var pendingCarVolumeGroups: Boolean? = null
+    private var pendingCarNaviStream: Int? = null
+    private var pendingCarVoiceStream: Int? = null
     private var pendingUseAacAudio: Boolean? = null
     private var pendingAttachHwDspEqualizer: Boolean? = null
     private var pendingMicInputSource: Int? = null
@@ -208,6 +219,14 @@ class SettingsFragment : Fragment() {
         // Initialize local state with current values
         pendingUseGps = settings.useGpsForNavigation
         pendingBydNavigationEnabled = settings.bydNavigationEnabled
+        pendingNavNotificationGuidance = settings.navNotificationGuidance
+        pendingClusterMapEnabled = settings.clusterMapEnabled
+        pendingClusterMapContent = settings.clusterMapContent
+        pendingClusterMapSize = settings.clusterMapSize
+        pendingClusterMapDetail = settings.clusterMapDetail
+        pendingClusterMarkerX = settings.clusterMarkerX
+        pendingClusterMarkerY = settings.clusterMarkerY
+        pendingClusterMapWidth = settings.clusterMapWidth
         pendingShowNavigationNotifications = settings.showNavigationNotifications
         pendingSyncMediaSessionAaMetadata = settings.syncMediaSessionWithAaMetadata
         pendingResolution = settings.resolutionId
@@ -226,6 +245,9 @@ class SettingsFragment : Fragment() {
         pendingStaticAudioFocus = settings.staticAudioFocus
         pendingPlaybackFocusMode = settings.playbackFocusMode
         pendingSeparateAudioStreams = settings.separateAudioStreams
+        pendingCarVolumeGroups = settings.carVolumeGroups
+        pendingCarNaviStream = settings.carNaviStream
+        pendingCarVoiceStream = settings.carVoiceStream
         pendingUseAacAudio = settings.useAacAudio
         pendingAttachHwDspEqualizer = settings.attachHwDspEqualizer
         pendingMicInputSource = settings.micInputSource
@@ -323,6 +345,14 @@ class SettingsFragment : Fragment() {
     private fun reloadPendingStateFromSettings() {
         pendingUseGps = settings.useGpsForNavigation
         pendingBydNavigationEnabled = settings.bydNavigationEnabled
+        pendingNavNotificationGuidance = settings.navNotificationGuidance
+        pendingClusterMapEnabled = settings.clusterMapEnabled
+        pendingClusterMapContent = settings.clusterMapContent
+        pendingClusterMapSize = settings.clusterMapSize
+        pendingClusterMapDetail = settings.clusterMapDetail
+        pendingClusterMarkerX = settings.clusterMarkerX
+        pendingClusterMarkerY = settings.clusterMarkerY
+        pendingClusterMapWidth = settings.clusterMapWidth
         pendingShowNavigationNotifications = settings.showNavigationNotifications
         pendingSyncMediaSessionAaMetadata = settings.syncMediaSessionWithAaMetadata
         pendingResolution = settings.resolutionId
@@ -340,6 +370,9 @@ class SettingsFragment : Fragment() {
         pendingStaticAudioFocus = settings.staticAudioFocus
         pendingPlaybackFocusMode = settings.playbackFocusMode
         pendingSeparateAudioStreams = settings.separateAudioStreams
+        pendingCarVolumeGroups = settings.carVolumeGroups
+        pendingCarNaviStream = settings.carNaviStream
+        pendingCarVoiceStream = settings.carVoiceStream
         pendingUseAacAudio = settings.useAacAudio
         pendingAttachHwDspEqualizer = settings.attachHwDspEqualizer
         pendingEnableRotary = settings.enableRotary
@@ -445,6 +478,14 @@ class SettingsFragment : Fragment() {
 
         pendingUseGps?.let { settings.useGpsForNavigation = it }
         pendingBydNavigationEnabled?.let { settings.bydNavigationEnabled = it }
+        pendingNavNotificationGuidance?.let { settings.navNotificationGuidance = it }
+        pendingClusterMapEnabled?.let { settings.clusterMapEnabled = it }
+        pendingClusterMapContent?.let { settings.clusterMapContent = it }
+        pendingClusterMapSize?.let { settings.clusterMapSize = it }
+        pendingClusterMapDetail?.let { settings.clusterMapDetail = it }
+        pendingClusterMarkerX?.let { settings.clusterMarkerX = it }
+        pendingClusterMarkerY?.let { settings.clusterMarkerY = it }
+        pendingClusterMapWidth?.let { settings.clusterMapWidth = it }
         pendingShowNavigationNotifications?.let { settings.showNavigationNotifications = it }
         pendingSyncMediaSessionAaMetadata?.let { settings.syncMediaSessionWithAaMetadata = it }
         pendingResolution?.let { settings.resolutionId = it }
@@ -464,6 +505,9 @@ class SettingsFragment : Fragment() {
         pendingStaticAudioFocus?.let { settings.staticAudioFocus = it }
         pendingPlaybackFocusMode?.let { settings.playbackFocusMode = it }
         pendingSeparateAudioStreams?.let { settings.separateAudioStreams = it }
+        pendingCarVolumeGroups?.let { settings.carVolumeGroups = it }
+        pendingCarNaviStream?.let { settings.carNaviStream = it }
+        pendingCarVoiceStream?.let { settings.carVoiceStream = it }
         pendingUseAacAudio?.let { settings.useAacAudio = it }
         pendingAttachHwDspEqualizer?.let { settings.attachHwDspEqualizer = it }
         pendingMicInputSource?.let { settings.micInputSource = it }
@@ -568,6 +612,14 @@ class SettingsFragment : Fragment() {
         // Check for any changes
         val anyChange = pendingUseGps != settings.useGpsForNavigation ||
                         pendingBydNavigationEnabled != settings.bydNavigationEnabled ||
+                        pendingNavNotificationGuidance != settings.navNotificationGuidance ||
+                        pendingClusterMapEnabled != settings.clusterMapEnabled ||
+                        pendingClusterMapContent != settings.clusterMapContent ||
+                        pendingClusterMapSize != settings.clusterMapSize ||
+                        pendingClusterMapDetail != settings.clusterMapDetail ||
+                        pendingClusterMarkerX != settings.clusterMarkerX ||
+                        pendingClusterMarkerY != settings.clusterMarkerY ||
+                        pendingClusterMapWidth != settings.clusterMapWidth ||
                         pendingShowNavigationNotifications != settings.showNavigationNotifications ||
                         pendingSyncMediaSessionAaMetadata != settings.syncMediaSessionWithAaMetadata ||
                         pendingResolution != settings.resolutionId ||
@@ -586,6 +638,9 @@ class SettingsFragment : Fragment() {
                         pendingStaticAudioFocus != settings.staticAudioFocus ||
                         pendingPlaybackFocusMode != settings.playbackFocusMode ||
                         pendingSeparateAudioStreams != settings.separateAudioStreams ||
+                        pendingCarVolumeGroups != settings.carVolumeGroups ||
+                        pendingCarNaviStream != settings.carNaviStream ||
+                        pendingCarVoiceStream != settings.carVoiceStream ||
                         pendingUseAacAudio != settings.useAacAudio ||
                         pendingAttachHwDspEqualizer != settings.attachHwDspEqualizer ||
                         pendingMicInputSource != settings.micInputSource ||
@@ -641,6 +696,9 @@ class SettingsFragment : Fragment() {
                           pendingStaticAudioFocus != settings.staticAudioFocus ||
                           pendingPlaybackFocusMode != settings.playbackFocusMode ||
                           pendingSeparateAudioStreams != settings.separateAudioStreams ||
+                          pendingCarVolumeGroups != settings.carVolumeGroups ||
+                          pendingCarNaviStream != settings.carNaviStream ||
+                          pendingCarVoiceStream != settings.carVoiceStream ||
                           pendingUseAacAudio != settings.useAacAudio ||
                           pendingAttachHwDspEqualizer != settings.attachHwDspEqualizer ||
                           pendingAudioLatencyMultiplier != settings.audioLatencyMultiplier ||
@@ -1190,6 +1248,133 @@ class SettingsFragment : Fragment() {
                     updateSettingsList()
                 }
             ))
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                items.add(SettingItem.ToggleSettingEntry(
+                    stableId = "navNotificationGuidance",
+                    nameResId = R.string.nav_notification_guidance_title,
+                    descriptionResId = R.string.nav_notification_guidance_description,
+                    isChecked = pendingNavNotificationGuidance ?: false,
+                    isEnabled = pendingBydNavigationEnabled == true,
+                    onCheckedChanged = { enabled ->
+                        pendingNavNotificationGuidance = enabled
+                        checkChanges()
+                        updateSettingsList()
+                    }
+                ))
+                if (pendingNavNotificationGuidance == true &&
+                    !com.andrerinas.openheadunit.hud.NavNotificationListener.hasAccess(requireContext())) {
+                    items.add(SettingItem.InfoBanner(
+                        stableId = "navNotificationAccessNeeded",
+                        textResId = R.string.nav_notification_access_needed
+                    ))
+                    items.add(SettingItem.ActionButton(
+                        stableId = "navNotificationGrantAccess",
+                        textResId = R.string.nav_notification_grant_access,
+                        onClick = { openNotificationAccessSettings() }
+                    ))
+                }
+            }
+        }
+
+
+        // Android Auto's own cluster map on the BYD dashboard. Declared to the phone at connection
+        // time, so every change here applies on the next connection.
+        val dashboardAvailable = com.andrerinas.openheadunit.hud.BydNavigationOutputs.available(requireContext()) ||
+            (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+                com.andrerinas.openheadunit.hud.ClusterMapScreen.findDisplay(requireContext()) != null)
+        if (dashboardAvailable) {
+            items.add(SettingItem.ToggleSettingEntry(
+                stableId = "clusterMap",
+                nameResId = R.string.cluster_map_title,
+                descriptionResId = R.string.cluster_map_description,
+                isChecked = pendingClusterMapEnabled ?: false,
+                onCheckedChanged = { enabled ->
+                    pendingClusterMapEnabled = enabled
+                    checkChanges()
+                    updateSettingsList()
+                }
+            ))
+            if (pendingClusterMapEnabled == true) {
+                fun choice(id: String, titleRes: Int, labels: Array<String>, current: Int, set: (Int) -> Unit) {
+                    val index = current.coerceIn(0, labels.size - 1)
+                    items.add(SettingItem.SettingEntry(
+                        stableId = id,
+                        nameResId = titleRes,
+                        value = labels[index],
+                        onClick = { _ ->
+                            MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
+                                .setTitle(titleRes)
+                                .setSingleChoiceItems(labels, index) { dialog, which ->
+                                    set(which)
+                                    checkChanges()
+                                    dialog.dismiss()
+                                    updateSettingsList()
+                                }
+                                .show()
+                        }
+                    ))
+                }
+                choice("clusterMapContent", R.string.cluster_map_content,
+                    arrayOf(getString(R.string.cluster_map_content_map), getString(R.string.cluster_map_content_turn_card)),
+                    pendingClusterMapContent ?: 0) { pendingClusterMapContent = it }
+                choice("clusterMapSize", R.string.cluster_map_size,
+                    arrayOf(getString(R.string.cluster_map_size_normal), getString(R.string.cluster_map_size_large)),
+                    pendingClusterMapSize ?: 0) { pendingClusterMapSize = it }
+                choice("clusterMapDetail", R.string.cluster_map_detail,
+                    arrayOf(getString(R.string.cluster_map_detail_small), getString(R.string.cluster_map_detail_normal),
+                        getString(R.string.cluster_map_detail_large), getString(R.string.cluster_map_detail_extra_large)),
+                    pendingClusterMapDetail ?: 1) { pendingClusterMapDetail = it }
+                choice("clusterMapWidth", R.string.cluster_map_width,
+                    arrayOf(getString(R.string.cluster_map_width_compact), getString(R.string.cluster_map_width_wide),
+                        getString(R.string.cluster_map_width_full)),
+                    pendingClusterMapWidth ?: 0) { pendingClusterMapWidth = it }
+                val x = pendingClusterMarkerX ?: 0
+                items.add(SettingItem.SliderSettingEntry(
+                    stableId = "clusterMarkerX",
+                    nameResId = R.string.cluster_marker_horizontal,
+                    value = if (x == 0) getString(R.string.cluster_marker_centre) else "%+d".format(x),
+                    sliderValue = x.toFloat(),
+                    valueFrom = com.andrerinas.openheadunit.hud.ClusterMapConfig.HORIZONTAL_STEPS.first.toFloat(),
+                    valueTo = com.andrerinas.openheadunit.hud.ClusterMapConfig.HORIZONTAL_STEPS.last.toFloat(),
+                    stepSize = 1f,
+                    onValueChanged = { value ->
+                        pendingClusterMarkerX = value.toInt()
+                        checkChanges()
+                        updateSettingsList()
+                    }
+                ))
+                val y = pendingClusterMarkerY ?: 0
+                items.add(SettingItem.SliderSettingEntry(
+                    stableId = "clusterMarkerY",
+                    nameResId = R.string.cluster_marker_vertical,
+                    value = if (y == 0) getString(R.string.cluster_marker_centre) else "%+d".format(y),
+                    sliderValue = y.toFloat(),
+                    valueFrom = com.andrerinas.openheadunit.hud.ClusterMapConfig.VERTICAL_STEPS.first.toFloat(),
+                    valueTo = com.andrerinas.openheadunit.hud.ClusterMapConfig.VERTICAL_STEPS.last.toFloat(),
+                    stepSize = 1f,
+                    onValueChanged = { value ->
+                        pendingClusterMarkerY = value.toInt()
+                        checkChanges()
+                        updateSettingsList()
+                    }
+                ))
+                items.add(SettingItem.InfoBanner(
+                    stableId = "clusterMapHint",
+                    textResId = R.string.cluster_map_hint
+                ))
+                if (!com.andrerinas.openheadunit.utils.AppPermissions.isOverlayGranted(requireContext())) {
+                    items.add(SettingItem.InfoBanner(
+                        stableId = "clusterMapOverlayHint",
+                        textResId = R.string.cluster_map_overlay_hint
+                    ))
+                    items.add(SettingItem.ActionButton(
+                        stableId = "clusterMapOverlayGrant",
+                        textResId = R.string.cluster_map_overlay_grant,
+                        onClick = { openOverlaySettings() }
+                    ))
+                }
+            }
         }
 
         items.add(SettingItem.ToggleSettingEntry(
@@ -1680,6 +1865,43 @@ class SettingsFragment : Fragment() {
                 updateSettingsList()
             }
         ))
+
+        items.add(SettingItem.ToggleSettingEntry(
+            stableId = "carVolumeGroups",
+            nameResId = R.string.car_volume_groups,
+            descriptionResId = R.string.car_volume_groups_description,
+            isChecked = pendingCarVolumeGroups ?: false,
+            onCheckedChanged = { isChecked ->
+                pendingCarVolumeGroups = isChecked
+                checkChanges()
+                updateSettingsList()
+            }
+        ))
+        if (pendingCarVolumeGroups == true) {
+            val dilink = com.andrerinas.openheadunit.aap.CarVolumeGroups.detectDiLink()
+            items.add(SettingItem.SettingEntry(
+                stableId = "carNaviStream",
+                nameResId = R.string.car_navi_stream,
+                value = carStreamLabel(pendingCarNaviStream ?: -1, dilink, voice = false),
+                onClick = { _ -> showCarStreamDialog(voice = false, dilink = dilink) }
+            ))
+            items.add(SettingItem.SettingEntry(
+                stableId = "carVoiceStream",
+                nameResId = R.string.car_voice_stream,
+                value = carStreamLabel(pendingCarVoiceStream ?: -1, dilink, voice = true),
+                onClick = { _ -> showCarStreamDialog(voice = true, dilink = dilink) }
+            ))
+            items.add(SettingItem.InfoBanner(
+                stableId = "carStreamHint",
+                textResId = R.string.car_stream_hint
+            ))
+        }
+        if (pendingCarVolumeGroups == true && pendingStaticAudioFocus == true) {
+            items.add(SettingItem.InfoBanner(
+                stableId = "carVolumeGroupsStaticHint",
+                textResId = R.string.car_volume_groups_static_hint
+            ))
+        }
 
         items.add(SettingItem.ToggleSettingEntry(
             stableId = "useAacAudio",
@@ -2250,6 +2472,103 @@ class SettingsFragment : Fragment() {
         settingsAdapter.submitList(filterSettings(fullSettingsList)) {
             scrollState?.let { settingsRecyclerView.layoutManager?.onRestoreInstanceState(it) }
         }
+    }
+
+    /**
+     * BYD replaces the settings app: the standard notification-access action lands on its own
+     * screen, which only says the feature is not supported. Android's settings app is often still
+     * installed underneath, so its screens are tried directly first and BYD's are skipped. When
+     * none can be opened, the fallback shows the adb command that grants the same access.
+     */
+    private fun openNotificationAccessSettings() {
+        val context = requireContext()
+        val pm = context.packageManager
+        val me = android.content.ComponentName(context, com.andrerinas.openheadunit.hud.NavNotificationListener::class.java)
+        val aosp = "com.android.settings"
+        val candidates = mutableListOf<Pair<Intent, Boolean>>() // intent to whether it needs the path hint
+        if (Build.VERSION.SDK_INT >= 30) {
+            fun detail() = Intent(SystemSettings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS)
+                .putExtra(SystemSettings.EXTRA_NOTIFICATION_LISTENER_COMPONENT_NAME, me.flattenToString())
+            candidates += detail().setPackage(aosp) to false
+            candidates += detail().setClassName(aosp, "$aosp.Settings\$NotificationAccessDetailsActivity") to false
+        }
+        candidates += Intent(SystemSettings.ACTION_NOTIFICATION_LISTENER_SETTINGS).setPackage(aosp) to false
+        candidates += Intent().setClassName(aosp, "$aosp.Settings\$NotificationAccessSettingsActivity") to false
+        candidates += Intent(SystemSettings.ACTION_NOTIFICATION_LISTENER_SETTINGS) to false
+        candidates += Intent().setClassName(aosp, "$aosp.Settings") to true
+
+        for ((intent, needsHint) in candidates) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            val target = runCatching { pm.resolveActivity(intent, 0)?.activityInfo }.getOrNull() ?: continue
+            if (target.packageName.startsWith("com.byd")) continue
+            if (runCatching { startActivity(intent) }.isSuccess) {
+                AppLog.i("Notification access: opened ${target.packageName}/${target.name}")
+                if (needsHint) Toast.makeText(context, R.string.nav_notification_access_path, Toast.LENGTH_LONG).show()
+                return
+            }
+        }
+        AppLog.i("Notification access: no settings screen can grant it here")
+        val command = com.andrerinas.openheadunit.hud.NavNotificationListener.adbGrantCommand(context)
+        MaterialAlertDialogBuilder(context, R.style.DarkAlertDialog)
+            .setTitle(R.string.nav_notification_grant_access)
+            .setMessage(getString(R.string.nav_notification_access_adb, command))
+            .setPositiveButton(R.string.nav_notification_copy_command) { _, _ ->
+                val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE)
+                    as? android.content.ClipboardManager
+                clipboard?.setPrimaryClip(android.content.ClipData.newPlainText("adb", command))
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun carStreamLabel(value: Int, dilink: Int, voice: Boolean): String = when {
+        value == -1 && voice -> getString(R.string.car_stream_same_as_navi)
+        value == -1 -> {
+            val auto = com.andrerinas.openheadunit.aap.CarVolumeGroups.defaultNaviStream(dilink)
+            if (auto > 0) getString(R.string.car_stream_auto, auto) else getString(R.string.car_stream_auto_label)
+        }
+        value == 0 -> getString(R.string.car_stream_label_only)
+        else -> value.toString()
+    }
+
+    /** Picks a stream; each choice plays a test tone on it so the matching slider can be found. */
+    private fun showCarStreamDialog(voice: Boolean, dilink: Int) {
+        val values = listOf(-1, 0) + com.andrerinas.openheadunit.aap.CarVolumeGroups.STREAMS.toList()
+        val labels = values.map { carStreamLabel(it, dilink, voice) }.toTypedArray()
+        val current = (if (voice) pendingCarVoiceStream else pendingCarNaviStream) ?: -1
+        var selected = values.indexOf(current).coerceAtLeast(0)
+        val preview = com.andrerinas.openheadunit.utils.StreamTonePreview()
+        val usage = if (voice) android.media.AudioAttributes.USAGE_ASSISTANT
+            else android.media.AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE
+        MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
+            .setTitle(if (voice) R.string.car_voice_stream else R.string.car_navi_stream)
+            .setSingleChoiceItems(labels, selected) { _, which ->
+                selected = which
+                val stream = when (val v = values[which]) {
+                    -1 -> if (voice) com.andrerinas.openheadunit.aap.CarVolumeGroups.resolveNavi(pendingCarNaviStream ?: -1, dilink)
+                        else com.andrerinas.openheadunit.aap.CarVolumeGroups.defaultNaviStream(dilink)
+                    else -> v
+                }
+                preview.play(stream, usage)
+            }
+            .setPositiveButton(R.string.save) { _, _ ->
+                if (voice) pendingCarVoiceStream = values[selected] else pendingCarNaviStream = values[selected]
+                checkChanges()
+                updateSettingsList()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .setOnDismissListener { preview.close() }
+            .show()
+    }
+
+    private fun openOverlaySettings() {
+        val packageUri = android.net.Uri.parse("package:" + requireContext().packageName)
+        val opened = runCatching {
+            startActivity(Intent(SystemSettings.ACTION_MANAGE_OVERLAY_PERMISSION, packageUri))
+        }.isSuccess || runCatching {
+            startActivity(Intent(SystemSettings.ACTION_MANAGE_OVERLAY_PERMISSION))
+        }.isSuccess
+        if (!opened) Toast.makeText(requireContext(), R.string.cluster_map_overlay_unavailable, Toast.LENGTH_LONG).show()
     }
 
     private fun openCarClientWifiSettings() {
