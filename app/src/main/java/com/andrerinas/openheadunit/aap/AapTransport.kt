@@ -779,6 +779,9 @@ class AapTransport(
         }
     }
 
+    /** Whether the main projection surface is up, so the phone may be told to project now. */
+    internal fun hasVideoSurface(): Boolean = videoDecoder.hasValidSurface()
+
     internal fun gainVideoFocus() {
         context.sendBroadcast(ProjectionActivityRequest())
     }
