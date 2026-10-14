@@ -995,7 +995,18 @@ class NativeAaHandshakeManager(
                         AppLog.i("NativeAA: Phone ready for WiFi association. Delivering credentials...")
                         AppLog.i("NativeAA: [TX] Sending WifiInfoResponse (Type 3) with full credentials in 1000ms...")
                         delay(1000) // [FIX] Increased delay to give phone more processing time
-                        sendWifiSecurityResponse(output, credSsid, credPsk, credBssid, transport)
+                        // [BUG_FIX] A phone still joined to our network from the last session
+                        // does not wait for these: it opens the projection session right after
+                        // WifiStartRequest, inside the pause above. Credentials that arrive after
+                        // that make it join again and open a second session, which replaces the
+                        // first one. Each replaced session ends the next one the same way, so the
+                        // car reconnects in a loop for as long as the phone stays on our network.
+                        if (commManager.isConnected ||
+                            commManager.connectionState.value is CommManager.ConnectionState.Connecting) {
+                            AppLog.i("NativeAA: The phone opened its session before the credentials went out; not sending them.")
+                        } else {
+                            sendWifiSecurityResponse(output, credSsid, credPsk, credBssid, transport)
+                        }
                         AppLog.i("NativeAA: Handshake completed successfully on Bluetooth side.")
                         ifOwner(socket) {
                             // The exchange is done; the phone's work is not — it still has to
