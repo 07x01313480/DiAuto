@@ -26,7 +26,7 @@ object RenameNotice {
         if (activity == null || activity.isFinishing || activity.isDestroyed) return
         if (settings.renameNoticeShown) return
         if (dialog?.isShowing == true) return
-        if (settings.onboardingVersion < OnboardingActivity.CURRENT_ONBOARDING_VERSION) return
+        if (settings.onboardingVersion < LiteSetup.ONBOARDING_VERSION) return
 
         val firstInstallTime = try {
             activity.packageManager.getPackageInfo(activity.packageName, 0).firstInstallTime

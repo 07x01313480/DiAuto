@@ -8,7 +8,6 @@ import com.andrerinas.openheadunit.connection.carkey.CarKeysManager
 import com.andrerinas.openheadunit.decoder.AudioDecoder
 import com.andrerinas.openheadunit.decoder.DeviceMemoryProfile
 import com.andrerinas.openheadunit.decoder.VideoDecoder
-import com.andrerinas.openheadunit.utils.SUExecutor
 import com.andrerinas.openheadunit.utils.Settings
 
 class AppComponent(private val app: App) {
@@ -17,6 +16,11 @@ class AppComponent(private val app: App) {
     val videoDecoder = VideoDecoder(settings, DeviceMemoryProfile.readWithOverride(app, settings.debugForceMemoryProfile))
     val audioDecoder = AudioDecoder()
 
+    /** Decodes the instrument-cluster (dashboard) stream; created only if a session uses one. */
+    val clusterVideoDecoder: VideoDecoder by lazy {
+        VideoDecoder(settings, DeviceMemoryProfile.readWithOverride(app, settings.debugForceMemoryProfile))
+    }
+
     val notificationManager: NotificationManager
         get() = app.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     val wifiManager: WifiManager
@@ -24,7 +28,6 @@ class AppComponent(private val app: App) {
 
     val commManager = CommManager(app, settings, audioDecoder, videoDecoder)
 
-    val suExecutor = SUExecutor()
 
     val carKeysManager = CarKeysManager()
 }

@@ -20,7 +20,6 @@ import com.andrerinas.openheadunit.aap.protocol.messages.SensorEvent
 import com.andrerinas.openheadunit.aap.protocol.messages.VideoFocusEvent
 import com.andrerinas.openheadunit.utils.LegacyOptimizer
 import com.andrerinas.openheadunit.connection.AccessoryConnection
-import com.andrerinas.openheadunit.connection.SocketAccessoryConnection
 import com.andrerinas.openheadunit.contract.ProjectionActivityRequest
 import com.andrerinas.openheadunit.decoder.AudioDecoder
 import com.andrerinas.openheadunit.decoder.MicRecorder
@@ -73,6 +72,30 @@ class AapTransport(
 
     internal val aapAudio: AapAudio
     internal val aapVideo: AapVideo
+
+    /**
+     * The dashboard stream. Lost or broken frames ask the phone for a fresh keyframe with an
+     * unsolicited focus notification on that channel only, never the main screen's recovery.
+     */
+    internal val clusterVideo: AapVideo by lazy {
+        AapVideo(
+            com.andrerinas.openheadunit.App.provide(context).clusterVideoDecoder, settings,
+            codecName = VideoDecoder.CodecType.H264.settingsValue, forceSoftware = false,
+        ) {
+            send(VideoFocusEvent(gain = true, unsolicited = true, channel = Channel.ID_CLUSTER_VID))
+        }
+    }
+    private val clusterVideoUsed: Boolean get() = settings.clusterMapEnabled
+
+    /**
+     * Dashboard focus is held until the main screen is streaming. Granted during the handshake, the
+     * phone can start the dashboard stream first and leave the main screen on "Android Auto is
+     * starting" for good, so it is only released once main video data has been arriving for
+     * [CLUSTER_FOCUS_DELAY_MS] (LIVI holds it the same way, until the first main frame).
+     */
+    private var clusterFocusPending = false
+    private var mainVideoStreaming = false
+    private val releaseClusterFocusRunnable = Runnable { releaseClusterFocus() }
     private var sendThread: HandlerThread? = null
     private var pollThread: HandlerThread? = null
     private val micRecorder: MicRecorder = MicRecorder(settings.micSampleRate, context)
@@ -87,8 +110,8 @@ class AapTransport(
     private var aapRead: AapRead? = null
     var isQuittingAllowed: Boolean = false
 
-    val isWireless: Boolean
-        get() = connection is com.andrerinas.openheadunit.connection.SocketAccessoryConnection
+    /** DiAuto Wire runs over USB only. */
+    val isWireless: Boolean get() = false
     var ignoreNextStopRequest: Boolean = false
     /** Why the last [startHandshake] failed, for callers that report it. */
     enum class HandshakeFailure {
@@ -486,10 +509,21 @@ class AapTransport(
         micRecorder.listener = null
         sendHandler?.removeCallbacks(focusCycleGainRunnable)
         sendHandler?.removeCallbacks(unrepairedCheckRunnable)
+        sendHandler?.removeCallbacks(releaseClusterFocusRunnable)
         pollThread?.quit()
         sendThread?.quit()
         aapAudio.releaseAllFocus()
         aapVideo.release()
+        if (clusterVideoUsed) {
+            clusterVideo.release()
+            com.andrerinas.openheadunit.App.provide(context).clusterVideoDecoder.stop("session ended")
+            // The dashboard window can outlive DiAuto's screen, so the session closes it.
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                android.os.Handler(android.os.Looper.getMainLooper()).post {
+                    com.andrerinas.openheadunit.hud.ClusterMapScreen.dismiss()
+                }
+            }
+        }
 
         // Never let a half-finished cycle outlive the transport that owed the regain: the claim is
         // session state, and a stuck one would refuse every cycle of the next session.
@@ -581,7 +615,7 @@ class AapTransport(
     private fun handshake(connection: AccessoryConnection): Boolean {
         lastHandshakeFailure = HandshakeFailure.OTHER
         try {
-            val isUsb = connection !is SocketAccessoryConnection && !connection.isSingleMessage
+            val isUsb = !connection.isSingleMessage
             // Increased delay for AA 16.4+ stability on USB - skip for Sockets
             if (isUsb) {
                 SystemClock.sleep(500)
@@ -791,6 +825,40 @@ class AapTransport(
         sessionIds.put(channel, sessionId)
     }
 
+    /** Whether the phone has started a media session on [channel] in this connection. */
+    internal fun isChannelStarted(channel: Int): Boolean = sessionIds.indexOfKey(channel) >= 0
+
+    /** The phone set up the dashboard sink: grant it focus now, or once the main screen streams. */
+    @Synchronized
+    internal fun requestClusterFocus() {
+        if (!mainVideoStreaming) {
+            if (!clusterFocusPending) AppLog.i("Dashboard video focus held until the main screen streams")
+            clusterFocusPending = true
+            return
+        }
+        clusterFocusPending = true
+        releaseClusterFocus()
+    }
+
+    /** Main-screen video arrived. The first time, schedules the held dashboard focus. */
+    internal fun onMainVideoData() {
+        if (mainVideoStreaming) return
+        synchronized(this) {
+            if (mainVideoStreaming) return
+            mainVideoStreaming = true
+            if (!clusterFocusPending) return
+        }
+        sendHandler?.postDelayed(releaseClusterFocusRunnable, CLUSTER_FOCUS_DELAY_MS)
+    }
+
+    @Synchronized
+    private fun releaseClusterFocus() {
+        if (!clusterFocusPending) return
+        clusterFocusPending = false
+        AppLog.i("Granting dashboard video focus")
+        send(VideoFocusEvent(gain = true, unsolicited = true, channel = Channel.ID_CLUSTER_VID))
+    }
+
     override fun onMicDataAvailable(mic_buf: ByteArray, mic_audio_len: Int) {
         if (mic_audio_len > 64) {  // If we read at least 64 bytes of audio data
             val length = mic_audio_len + 12  // 4 header + 8 timestamp + PCM
@@ -811,5 +879,7 @@ class AapTransport(
         // Prevents the retry loop from blocking for minutes on an unresponsive USB device.
         private const val HANDSHAKE_TIMEOUT_MS = 10_000L
         private const val SENSOR_DROP_LOG_INTERVAL_MS = 30_000L
+        // How long main-screen video must have been arriving before the dashboard is given focus.
+        private const val CLUSTER_FOCUS_DELAY_MS = 1_500L
     }
 }
