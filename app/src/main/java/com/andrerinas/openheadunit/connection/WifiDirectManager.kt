@@ -1245,8 +1245,13 @@ class WifiDirectManager(private val context: Context) : WifiP2pManager.Connectio
                         else WifiP2pConfig.GROUP_OWNER_BAND_5GHZ
                     )
                 }
+                // Kept in a local rather than read back from the config: WifiP2pConfig.getNetworkName()
+                // only exists from Android 11, and calling it on Android 10 throws NoSuchMethodError
+                // after the builder (Android 10 API) has already succeeded. That made every 5 GHz
+                // request on Android 10 head units fall back to a 2.4 GHz standard group.
+                val networkName = generateP2pNetworkName()
                 val config = builder
-                    .setNetworkName(generateP2pNetworkName())
+                    .setNetworkName(networkName)
                     .setPassphrase(generateP2pPassphrase())
                     .build()
 
@@ -1255,8 +1260,8 @@ class WifiDirectManager(private val context: Context) : WifiP2pManager.Connectio
                 // does not exist and standardCreateGroup leaves the field UNSPECIFIED.
                 nativeRequestedBand = band
                 AppLog.i("WifiDirectManager: Requesting Native AA P2P group on $bandLabel band.${if (force24) " Forced by debug setting." else ""}")
-                sessionOwnership.expect(requireNotNull(config.networkName))
-                ownershipPrefs.edit().putString("network_name", config.networkName).apply()
+                sessionOwnership.expect(networkName)
+                ownershipPrefs.edit().putString("network_name", networkName).apply()
                 mgr.createGroup(ch, config, object : WifiP2pManager.ActionListener {
                     override fun onSuccess() {
                         if (!sessionOwnership.created(gen)) return
