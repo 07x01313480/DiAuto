@@ -1000,4 +1000,6 @@
     <string name="turn_card_info_duration_hm">%1$d小时%2$d分</string>
     <string name="turn_card_info_duration_m">%1$d分</string>
     <string name="turn_card_info_km">%1$.1f公里</string>
+    <string name="cluster_usage_access_hint">在“场景”主题下，侧边小地图会出现在仪表的每个卡片上。为 DiAuto 开启“使用情况访问权限”后，地图只在地图卡片上显示。如果按钮无法打开设置，可通过 ADB 授权：appops set com.andrerinas.headunitrevived GET_USAGE_STATS allow</string>
+    <string name="cluster_usage_access_grant">开启使用情况访问权限</string>
 </resources>

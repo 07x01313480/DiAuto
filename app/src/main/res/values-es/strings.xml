@@ -1009,4 +1009,6 @@
     <string name="turn_card_info_duration_hm">%1$dh %2$dmin</string>
     <string name="turn_card_info_duration_m">%1$dmin</string>
     <string name="turn_card_info_km">%1$.1f km</string>
+    <string name="cluster_usage_access_hint">En el modo Escenario el mapa lateral aparece en todas las tarjetas del cuadro. Permite a DiAuto el «Acceso a datos de uso» para que solo aparezca en la tarjeta del mapa. Si el botón no abre nada, se puede conceder por ADB: appops set com.andrerinas.headunitrevived GET_USAGE_STATS allow</string>
+    <string name="cluster_usage_access_grant">Permitir acceso a datos de uso</string>
 </resources>

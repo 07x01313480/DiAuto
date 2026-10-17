@@ -1000,4 +1000,6 @@
     <string name="turn_card_info_duration_hm">%1$dч %2$dмин</string>
     <string name="turn_card_info_duration_m">%1$dмин</string>
     <string name="turn_card_info_km">%1$.1f км</string>
+    <string name="cluster_usage_access_hint">В режиме «Сценарий» боковая карта видна на всех карточках приборной панели. Разрешите DiAuto «Доступ к истории использования», чтобы она показывалась только на карточке карты. Если кнопка ничего не открывает, разрешение можно выдать через ADB: appops set com.andrerinas.headunitrevived GET_USAGE_STATS allow</string>
+    <string name="cluster_usage_access_grant">Разрешить доступ к истории использования</string>
 </resources>

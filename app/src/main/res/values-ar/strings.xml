@@ -999,4 +999,6 @@
     <string name="turn_card_info_duration_hm">%1$dس %2$dد</string>
     <string name="turn_card_info_duration_m">%1$dد</string>
     <string name="turn_card_info_km">%1$.1f كم</string>
+    <string name="cluster_usage_access_hint">في وضع «المشهد» تظهر الخريطة الجانبية في كل بطاقات لوحة العدادات. اسمح بـ«الوصول إلى بيانات الاستخدام» لـ DiAuto لتظهر فقط في بطاقة الخريطة. إذا لم يفتح الزر شيئًا، يمكن منح الإذن عبر ADB: appops set com.andrerinas.headunitrevived GET_USAGE_STATS allow</string>
+    <string name="cluster_usage_access_grant">السماح بالوصول إلى بيانات الاستخدام</string>
 </resources>

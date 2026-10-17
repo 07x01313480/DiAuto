@@ -85,11 +85,45 @@ internal class ClusterMapScreen(
     override fun onStart() {
         super.onStart()
         if (turnCard != null) handler.post(guidanceTick)
+        startClusterMonitor()
     }
 
     override fun onStop() {
         handler.removeCallbacks(guidanceTick)
+        monitor?.stop()
+        monitor = null
         super.onStop()
+    }
+
+    private var monitor: DiLink51ClusterMonitor? = null
+    private var lastClusterState: ClusterActivityState.Snapshot? = null
+
+    /**
+     * Scenario keeps the side layer on screen on every cluster card, so the map would show on all
+     * of them. With Usage access, follow the stock cluster screens as DiPlay does and show the map
+     * only while the cluster shows its map card (or the Map theme). Without it, the map stays up.
+     */
+    private fun startClusterMonitor() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P || !ClusterMapConfig.measured(Build.FINGERPRINT)) return
+        if (!DiLink51ClusterMonitor.hasAccess(context)) {
+            AppLog.i("ClusterMap: no Usage access, so the map shows on every cluster card")
+            return
+        }
+        monitor = DiLink51ClusterMonitor(context) { state ->
+            if (state != lastClusterState) {
+                lastClusterState = state
+                AppLog.i("ClusterMap: cluster theme=${state.theme} map card visible=${state.mapVisible}")
+            }
+            // Unknown theme (no cluster screen seen yet): keep showing, as without Usage access.
+            setMapVisible(state.theme == null || state.mapVisible)
+        }.also { it.start() }
+    }
+
+    /** Window alpha hides the pixels without destroying the TextureView and the decoder surface. */
+    private fun setMapVisible(visible: Boolean) {
+        val target = this.window ?: return
+        val alpha = if (visible) 1f else 0f
+        if (target.attributes.alpha != alpha) target.attributes = target.attributes.apply { this.alpha = alpha }
     }
 
     /** Adds the map: across the whole layer, or only inside [window], where it is cut out of the panel. */

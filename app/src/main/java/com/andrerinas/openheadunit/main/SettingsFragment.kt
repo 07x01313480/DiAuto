@@ -1371,6 +1371,25 @@ class SettingsFragment : Fragment() {
                         onClick = { openOverlaySettings() }
                     ))
                 }
+                // DiLink 5.1 Scenario keeps the side layer up on every cluster card; with Usage
+                // access the map follows the cluster and shows only on its map card.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
+                    com.andrerinas.openheadunit.hud.ClusterMapConfig.measured(Build.FINGERPRINT) &&
+                    !com.andrerinas.openheadunit.hud.DiLink51ClusterMonitor.hasAccess(requireContext())) {
+                    items.add(SettingItem.InfoBanner(
+                        stableId = "clusterUsageAccessHint",
+                        textResId = R.string.cluster_usage_access_hint
+                    ))
+                    items.add(SettingItem.ActionButton(
+                        stableId = "clusterUsageAccessGrant",
+                        textResId = R.string.cluster_usage_access_grant,
+                        onClick = {
+                            runCatching { startActivity(Intent(SystemSettings.ACTION_USAGE_ACCESS_SETTINGS)) }.onFailure {
+                                Toast.makeText(requireContext(), R.string.cluster_map_overlay_unavailable, Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    ))
+                }
             }
         }
 

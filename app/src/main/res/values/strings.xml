@@ -1053,4 +1053,6 @@
     <string name="turn_card_info_duration_hm">%1$dh %2$dmin</string>
     <string name="turn_card_info_duration_m">%1$dmin</string>
     <string name="turn_card_info_km">%1$.1f km</string>
+    <string name="cluster_usage_access_hint">In Scenario the side map shows on every cluster card. Allow Usage access for DiAuto so it shows only on the map card. If the button opens nothing, it can be granted over ADB: appops set com.andrerinas.headunitrevived GET_USAGE_STATS allow</string>
+    <string name="cluster_usage_access_grant">Allow Usage access</string>
 </resources>
