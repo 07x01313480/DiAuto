@@ -46,6 +46,10 @@ object DiagnosticReport {
             appendLine("--- Recent app logs (up to 6000 lines) ---")
             if (lines.isEmpty()) appendLine("No recent app logs available. Reproduce the issue and save a new report.")
             lines.forEach { appendLine(it) }
+            if (com.andrerinas.openheadunit.hud.BydVehicleProbe.appliesTo()) {
+                appendLine("--- BYD vehicle interfaces (read-only inventory) ---")
+                com.andrerinas.openheadunit.hud.BydVehicleProbe.report(context).forEach { appendLine(it) }
+            }
         }
     }
 }
