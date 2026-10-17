@@ -946,9 +946,6 @@
     <string name="byd_navigation_description">Show Android Auto directions on supported BYD displays. Experimental; vehicle compatibility varies.</string>
     <string name="cluster_map_title">Android Auto map on the dashboard (experimental)</string>
     <string name="cluster_map_description">Show the navigation app\'s own cluster map (Waze, Google Maps) on the BYD instrument cluster. Applies on the next connection.</string>
-    <string name="cluster_map_content">Dashboard shows</string>
-    <string name="cluster_map_content_map">Map</string>
-    <string name="cluster_map_content_turn_card">Turn card only</string>
     <string name="cluster_map_size">Map size</string>
     <string name="cluster_map_size_normal">Normal (1920×720, sharp)</string>
     <string name="cluster_map_size_large">Large (enlarged 1.5×)</string>

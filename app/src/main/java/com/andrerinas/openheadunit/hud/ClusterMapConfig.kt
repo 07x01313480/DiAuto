@@ -11,19 +11,6 @@ package com.andrerinas.openheadunit.hud
  */
 internal object ClusterMapConfig {
 
-    /** What the dashboard shows. */
-    enum class Content(val value: Int) {
-        /** DISPLAY_TYPE_CLUSTER: the navigation app's own cluster map (Waze, Google Maps). */
-        MAP(0),
-        /**
-         * DiPlay's turn card, drawn by DiAuto; no second display is declared to the phone. The
-         * profile still describes AA's own auxiliary turn card for reference.
-         */
-        TURN_CARD(1);
-
-        companion object { fun of(value: Int) = entries.firstOrNull { it.value == value } ?: MAP }
-    }
-
     /** How much of the map fits: a smaller stream is enlarged onto the panel. */
     enum class Size(val value: Int, val codecResolution: Int, val codecWidth: Int, val codecHeight: Int) {
         /** 1920x720 drawn at native size. */
@@ -112,8 +99,6 @@ internal object ClusterMapConfig {
     const val RES_1920x1080 = 3
 
     const val DISPLAY_TYPE_CLUSTER = 1
-    const val DISPLAY_TYPE_AUXILIARY = 2
-    const val KEYCODE_TURN_CARD = 65544
 
     /** The cluster is the second display; the main screen is display 0. */
     const val DISPLAY_ID = 1
@@ -142,8 +127,6 @@ internal object ClusterMapConfig {
     data class Insets(val top: Int, val bottom: Int, val left: Int, val right: Int)
 
     data class Profile(
-        val displayType: Int,
-        val initialContentKeycode: Int?,
         val codecResolution: Int,
         val codecWidth: Int,
         val codecHeight: Int,
@@ -160,7 +143,7 @@ internal object ClusterMapConfig {
     }
 
     fun profile(
-        content: Content, size: Size, detail: Detail, markerX: Int, markerY: Int,
+        size: Size, detail: Detail, markerX: Int, markerY: Int,
         width: Width = Width.COMPACT, window: Window? = null,
     ): Profile {
         // Keep the panel's 8:3 shape inside the codec frame; the rest is margin.
@@ -168,8 +151,6 @@ internal object ClusterMapConfig {
         val contentHeight = contentWidth * PANEL_HEIGHT / PANEL_WIDTH
         val heightMargin = size.codecHeight - contentHeight
         return Profile(
-            displayType = if (content == Content.TURN_CARD) DISPLAY_TYPE_AUXILIARY else DISPLAY_TYPE_CLUSTER,
-            initialContentKeycode = if (content == Content.TURN_CARD) KEYCODE_TURN_CARD else null,
             codecResolution = size.codecResolution,
             codecWidth = size.codecWidth,
             codecHeight = size.codecHeight,

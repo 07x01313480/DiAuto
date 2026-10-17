@@ -83,7 +83,6 @@ class SettingsFragment : Fragment() {
     private var pendingUseGps: Boolean? = null
     private var pendingBydNavigationEnabled: Boolean? = null
     private var pendingClusterMapEnabled: Boolean? = null
-    private var pendingClusterMapContent: Int? = null
     private var pendingClusterMapSize: Int? = null
     private var pendingClusterMapDetail: Int? = null
     private var pendingClusterMarkerX: Int? = null
@@ -219,7 +218,6 @@ class SettingsFragment : Fragment() {
         pendingUseGps = settings.useGpsForNavigation
         pendingBydNavigationEnabled = settings.bydNavigationEnabled
         pendingClusterMapEnabled = settings.clusterMapEnabled
-        pendingClusterMapContent = settings.clusterMapContent
         pendingClusterMapSize = settings.clusterMapSize
         pendingClusterMapDetail = settings.clusterMapDetail
         pendingClusterMarkerX = settings.clusterMarkerX
@@ -344,7 +342,6 @@ class SettingsFragment : Fragment() {
         pendingUseGps = settings.useGpsForNavigation
         pendingBydNavigationEnabled = settings.bydNavigationEnabled
         pendingClusterMapEnabled = settings.clusterMapEnabled
-        pendingClusterMapContent = settings.clusterMapContent
         pendingClusterMapSize = settings.clusterMapSize
         pendingClusterMapDetail = settings.clusterMapDetail
         pendingClusterMarkerX = settings.clusterMarkerX
@@ -476,7 +473,6 @@ class SettingsFragment : Fragment() {
         pendingUseGps?.let { settings.useGpsForNavigation = it }
         pendingBydNavigationEnabled?.let { settings.bydNavigationEnabled = it }
         pendingClusterMapEnabled?.let { settings.clusterMapEnabled = it }
-        pendingClusterMapContent?.let { settings.clusterMapContent = it }
         pendingClusterMapSize?.let { settings.clusterMapSize = it }
         pendingClusterMapDetail?.let { settings.clusterMapDetail = it }
         pendingClusterMarkerX?.let { settings.clusterMarkerX = it }
@@ -609,7 +605,6 @@ class SettingsFragment : Fragment() {
         val anyChange = pendingUseGps != settings.useGpsForNavigation ||
                         pendingBydNavigationEnabled != settings.bydNavigationEnabled ||
                         pendingClusterMapEnabled != settings.clusterMapEnabled ||
-                        pendingClusterMapContent != settings.clusterMapContent ||
                         pendingClusterMapSize != settings.clusterMapSize ||
                         pendingClusterMapDetail != settings.clusterMapDetail ||
                         pendingClusterMarkerX != settings.clusterMarkerX ||
@@ -1293,9 +1288,6 @@ class SettingsFragment : Fragment() {
                         }
                     ))
                 }
-                choice("clusterMapContent", R.string.cluster_map_content,
-                    arrayOf(getString(R.string.cluster_map_content_map), getString(R.string.cluster_map_content_turn_card)),
-                    pendingClusterMapContent ?: 0) { pendingClusterMapContent = it }
                 // DiLink 5.1 shows the map on a different layer and window per cluster theme.
                 // Picked by hand only when the cluster cannot report its theme (no Usage access).
                 if (com.andrerinas.openheadunit.hud.ClusterMapConfig.measured(Build.FINGERPRINT) &&
@@ -1306,18 +1298,16 @@ class SettingsFragment : Fragment() {
                             getString(R.string.cluster_theme_simple)),
                         pendingClusterTheme ?: 0) { pendingClusterTheme = it }
                 }
-                if ((pendingClusterMapContent ?: 0) == com.andrerinas.openheadunit.hud.ClusterMapConfig.Content.MAP.value) {
-                    items.add(SettingItem.ToggleSettingEntry(
-                        stableId = "clusterTurnCardOverlay",
-                        nameResId = R.string.cluster_turn_card_overlay,
-                        descriptionResId = R.string.cluster_turn_card_overlay_description,
-                        isChecked = pendingClusterTurnCardOverlay ?: true,
-                        onCheckedChanged = { enabled ->
-                            pendingClusterTurnCardOverlay = enabled
-                            checkChanges()
-                        }
-                    ))
-                }
+                items.add(SettingItem.ToggleSettingEntry(
+                    stableId = "clusterTurnCardOverlay",
+                    nameResId = R.string.cluster_turn_card_overlay,
+                    descriptionResId = R.string.cluster_turn_card_overlay_description,
+                    isChecked = pendingClusterTurnCardOverlay ?: true,
+                    onCheckedChanged = { enabled ->
+                        pendingClusterTurnCardOverlay = enabled
+                        checkChanges()
+                    }
+                ))
                 choice("clusterMapSize", R.string.cluster_map_size,
                     arrayOf(getString(R.string.cluster_map_size_normal), getString(R.string.cluster_map_size_large)),
                     pendingClusterMapSize ?: 0) { pendingClusterMapSize = it }

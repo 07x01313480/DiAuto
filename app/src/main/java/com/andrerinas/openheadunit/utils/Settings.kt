@@ -121,10 +121,6 @@ class Settings(private val context: Context) {
         get() = prefs.getBoolean("cluster-map-enabled", false)
         set(value) { prefs.edit().putBoolean("cluster-map-enabled", value).apply() }
 
-    var clusterMapContent: Int
-        get() = prefs.getInt("cluster-map-content", 0)
-        set(value) { prefs.edit().putInt("cluster-map-content", value).apply() }
-
     var clusterMapSize: Int
         get() = prefs.getInt("cluster-map-size", 0)
         set(value) { prefs.edit().putInt("cluster-map-size", value).apply() }

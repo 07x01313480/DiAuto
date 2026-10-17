@@ -27,7 +27,7 @@
     "bssid": "DiAuto 0.3.2 automatically recovers the Wi-Fi Direct address on supported DiLink firmware. Leave Static BSSID on Auto; no ADB setup is needed for this recovery. Some firmware and phone combinations may still have connection issues.",
     "whats": "What’s new",
     "features": [
-      "Android Auto’s map on the instrument cluster (Google Maps, Waze) with DiPlay’s turn card, or the turn card on its own.",
+      "Android Auto’s map on the instrument cluster (Google Maps, Waze) with DiPlay’s turn card, following the cluster theme by itself.",
       "Windshield HUD arrows appear as soon as a route starts and stay on, and numbered roundabouts show their exit.",
       "Reconnecting during a route no longer ends in “Connection lost”, and a reconnect loop on the car’s Wi-Fi is fixed.",
       "Exiting Android Auto from the phone no longer reconnects by itself, and a phone removed from auto-start stays removed.",
@@ -76,7 +76,7 @@
     "bssid": "يستخرج DiAuto 0.3.2 عنوان Wi-Fi Direct تلقائيًا على إصدارات DiLink المدعومة. اترك Static BSSID على Auto؛ لا تتطلب هذه الميزة إعداد ADB. قد تستمر مشكلات الاتصال مع بعض إصدارات النظام والهواتف.",
     "whats": "الجديد في هذا الإصدار",
     "features": [
-      "خريطة Android Auto على لوحة العدادات (خرائط Google وWaze) مع بطاقة الانعطاف من DiPlay، أو بطاقة الانعطاف وحدها.",
+      "خريطة Android Auto على لوحة العدادات (خرائط Google وWaze) مع بطاقة الانعطاف من DiPlay، وتتبع سمة لوحة العدادات تلقائيًا.",
       "تظهر أسهم شاشة الزجاج الأمامي (HUD) فور بدء المسار وتبقى ظاهرة، وتعرض الدوّارات رقم المخرج.",
       "إعادة الاتصال أثناء المسار لم تعد تنتهي برسالة «فُقد الاتصال»، وتم إصلاح حلقة إعادة الاتصال عبر Wi-Fi السيارة.",
       "الخروج من Android Auto على الهاتف لم يعد يعيد الاتصال تلقائيًا، والهاتف الذي تزيله من التشغيل التلقائي يبقى محذوفًا.",
@@ -125,7 +125,7 @@
     "bssid": "DiAuto 0.3.2 автоматически определяет адрес Wi-Fi Direct на поддерживаемых прошивках DiLink. Оставьте Static BSSID в режиме Auto; для этого не нужна настройка ADB. На некоторых прошивках и телефонах проблемы подключения могут сохраняться.",
     "whats": "Что нового",
     "features": [
-      "Карта Android Auto на приборной панели (Google Карты, Waze) с карточкой манёвра из DiPlay или только карточка манёвра.",
+      "Карта Android Auto на приборной панели (Google Карты, Waze) с карточкой манёвра из DiPlay; тема панели определяется автоматически.",
       "Стрелки на проекционном дисплее (HUD) появляются сразу после начала маршрута и не пропадают, а на кольцах показывается номер съезда.",
       "Повторное подключение во время маршрута больше не заканчивается «Соединение потеряно», устранён цикл переподключений через Wi-Fi автомобиля.",
       "Выход из Android Auto на телефоне больше не вызывает автоматического переподключения, а удалённый из автозапуска телефон больше не добавляется снова.",
@@ -174,7 +174,7 @@
     "bssid": "DiAuto 0.3.2 recupera automáticamente la dirección Wi-Fi Direct en firmware DiLink compatible. Deja Static BSSID en Auto; esta función no requiere configurar ADB. Algunas combinaciones de firmware y teléfono pueden seguir teniendo problemas de conexión.",
     "whats": "Novedades",
     "features": [
-      "El mapa de Android Auto en el cuadro de instrumentos (Google Maps, Waze) con la tarjeta de giro de DiPlay, o solo la tarjeta.",
+      "El mapa de Android Auto en el cuadro de instrumentos (Google Maps, Waze) con la tarjeta de giro de DiPlay, siguiendo el tema del cuadro automáticamente.",
       "Las flechas del HUD aparecen en cuanto empieza la ruta y no desaparecen, y las rotondas muestran el número de salida.",
       "Reconectar durante una ruta ya no termina en «Conexión perdida», y se corrige un ciclo de reconexión por el Wi-Fi del coche.",
       "Salir de Android Auto desde el teléfono ya no reconecta solo, y un teléfono quitado del inicio automático no vuelve a añadirse.",
@@ -223,7 +223,7 @@
     "bssid": "DiAuto 0.3.2 可在支持的 DiLink 固件上自动获取 Wi-Fi Direct 地址。请将 Static BSSID 保持为 Auto；此功能无需配置 ADB。部分固件与手机组合仍可能存在连接问题。",
     "whats": "本次更新",
     "features": [
-      "在仪表盘上显示 Android Auto 地图（Google 地图、Waze）及 DiPlay 转向卡片，或仅显示转向卡片。",
+      "在仪表盘上显示 Android Auto 地图（Google 地图、Waze）及 DiPlay 转向卡片，并自动跟随仪表主题。",
       "开始导航后挡风玻璃 HUD 立即显示箭头且不再消失，环岛会显示出口编号。",
       "导航中重新连接不再出现“连接中断”，并修复了通过车机 Wi-Fi 反复重连的问题。",
       "在手机上退出 Android Auto 后不再自动重连，从自动启动中移除的手机也不会再被加回。",

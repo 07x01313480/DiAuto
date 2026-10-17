@@ -6,8 +6,8 @@
 - Keep the negotiated resolution when the surface changes with the resolution locked, instead of falling through to 800x480 (#19, #42).
 - Ask for 1440p/4K automatically only with a decoder on the HEVC reliability list or chosen software HEVC; a manual 1440p uses H.265 on any hardware HEVC decoder (#35, #6, #42).
 - Android Auto map on the BYD dashboard, off by default (#44, by 07x01313480): a second display (CLUSTER) for Google Maps and Waze, decoded separately and shown on BYD's cluster projection display, with size, detail, layout width and car-marker settings.
-- On the measured DiLink 5.1 firmware (Han L, Leopard 5 Ultra 2025) the map goes on the layer the cluster shows for the chosen cluster theme (shared `_0` for Map, `_1` for Scenario and Simple), and the safe area starts on that theme's window so the car marker sits in the middle of it.
-- DiPlay's dashboard turn card (glyphs, distance, street, arrival strip) over the map, or "Turn card only", which declares no second display so Google Maps keeps its own view on the main screen.
+- On the measured DiLink 5.1 firmware (Han L, Leopard 5 Ultra 2025) the cluster theme is detected by itself through Usage access, as in DiPlay: the map goes on the layer the cluster shows (shared `_0` for Map, `_1` for Scenario and Simple), shows in Scenario and Simple only while the mini map card is open, and follows a theme change mid-session without involving the phone (one safe area per connection, the running decoder's surface handed to the new layer).
+- DiPlay's dashboard turn card (glyphs, distance, street, arrival strip) over the map. #44's "Dashboard shows" choice is removed; the dashboard always shows the map.
 - Numbered roundabouts reach the HUD and the turn card with their exit, using a new "traffic keeps left" setting for the direction (#26, by JuanGaVS).
 - DiLink 3.0: cluster/HUD guidance through com.example.amapservice (#25), and a long press on the steering-wheel voice button opens the phone's assistant (#27), by JuanGaVS.
 - Wi-Fi Direct: a working 5 GHz group on Android 10 (#22) and no retries of a 5 GHz request that failed deterministically (#24), by JuanGaVS.

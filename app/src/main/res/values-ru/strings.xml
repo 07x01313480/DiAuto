@@ -943,9 +943,6 @@
     <string name="byd_navigation_description">Показывать указания Android Auto на поддерживаемых дисплеях BYD. Экспериментально; совместимость зависит от автомобиля.</string>
     <string name="cluster_map_title">Карта Android Auto на приборной панели (экспериментально)</string>
     <string name="cluster_map_description">Показывать карту навигационного приложения для приборной панели (Waze, Google Карты) на приборной панели BYD. Применяется при следующем подключении.</string>
-    <string name="cluster_map_content">На приборной панели</string>
-    <string name="cluster_map_content_map">Карта</string>
-    <string name="cluster_map_content_turn_card">Только карточка манёвра</string>
     <string name="cluster_map_size">Размер карты</string>
     <string name="cluster_map_size_normal">Обычный (1920×720, чётко)</string>
     <string name="cluster_map_size_large">Крупный (увеличен в 1,5 раза)</string>

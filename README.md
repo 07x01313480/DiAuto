@@ -19,7 +19,7 @@ this is not Apple CarPlay.
 
 ## What’s new in 0.3.12
 
-- Android Auto’s map on the instrument cluster (Google Maps, Waze) with DiPlay’s turn card, or the turn card on its own.
+- Android Auto’s map on the instrument cluster (Google Maps, Waze) with DiPlay’s turn card, following the cluster theme by itself.
 - Windshield HUD arrows appear as soon as a route starts and stay on, and numbered roundabouts show their exit.
 - Reconnecting during a route no longer ends in “Connection lost”, and a reconnect loop on the car’s Wi-Fi is fixed.
 - Exiting Android Auto from the phone no longer reconnects by itself, and a phone removed from auto-start stays removed.
