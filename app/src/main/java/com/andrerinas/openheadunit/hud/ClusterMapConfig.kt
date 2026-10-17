@@ -101,6 +101,9 @@ internal object ClusterMapConfig {
         else -> theme != Theme.MAP && mapCardVisible
     }
 
+    /** The theme the cluster last reported while the dashboard map runs; null when unknown. */
+    @Volatile var reportedTheme: Theme? = null
+
     /** Simple keeps a dark background on that firmware; Scenario and Map are light. */
     fun dark(theme: Theme): Boolean = theme == Theme.SIMPLE
 

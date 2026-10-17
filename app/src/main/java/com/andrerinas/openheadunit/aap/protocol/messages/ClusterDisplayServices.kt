@@ -37,7 +37,9 @@ internal object ClusterDisplayServices {
     fun theme(context: android.content.Context, settings: Settings): ClusterMapConfig.Theme {
         val reported = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P &&
             ClusterMapConfig.measured(android.os.Build.FINGERPRINT)
-        ) com.andrerinas.openheadunit.hud.DiLink51ClusterMonitor.snapshotNow(context)?.theme else null
+        ) ClusterMapConfig.reportedTheme
+            ?: com.andrerinas.openheadunit.hud.DiLink51ClusterMonitor.snapshotNow(context)?.theme
+        else null
         return reported ?: ClusterMapConfig.Theme.of(settings.clusterTheme)
     }
 

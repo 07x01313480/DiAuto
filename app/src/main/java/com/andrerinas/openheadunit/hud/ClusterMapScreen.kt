@@ -75,7 +75,7 @@ internal class ClusterMapScreen(
             turnCard = ClusterTurnCardView(context).apply {
                 visibility = android.view.View.GONE
                 setPlan(mapWindow)
-                setNightMode(mapWindow != null && ClusterMapConfig.dark(ClusterMapConfig.Theme.of(settings.clusterTheme)))
+                setNightMode(mapWindow != null && ClusterMapConfig.dark(ClusterDisplayServices.theme(context, settings)))
             }
             root.addView(turnCard, FrameLayout.LayoutParams(-1, -1))
         }
@@ -87,56 +87,25 @@ internal class ClusterMapScreen(
     override fun onStart() {
         super.onStart()
         if (turnCard != null) handler.post(guidanceTick)
-        startClusterMonitor()
     }
 
     override fun onStop() {
         handler.removeCallbacks(guidanceTick)
-        monitor?.stop()
-        monitor = null
         super.onStop()
     }
 
-    private var monitor: DiLink51ClusterMonitor? = null
     private var contentRoot: FrameLayout? = null
     private var mapWindow: ClusterMapConfig.Window? = null
-    private var lastClusterState: ClusterActivityState.Snapshot? = null
 
-    /**
-     * Scenario keeps the side layer on screen on every cluster card, so the map would show on all
-     * of them. With Usage access, follow the stock cluster screens as DiPlay does and show the map
-     * only while the cluster shows its map card (or the Map theme). Without it, the map stays up.
-     */
-    private fun startClusterMonitor() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P || !ClusterMapConfig.measured(Build.FINGERPRINT)) return
-        if (!DiLink51ClusterMonitor.hasAccess(context)) {
-            AppLog.i("ClusterMap: no Usage access, so the map shows on every cluster card")
-            return
-        }
-        monitor = DiLink51ClusterMonitor(context) { state ->
-            if (state != lastClusterState) {
-                lastClusterState = state
-                AppLog.i("ClusterMap: cluster theme=${state.theme} map card visible=${state.mapVisible}")
-            }
-            val onFullMap = mapWindow?.fullMap
-            val wantsFullMap = state.theme?.let { it == ClusterMapConfig.Theme.MAP }
-            if (onFullMap != null && wantsFullMap != null && onFullMap != wantsFullMap) {
-                // The driver switched the cluster theme: the map belongs on the other layer now.
-                AppLog.i("ClusterMap: cluster theme is now ${state.theme}; moving the map to its layer")
-                setMapVisible(false)
-                handler.post { relayout() }
-                return@DiLink51ClusterMonitor
-            }
-            setMapVisible(ClusterMapConfig.shownOnLayer(state.theme, state.mapVisible, onFullMap))
-        }.also { it.start() }
-    }
+    /** True on the Map theme's layer, false on the side layer, null where nothing is measured. */
+    val fullMapLayer: Boolean? get() = mapWindow?.fullMap
 
     /**
      * Hides the content, not the window: the overlay owner gives this window a type its window
      * context does not have, and Android refuses any window attribute update on it ("Window type
      * mismatch"). A transparent view still draws, so the TextureView keeps taking frames.
      */
-    private fun setMapVisible(visible: Boolean) {
+    fun setMapVisible(visible: Boolean) {
         val root = contentRoot ?: return
         val alpha = if (visible) 1f else 0f
         if (root.alpha != alpha) root.alpha = alpha
@@ -212,16 +181,68 @@ internal class ClusterMapScreen(
         /** What [show] was last called with, so the map can move layers when the cluster theme changes. */
         private var showContext: java.lang.ref.WeakReference<Context>? = null
 
+        // One watcher of the stock cluster screens for the whole session, as in DiPlay. It lives
+        // here, not in a window: a window that failed to open must not leave one running.
+        private var monitor: Any? = null
+        private var clusterState: ClusterActivityState.Snapshot? = null
+        private var lastMoveTo: Boolean? = null
+        private var lastMoveAt = 0L
+        private const val MOVE_RETRY_MS = 10_000L
+
+        private fun startMonitor(context: Context) {
+            if (monitor != null || Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return
+            if (!ClusterMapConfig.measured(Build.FINGERPRINT)) return
+            if (!DiLink51ClusterMonitor.hasAccess(context)) {
+                AppLog.i("ClusterMap: no Usage access, so the map shows on every cluster card")
+                return
+            }
+            monitor = DiLink51ClusterMonitor(context) { onClusterState(it) }.also { it.start() }
+        }
+
+        private fun stopMonitor() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) (monitor as? DiLink51ClusterMonitor)?.stop()
+            monitor = null
+            clusterState = null
+            ClusterMapConfig.reportedTheme = null
+            lastMoveTo = null
+        }
+
         /**
-         * Moves the map to the layer of the cluster's current theme, and tells the phone where that
-         * theme's window is, so Google Maps puts the car in the middle of it again.
+         * Follows the cluster: the map goes on the layer of the theme the cluster shows, and on the
+         * side layer only shows while the map card is open. Main thread.
          */
-        private fun relayout() {
+        private fun onClusterState(state: ClusterActivityState.Snapshot) {
+            if (state != clusterState) AppLog.i("ClusterMap: cluster theme=${state.theme} map card visible=${state.mapVisible}")
+            clusterState = state
+            ClusterMapConfig.reportedTheme = state.theme
+            val screen = current ?: return
+            val onFullMap = screen.fullMapLayer
+            val wantsFullMap = state.theme?.let { it == ClusterMapConfig.Theme.MAP }
+            if (onFullMap != null && wantsFullMap != null && onFullMap != wantsFullMap) {
+                screen.setMapVisible(false)
+                // One move per theme change, and never a loop if the other layer cannot be shown.
+                val now = android.os.SystemClock.elapsedRealtime()
+                if (lastMoveTo == wantsFullMap && now - lastMoveAt < MOVE_RETRY_MS) return
+                lastMoveTo = wantsFullMap
+                lastMoveAt = now
+                AppLog.i("ClusterMap: the cluster switched to ${state.theme}; moving the map to its layer")
+                moveLayer()
+                return
+            }
+            screen.setMapVisible(ClusterMapConfig.shownOnLayer(state.theme, state.mapVisible, onFullMap))
+        }
+
+        /**
+         * Reopens the map on the layer of the cluster's current theme, and tells the phone once
+         * where that theme's window is, so Google Maps puts the car in the middle of it.
+         */
+        private fun moveLayer() {
             val context = showContext?.get() ?: return
-            dismiss()
+            closeWindow()
             show(context)
             val settings = App.provide(context).settings
-            if (ClusterMapConfig.Content.of(settings.clusterMapContent) == ClusterMapConfig.Content.MAP) {
+            if (current?.fullMapLayer == lastMoveTo &&
+                ClusterMapConfig.Content.of(settings.clusterMapContent) == ClusterMapConfig.Content.MAP) {
                 App.provide(context).commManager.sendClusterUiConfig(
                     ClusterDisplayServices.uiConfigUpdate(ClusterDisplayServices.profile(context, settings)))
             }
@@ -259,8 +280,12 @@ internal class ClusterMapScreen(
                     currentOwner = owner
                     AppLog.i("ClusterMap: shown as $owner window" +
                         if (owner == Owner.SCREEN) " (closes when DiAuto's screen is hidden)" else "")
+                    startMonitor(app)
+                    clusterState?.let(::onClusterState)
                     return
                 }
+                // A refused window may have been half created; close it so nothing of it runs on.
+                runCatching { screen.dismiss() }
             }
         }
 
@@ -271,6 +296,11 @@ internal class ClusterMapScreen(
 
         /** The session ended. */
         fun dismiss() {
+            closeWindow()
+            stopMonitor()
+        }
+
+        private fun closeWindow() {
             current?.let { runCatching { it.dismiss() } }
             current = null
             currentOwner = null
