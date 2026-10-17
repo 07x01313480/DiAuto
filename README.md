@@ -19,11 +19,12 @@ this is not Apple CarPlay.
 
 ## What’s new in 0.3.12
 
-- Windshield HUD arrows appear as soon as a route starts and no longer disappear mid-route.
-- Reconnecting during a route no longer ends in “Connection lost”.
-- Stops a reconnect loop when the phone is still on the car’s Wi-Fi from the previous connection.
-- Hiding the status bar or toolbar no longer drops the picture to 800x480.
-- Head units whose video decoder is not on the verified list now get 1080p instead of a 1440p stream they cannot show.
+- Android Auto’s map on the instrument cluster (Google Maps, Waze) with DiPlay’s turn card, or the turn card on its own.
+- Windshield HUD arrows appear as soon as a route starts and stay on, and numbered roundabouts show their exit.
+- Reconnecting during a route no longer ends in “Connection lost”, and a reconnect loop on the car’s Wi-Fi is fixed.
+- Exiting Android Auto from the phone no longer reconnects by itself, and a phone removed from auto-start stays removed.
+- Hiding the status bar no longer drops the picture to 800x480, and head units without a verified HEVC decoder get 1080p.
+- DiLink 3.0: HUD and cluster guidance, and a long press on the voice button opens the phone’s assistant.
 
 ## Features
 
