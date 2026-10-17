@@ -938,7 +938,8 @@ class NativeAaHandshakeManager(
             }
 
             val macs = settings.autoStartBluetoothDeviceMacs
-            if (!macs.contains(device.address)) {
+            // Never add back a phone the user took off the list (#35).
+            if (!macs.contains(device.address) && device.address !in settings.autoStartBluetoothDeviceMacsRemoved) {
                 AppLog.i("NativeAA: Saving ${device.address} (${device.name}) to the list of auto-start devices.")
                 val newMacs = macs + device.address
                 settings.autoStartBluetoothDeviceMacs = newMacs

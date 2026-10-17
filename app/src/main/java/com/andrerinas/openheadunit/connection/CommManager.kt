@@ -411,7 +411,8 @@ class CommManager(
                         _transport = null
 
                         if (oldTransport != null) {
-                            transportedQuited(isClean)
+                            // Read from the transport that quit: _transport is already null here.
+                            transportedQuited(isClean, oldTransport.wasUserExit)
                         }
                     }
                     _transport!!.onAudioFocusStateChanged = { isPlaying -> onAudioFocusStateChanged?.invoke(isPlaying) }
@@ -542,8 +543,10 @@ class CommManager(
      * `false` immediately) then schedules cleanup. `sendByeBye` is `false` because the
      * connection is already dead — there is no point sending a `ByeByeRequest`.
      */
-    private fun transportedQuited(isClean: Boolean) {
-        val wasUserExit = _transport?.wasUserExit ?: false
+    private fun transportedQuited(isClean: Boolean, wasUserExit: Boolean) {
+        // [BUG_FIX] This used to read _transport?.wasUserExit, after onQuit had cleared
+        // _transport, so a user's exit from the phone (VIDEO_FOCUS_NATIVE) was always published
+        // as isUserExit=false and the service reconnected 1.5 s later (#35).
         _connectionState.value = ConnectionState.Disconnected(isClean, isUserExit = wasUserExit)
         // Transport already quit on its own — no ByeByeRequest needed (connection is dead).
         _disconnectJob = _scope.launch { doDisconnect(sendByeBye = false) }

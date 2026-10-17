@@ -798,6 +798,14 @@ class Settings(private val context: Context) {
             prefs.edit().putString("auto-connect-priority-order", value.joinToString(",")).apply()
         }
 
+    /**
+     * Phones the user took off the auto-start list. DiAuto adds a phone that connects to the list
+     * by itself, so without this a removed phone came back on its next connection (#35).
+     */
+    var autoStartBluetoothDeviceMacsRemoved: Set<String>
+        get() = prefs.getStringSet("auto-start-bt-macs-removed", null)?.toSet() ?: emptySet()
+        set(value) { prefs.edit().putStringSet("auto-start-bt-macs-removed", value).apply() }
+
     var autoStartBluetoothDeviceMacs: Set<String>
         get() {
             var macs = prefs.getStringSet("auto-start-bt-macs", null)
