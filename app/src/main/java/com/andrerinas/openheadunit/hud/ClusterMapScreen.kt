@@ -59,10 +59,9 @@ internal class ClusterMapScreen(
         val mapWindow = ClusterDisplayServices.window(context, settings)
         this.mapWindow = mapWindow
         val root = FrameLayout(context)
-        // Scenario and Simple show the map in a side window. Scenario shows this whole layer, so
-        // anything drawn outside that window covers the car's own dashboard, as DiPlay avoids too.
-        val sideWindow = mapWindow?.takeIf { !it.fullMap }
-        if (cardOnly || sideWindow != null) {
+        // On measured firmware the map fills only the window of the cluster's theme. Scenario
+        // shows this whole layer, so anything drawn outside it would cover the car's own dashboard.
+        if (cardOnly || mapWindow != null) {
             // The rest of the layer stays clear, so the car's own dashboard shows around it.
             this.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             this.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
@@ -70,7 +69,7 @@ internal class ClusterMapScreen(
         } else {
             root.setBackgroundColor(Color.BLACK)
         }
-        if (!cardOnly) addMap(root, sideWindow)
+        if (!cardOnly) addMap(root, mapWindow)
         if (cardOnly || settings.clusterTurnCardOverlay) {
             turnCard = ClusterTurnCardView(context).apply {
                 visibility = android.view.View.GONE
@@ -146,8 +145,10 @@ internal class ClusterMapScreen(
             root.addView(texture, FrameLayout.LayoutParams(-1, -1))
             return
         }
-        // The phone draws the whole panel and keeps the car in the window's safe area, so lay
-        // the map out at panel size and let the window clip it: the car stays in the middle.
+        // The phone draws the whole panel with the car in the middle of one safe area for every
+        // theme. Lay the map out at panel size, slid so that point is the window's centre, and let
+        // the window clip it: a theme change only moves the picture.
+        val (dx, dy) = ClusterMapConfig.mapOffset(window)
         val clip = FrameLayout(context).apply { clipChildren = true; setBackgroundColor(Color.BLACK) }
         root.addView(clip, FrameLayout.LayoutParams(window.width, window.height, Gravity.TOP or Gravity.START).apply {
             leftMargin = window.left
@@ -156,8 +157,8 @@ internal class ClusterMapScreen(
         clip.addView(texture, FrameLayout.LayoutParams(
             ClusterMapConfig.PANEL_WIDTH, ClusterMapConfig.PANEL_HEIGHT, Gravity.TOP or Gravity.START,
         ).apply {
-            leftMargin = -window.left
-            topMargin = -window.top
+            leftMargin = dx - window.left
+            topMargin = dy - window.top
         })
     }
 
@@ -233,19 +234,13 @@ internal class ClusterMapScreen(
         }
 
         /**
-         * Reopens the map on the layer of the cluster's current theme, and tells the phone once
-         * where that theme's window is, so Google Maps puts the car in the middle of it.
+         * Reopens the map on the layer of the cluster's current theme. Nothing goes to the phone:
+         * the safe area is the same for every theme, so only the picture moves.
          */
         private fun moveLayer() {
             val context = showContext?.get() ?: return
             closeWindow()
             show(context)
-            val settings = App.provide(context).settings
-            if (current?.fullMapLayer == lastMoveTo &&
-                ClusterMapConfig.Content.of(settings.clusterMapContent) == ClusterMapConfig.Content.MAP) {
-                App.provide(context).commManager.sendClusterUiConfig(
-                    ClusterDisplayServices.uiConfigUpdate(ClusterDisplayServices.profile(context, settings)))
-            }
         }
 
         /** Shows the dashboard map while a session with it enabled is up. Safe to call repeatedly. */

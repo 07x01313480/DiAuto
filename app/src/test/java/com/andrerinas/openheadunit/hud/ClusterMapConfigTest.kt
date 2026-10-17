@@ -140,23 +140,23 @@ class ClusterMapConfigTest {
     }
 
     @Test
-    fun `the safe area is centred on the side window, so the car sits in it`() {
-        val window = ClusterMapConfig.window(ClusterMapConfig.Theme.SCENARIO)
-        val i = ClusterMapConfig.insets(1920, 720, 0, 0, window = window)
-        val centre = i.left + (1920 - i.left - i.right) / 2
-        assertTrue("car centre $centre inside the side window", centre in 1320..1920)
-        assertTrue(kotlin.math.abs(centre - (1320 + 300)) <= 20)
-    }
-
-    @Test
-    fun `the safe area fills the Map window between the readouts`() {
-        val window = ClusterMapConfig.window(ClusterMapConfig.Theme.MAP)
-        val i = ClusterMapConfig.insets(1920, 720, 0, 0, window = window)
-        assertEquals(720 * 20 / 100, i.top)
-        assertEquals(1920 * 24 / 100, i.left)
-        assertEquals(i.left, i.right)
-        val middleY = i.top + (720 - i.top - i.bottom) / 2
-        assertTrue("car centre $middleY inside the window", middleY in 144..624)
+    fun `one safe area for every theme, and the map slides into each window`() {
+        val side = ClusterMapConfig.window(ClusterMapConfig.Theme.SCENARIO)
+        val map = ClusterMapConfig.window(ClusterMapConfig.Theme.MAP)
+        // The phone is told the same safe area whatever the theme, so a switch needs nothing from it.
+        assertEquals(ClusterMapConfig.insets(1920, 720, 0, 0, window = side), ClusterMapConfig.insets(1920, 720, 0, 0, window = map))
+        val i = ClusterMapConfig.insets(1920, 720, 0, 0, window = side)
+        val carX = i.left + (1920 - i.left - i.right) / 2
+        val carY = i.top + (720 - i.top - i.bottom) / 2
+        assertEquals(960, carX)
+        assertEquals(360, carY)
+        assertTrue("cards fit the side window", 1920 - i.left - i.right <= side.width)
+        // Slid by mapOffset, the car lands in the middle of each window.
+        for (w in listOf(side, map)) {
+            val (dx, dy) = ClusterMapConfig.mapOffset(w)
+            assertEquals(w.left + w.width / 2, carX + dx)
+            assertEquals(w.top + w.height / 2, carY + dy)
+        }
     }
 
     @Test

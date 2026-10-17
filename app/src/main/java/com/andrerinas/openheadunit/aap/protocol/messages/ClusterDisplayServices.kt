@@ -104,26 +104,6 @@ internal object ClusterDisplayServices {
         return services
     }
 
-    /**
-     * The dashboard's UI config again, on its own channel: sent when the cluster theme changes
-     * mid-session, so the phone moves the car marker into the new theme's window.
-     */
-    fun uiConfigUpdate(p: ClusterMapConfig.Profile): com.andrerinas.openheadunit.aap.AapMessage {
-        fun insets(i: ClusterMapConfig.Insets) = Media.Insets.newBuilder()
-            .setTop(i.top).setBottom(i.bottom).setLeft(i.left).setRight(i.right).build()
-        val request = Media.UpdateUiConfigRequest.newBuilder().setUiConfig(
-            Media.UiConfig.newBuilder()
-                .setMargins(insets(p.margins))
-                .setContentInsets(insets(p.contentInsets))
-                .setStableContentInsets(insets(p.contentInsets))
-                .setUiTheme(0)
-                .build()
-        ).build()
-        AppLog.i("[ClusterMap] TX dashboard UpdateUiConfigRequest insets=${p.contentInsets}")
-        return com.andrerinas.openheadunit.aap.AapMessage(
-            Channel.ID_CLUSTER_VID, Media.MsgType.MEDIA_MESSAGE_UPDATE_UI_CONFIG_REQUEST_VALUE, request)
-    }
-
     /** Roughly the driver's distance to an instrument cluster. */
     private const val VIEWING_DISTANCE_MM = 750
 }

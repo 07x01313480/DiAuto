@@ -208,22 +208,24 @@ internal object ClusterMapConfig {
     }
 
     /** The unshifted safe area, in percent of the panel. */
-    private fun basePercent(width: Width, window: Window?): Insets {
-        if (window == null) return Insets(BASE_TOP, BASE_BOTTOM, width.left, width.right)
-        val top = window.top * 100 / PANEL_HEIGHT
-        val bottom = (PANEL_HEIGHT - window.top - window.height) * 100 / PANEL_HEIGHT
-        if (!window.fullMap) {
-            // The side window: its own width, with a little room above and below the cards.
-            val left = window.left * 100 / PANEL_WIDTH
-            val right = ((PANEL_WIDTH - window.left - window.width) * 100 / PANEL_WIDTH).coerceAtLeast(1)
-            return Insets(top + SIDE_VERTICAL_ROOM, bottom + SIDE_VERTICAL_ROOM, left, right)
-        }
-        // The trip and menu readouts cover about 460 px on each side of the Map window.
-        val side = when (width) { Width.COMPACT -> 24; Width.WIDE -> 16; Width.FULL -> 3 }
-        return Insets(top, bottom, side, side)
-    }
+    private fun basePercent(width: Width, window: Window?): Insets =
+        if (window == null) Insets(BASE_TOP, BASE_BOTTOM, width.left, width.right) else UNIFIED
 
-    private const val SIDE_VERTICAL_ROOM = 8
+    /**
+     * Measured DiLink 5.1: one safe area for every cluster theme, told to the phone once per
+     * connection: as wide as the side window and centred on the panel. Changing it mid-session
+     * (UpdateUiConfigRequest on the dashboard channel) made the phone drop the connection, so a
+     * theme change instead slides the same picture into the window the cluster shows
+     * ([mapOffset]), as DiPlay crops one stream into either window.
+     */
+    private val UNIFIED = Insets(top = 17, bottom = 17, left = 35, right = 35)
+
+    /**
+     * Where the panel-size map goes for [window], in panel pixels: the safe area's centre, where
+     * the phone keeps the car, lands on the window's centre.
+     */
+    fun mapOffset(window: Window): Pair<Int, Int> =
+        (window.left + window.width / 2 - PANEL_WIDTH / 2) to (window.top + window.height / 2 - PANEL_HEIGHT / 2)
 
     /** Moves a (start, end) inset pair by [delta] percent, keeping both edges on the panel. */
     private fun shift(start: Int, end: Int, delta: Int): Pair<Int, Int> {

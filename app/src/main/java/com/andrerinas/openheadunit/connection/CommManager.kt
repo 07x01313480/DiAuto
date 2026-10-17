@@ -708,13 +708,6 @@ class CommManager(
      * recreated. Sent only once the phone has started that stream: a media message on a channel it
      * never opened is not something to risk the session on.
      */
-    /** Sends [message] on the dashboard channel, once the phone has started it. */
-    fun sendClusterUiConfig(message: com.andrerinas.openheadunit.aap.AapMessage) {
-        val transport = _transport ?: return
-        if (!transport.isChannelStarted(com.andrerinas.openheadunit.aap.protocol.Channel.ID_CLUSTER_VID)) return
-        transport.send(message)
-    }
-
     fun requestClusterKeyframe() {
         val transport = _transport ?: return
         val channel = com.andrerinas.openheadunit.aap.protocol.Channel.ID_CLUSTER_VID
