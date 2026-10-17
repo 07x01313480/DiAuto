@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.Display
+import android.view.Gravity
 import android.view.Surface
 import android.view.TextureView
 import android.view.WindowManager
@@ -57,15 +58,18 @@ internal class ClusterMapScreen(
         val cardOnly = ClusterMapConfig.Content.of(settings.clusterMapContent) == ClusterMapConfig.Content.TURN_CARD
         val mapWindow = ClusterDisplayServices.window(settings)
         val root = FrameLayout(context)
-        if (cardOnly) {
-            // Only the card: the rest of the layer stays clear, so the car's own dashboard shows.
+        // Scenario and Simple show the map in a side window. Scenario shows this whole layer, so
+        // anything drawn outside that window covers the car's own dashboard, as DiPlay avoids too.
+        val sideWindow = mapWindow?.takeIf { !it.fullMap }
+        if (cardOnly || sideWindow != null) {
+            // The rest of the layer stays clear, so the car's own dashboard shows around it.
             this.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             this.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
             root.setBackgroundColor(Color.TRANSPARENT)
         } else {
             root.setBackgroundColor(Color.BLACK)
-            addMap(root)
         }
+        if (!cardOnly) addMap(root, sideWindow)
         if (cardOnly || settings.clusterTurnCardOverlay) {
             turnCard = ClusterTurnCardView(context).apply {
                 visibility = android.view.View.GONE
@@ -88,7 +92,8 @@ internal class ClusterMapScreen(
         super.onStop()
     }
 
-    private fun addMap(root: FrameLayout) {
+    /** Adds the map: across the whole layer, or only inside [window], where it is cut out of the panel. */
+    private fun addMap(root: FrameLayout, window: ClusterMapConfig.Window?) {
         val texture = TextureView(context)
         fun applyCrop(width: Int, height: Int) {
             if (width <= 0 || height <= 0) return
@@ -118,7 +123,23 @@ internal class ClusterMapScreen(
                 return true
             }
         }
-        root.addView(texture, FrameLayout.LayoutParams(-1, -1))
+        if (window == null) {
+            root.addView(texture, FrameLayout.LayoutParams(-1, -1))
+            return
+        }
+        // The phone draws the whole panel and keeps the car in the window's safe area, so lay
+        // the map out at panel size and let the window clip it: the car stays in the middle.
+        val clip = FrameLayout(context).apply { clipChildren = true; setBackgroundColor(Color.BLACK) }
+        root.addView(clip, FrameLayout.LayoutParams(window.width, window.height, Gravity.TOP or Gravity.START).apply {
+            leftMargin = window.left
+            topMargin = window.top
+        })
+        clip.addView(texture, FrameLayout.LayoutParams(
+            ClusterMapConfig.PANEL_WIDTH, ClusterMapConfig.PANEL_HEIGHT, Gravity.TOP or Gravity.START,
+        ).apply {
+            leftMargin = -window.left
+            topMargin = -window.top
+        })
     }
 
     private fun decoder() = App.provide(context).clusterVideoDecoder
