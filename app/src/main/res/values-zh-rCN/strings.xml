@@ -945,7 +945,7 @@
     <string name="cluster_map_description">在比亚迪仪表盘上显示导航应用的仪表地图（Waze、Google 地图）。下次连接时生效。</string>
     <string name="cluster_map_content">仪表盘显示</string>
     <string name="cluster_map_content_map">地图</string>
-    <string name="cluster_map_content_turn_card">转向卡片（实验）</string>
+    <string name="cluster_map_content_turn_card">仅转向卡片</string>
     <string name="cluster_map_size">地图大小</string>
     <string name="cluster_map_size_normal">标准（1920×720，清晰）</string>
     <string name="cluster_map_size_large">大（放大 1.5 倍）</string>
@@ -984,4 +984,18 @@
     <string name="audio_queue_backlog">无限制（最大积压）</string>
     <string name="keymap_test_hint">按任意键进行测试…</string>
     <string name="keymap_test_event">按键：%1$s（%2$d）· %3$s</string>
+    <string name="cluster_theme">车内仪表盘主题</string>
+    <string name="cluster_theme_scenario">情景</string>
+    <string name="cluster_theme_map">地图</string>
+    <string name="cluster_theme_simple">简约</string>
+    <string name="cluster_turn_card_overlay">仪表盘地图上的转向卡片</string>
+    <string name="cluster_turn_card_overlay_description">在仪表盘地图上显示下一个转向、距离和街道名称，与 DiPlay 相同。</string>
+    <string name="turn_card_now">即将转向</string>
+    <string name="turn_card_distance_m">%1$d 米</string>
+    <string name="turn_card_distance_km">%1$.1f 公里</string>
+    <string name="turn_card_exit">出口 %1$d</string>
+    <string name="turn_card_info_arrival">%1$s到达</string>
+    <string name="turn_card_info_duration_hm">%1$d小时%2$d分</string>
+    <string name="turn_card_info_duration_m">%1$d分</string>
+    <string name="turn_card_info_km">%1$.1f公里</string>
 </resources>

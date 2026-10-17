@@ -15,7 +15,10 @@ internal object ClusterMapConfig {
     enum class Content(val value: Int) {
         /** DISPLAY_TYPE_CLUSTER: the navigation app's own cluster map (Waze, Google Maps). */
         MAP(0),
-        /** DISPLAY_TYPE_AUXILIARY opened on the turn card. Experimental. */
+        /**
+         * DiPlay's turn card, drawn by DiAuto; no second display is declared to the phone. The
+         * profile still describes AA's own auxiliary turn card for reference.
+         */
         TURN_CARD(1);
 
         companion object { fun of(value: Int) = entries.firstOrNull { it.value == value } ?: MAP }
@@ -54,6 +57,40 @@ internal object ClusterMapConfig {
 
         companion object { fun of(value: Int) = entries.firstOrNull { it.value == value } ?: COMPACT }
     }
+
+    /** The cluster theme picked on the car. On DiLink 5.1 it decides which layer shows the map, and where. */
+    enum class Theme(val value: Int) {
+        SCENARIO(0), MAP(1), SIMPLE(2);
+
+        companion object { fun of(value: Int) = entries.firstOrNull { it.value == value } ?: SCENARIO }
+    }
+
+    /** The part of the 1920x720 panel where the car shows the map, in panel pixels. */
+    data class Window(val left: Int, val top: Int, val width: Int, val height: Int, val fullMap: Boolean)
+
+    /**
+     * DiLink 5.1 firmware whose three-layer cluster DiPlay measured: a Han L, and a Leopard 5 Ultra
+     * 2025 (DiPlay #301). Their cluster shows the shared `_0` layer in the Map theme and `_1` in
+     * Scenario and Simple, never the base layer DiLink 5.0 uses.
+     */
+    private val MEASURED_DILINK51 = setOf(
+        "BYD-AUTO/IVI/IVI:13/TP1A.220624.014/eng.build20260722.221155:user/release-keys",
+        "BYD-AUTO/IVI/IVI:13/TP1A.220624.014/eng.build20260705.021352:user/release-keys",
+    )
+
+    fun measured(fingerprint: String): Boolean = fingerprint in MEASURED_DILINK51
+
+    /**
+     * Where [theme] shows the map on a measured DiLink 5.1 cluster: the Map theme's full-width
+     * window between the speed readout and the gear/range bar, or the side window on the right of
+     * Scenario and Simple.
+     */
+    fun window(theme: Theme): Window =
+        if (theme == Theme.MAP) Window(0, 144, PANEL_WIDTH, 480, true)
+        else Window(1320, 0, 600, PANEL_HEIGHT, false)
+
+    /** Simple keeps a dark background on that firmware; Scenario and Map are light. */
+    fun dark(theme: Theme): Boolean = theme == Theme.SIMPLE
 
     // VideoCodecResolutionType values.
     const val RES_1280x720 = 2
@@ -109,7 +146,7 @@ internal object ClusterMapConfig {
 
     fun profile(
         content: Content, size: Size, detail: Detail, markerX: Int, markerY: Int,
-        width: Width = Width.COMPACT,
+        width: Width = Width.COMPACT, window: Window? = null,
     ): Profile {
         // Keep the panel's 8:3 shape inside the codec frame; the rest is margin.
         val contentWidth = size.codecWidth
@@ -129,18 +166,24 @@ internal object ClusterMapConfig {
             // and shows less area around the car. Left unscaled on the LARGE stream on purpose:
             // its 1.5x enlargement then makes everything 1.5x larger, which is what LARGE is for.
             density = detail.dpi,
-            contentInsets = insets(contentWidth, contentHeight, markerX, markerY, width),
+            contentInsets = insets(contentWidth, contentHeight, markerX, markerY, width, window),
         )
     }
 
-    /** The safe area in content pixels for marker steps [markerX] and [markerY]. */
+    /**
+     * The safe area in content pixels for marker steps [markerX] and [markerY]. With a measured
+     * [window] it starts as that window, so the car marker sits in the middle of what the cluster
+     * shows; the full-width Map window keeps clear of the trip readouts on both sides.
+     */
     fun insets(
         contentWidth: Int, contentHeight: Int, markerX: Int, markerY: Int, width: Width = Width.COMPACT,
+        window: Window? = null,
     ): Insets {
         val dx = markerX.coerceIn(HORIZONTAL_STEPS) * STEP_PERCENT
         val dy = markerY.coerceIn(VERTICAL_STEPS) * STEP_PERCENT
-        val (left, right) = shift(width.left, width.right, dx)
-        val (top, bottom) = shift(BASE_TOP, BASE_BOTTOM, dy)
+        val base = basePercent(width, window)
+        val (left, right) = shift(base.left, base.right, dx)
+        val (top, bottom) = shift(base.top, base.bottom, dy)
         return Insets(
             top = contentHeight * top / 100,
             bottom = contentHeight * bottom / 100,
@@ -148,6 +191,24 @@ internal object ClusterMapConfig {
             right = contentWidth * right / 100,
         )
     }
+
+    /** The unshifted safe area, in percent of the panel. */
+    private fun basePercent(width: Width, window: Window?): Insets {
+        if (window == null) return Insets(BASE_TOP, BASE_BOTTOM, width.left, width.right)
+        val top = window.top * 100 / PANEL_HEIGHT
+        val bottom = (PANEL_HEIGHT - window.top - window.height) * 100 / PANEL_HEIGHT
+        if (!window.fullMap) {
+            // The side window: its own width, with a little room above and below the cards.
+            val left = window.left * 100 / PANEL_WIDTH
+            val right = ((PANEL_WIDTH - window.left - window.width) * 100 / PANEL_WIDTH).coerceAtLeast(1)
+            return Insets(top + SIDE_VERTICAL_ROOM, bottom + SIDE_VERTICAL_ROOM, left, right)
+        }
+        // The trip and menu readouts cover about 460 px on each side of the Map window.
+        val side = when (width) { Width.COMPACT -> 24; Width.WIDE -> 16; Width.FULL -> 3 }
+        return Insets(top, bottom, side, side)
+    }
+
+    private const val SIDE_VERTICAL_ROOM = 8
 
     /** Moves a (start, end) inset pair by [delta] percent, keeping both edges on the panel. */
     private fun shift(start: Int, end: Int, delta: Int): Pair<Int, Int> {

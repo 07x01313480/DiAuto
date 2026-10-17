@@ -6,9 +6,12 @@ import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Point
 import android.graphics.SurfaceTexture
+import android.graphics.drawable.ColorDrawable
 import android.hardware.display.DisplayManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.Display
 import android.view.Surface
 import android.view.TextureView
@@ -39,10 +42,53 @@ internal class ClusterMapScreen(
 ) : Presentation(context, display) {
 
     private var surface: Surface? = null
+    private var turnCard: ClusterTurnCardView? = null
+    private val handler = Handler(Looper.getMainLooper())
+    private val guidanceTick = object : Runnable {
+        override fun run() {
+            turnCard?.setGuidance(DashboardGuidance.current())
+            handler.postDelayed(this, GUIDANCE_TICK_MS)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val root = FrameLayout(context).apply { setBackgroundColor(Color.BLACK) }
+        val settings = App.provide(context).settings
+        val cardOnly = ClusterMapConfig.Content.of(settings.clusterMapContent) == ClusterMapConfig.Content.TURN_CARD
+        val mapWindow = ClusterDisplayServices.window(settings)
+        val root = FrameLayout(context)
+        if (cardOnly) {
+            // Only the card: the rest of the layer stays clear, so the car's own dashboard shows.
+            this.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            this.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            root.setBackgroundColor(Color.TRANSPARENT)
+        } else {
+            root.setBackgroundColor(Color.BLACK)
+            addMap(root)
+        }
+        if (cardOnly || settings.clusterTurnCardOverlay) {
+            turnCard = ClusterTurnCardView(context).apply {
+                visibility = android.view.View.GONE
+                setPlan(mapWindow)
+                setNightMode(mapWindow != null && ClusterMapConfig.dark(ClusterMapConfig.Theme.of(settings.clusterTheme)))
+            }
+            root.addView(turnCard, FrameLayout.LayoutParams(-1, -1))
+        }
+        setContentView(root)
+        AppLog.i("ClusterMap: ${if (cardOnly) "turn card" else "map"} on ${display.name} window=$mapWindow card=${turnCard != null}")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (turnCard != null) handler.post(guidanceTick)
+    }
+
+    override fun onStop() {
+        handler.removeCallbacks(guidanceTick)
+        super.onStop()
+    }
+
+    private fun addMap(root: FrameLayout) {
         val texture = TextureView(context)
         fun applyCrop(width: Int, height: Int) {
             if (width <= 0 || height <= 0) return
@@ -73,7 +119,6 @@ internal class ClusterMapScreen(
             }
         }
         root.addView(texture, FrameLayout.LayoutParams(-1, -1))
-        setContentView(root)
     }
 
     private fun decoder() = App.provide(context).clusterVideoDecoder
@@ -81,6 +126,7 @@ internal class ClusterMapScreen(
     companion object {
         private const val DILINK5_BASE = "fission_bg_XDJAScreenProjection"
         private const val DILINK4_NAME = "fission_bg_xdjaVirtualSurface"
+        private const val GUIDANCE_TICK_MS = 500L
 
         private var current: ClusterMapScreen? = null
         private var currentOwner: Owner? = null
@@ -147,7 +193,13 @@ internal class ClusterMapScreen(
         fun findDisplay(context: Context): Display? {
             val displays = (context.getSystemService(Context.DISPLAY_SERVICE) as? DisplayManager)
                 ?.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION) ?: return null
-            // DiLink 5 / 5.1: the base projection display, else its full-map layer (_0).
+            // Measured DiLink 5.1: the layer the cluster shows for the car's theme, and no other.
+            if (ClusterMapConfig.measured(Build.FINGERPRINT)) {
+                val theme = ClusterMapConfig.Theme.of(App.provide(context).settings.clusterTheme)
+                val layer = if (theme == ClusterMapConfig.Theme.MAP) "shared_${DILINK5_BASE}_0" else "shared_${DILINK5_BASE}_1"
+                return displays.firstOrNull { it.name == layer }
+            }
+            // DiLink 5: the base projection display, else its full-map layer (_0).
             displays.firstOrNull { it.name == DILINK5_BASE }?.let { return it }
             displays.firstOrNull { it.name.contains(DILINK5_BASE) && it.name.endsWith("_0") }?.let { return it }
             displays.firstOrNull { it.name.contains(DILINK5_BASE) }?.let { return it }

@@ -945,7 +945,7 @@
     <string name="cluster_map_description">Показывать карту навигационного приложения для приборной панели (Waze, Google Карты) на приборной панели BYD. Применяется при следующем подключении.</string>
     <string name="cluster_map_content">На приборной панели</string>
     <string name="cluster_map_content_map">Карта</string>
-    <string name="cluster_map_content_turn_card">Карточка поворота (экспериментально)</string>
+    <string name="cluster_map_content_turn_card">Только карточка манёвра</string>
     <string name="cluster_map_size">Размер карты</string>
     <string name="cluster_map_size_normal">Обычный (1920×720, чётко)</string>
     <string name="cluster_map_size_large">Крупный (увеличен в 1,5 раза)</string>
@@ -984,4 +984,18 @@
     <string name="audio_queue_backlog">Без ограничения (максимальная очередь)</string>
     <string name="keymap_test_hint">Нажмите любую кнопку для проверки…</string>
     <string name="keymap_test_event">Кнопка: %1$s (%2$d) · %3$s</string>
+    <string name="cluster_theme">Тема приборной панели в автомобиле</string>
+    <string name="cluster_theme_scenario">Сценарий</string>
+    <string name="cluster_theme_map">Карта</string>
+    <string name="cluster_theme_simple">Простая</string>
+    <string name="cluster_turn_card_overlay">Карточка манёвра на карте приборной панели</string>
+    <string name="cluster_turn_card_overlay_description">Показывает следующий манёвр, расстояние и улицу поверх карты на приборной панели, как в DiPlay.</string>
+    <string name="turn_card_now">Сейчас</string>
+    <string name="turn_card_distance_m">%1$d м</string>
+    <string name="turn_card_distance_km">%1$.1f км</string>
+    <string name="turn_card_exit">Съезд %1$d</string>
+    <string name="turn_card_info_arrival">Прибытие %1$s</string>
+    <string name="turn_card_info_duration_hm">%1$dч %2$dмин</string>
+    <string name="turn_card_info_duration_m">%1$dмин</string>
+    <string name="turn_card_info_km">%1$.1f км</string>
 </resources>

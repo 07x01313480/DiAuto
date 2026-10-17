@@ -145,6 +145,16 @@ class Settings(private val context: Context) {
         get() = prefs.getInt("cluster-map-width", 0)
         set(value) { prefs.edit().putInt("cluster-map-width", value).apply() }
 
+    /** The cluster theme picked on the car, which decides where its map window is (DiLink 5.1). */
+    var clusterTheme: Int
+        get() = prefs.getInt("cluster-theme", 0)
+        set(value) { prefs.edit().putInt("cluster-theme", value).apply() }
+
+    /** DiPlay's turn card drawn over the dashboard map. */
+    var clusterTurnCardOverlay: Boolean
+        get() = prefs.getBoolean("cluster-turn-card-overlay", true)
+        set(value) { prefs.edit().putBoolean("cluster-turn-card-overlay", value).apply() }
+
     var showNavigationNotifications: Boolean
         get() = prefs.getBoolean("show-navigation-notifications", false)
         set(value) {

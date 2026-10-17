@@ -26,10 +26,20 @@ internal object ClusterDisplayServices {
         settings.clusterMarkerX,
         settings.clusterMarkerY,
         ClusterMapConfig.Width.of(settings.clusterMapWidth),
+        window(settings),
     )
+
+    /** The map window of the car's cluster theme, on measured DiLink 5.1 firmware only. */
+    fun window(settings: Settings): ClusterMapConfig.Window? =
+        if (ClusterMapConfig.measured(android.os.Build.FINGERPRINT))
+            ClusterMapConfig.window(ClusterMapConfig.Theme.of(settings.clusterTheme))
+        else null
 
     fun build(settings: Settings): List<Control.Service> {
         if (!settings.clusterMapEnabled) return emptyList()
+        // DiAuto draws the turn card itself from the guidance the HUD uses, so the phone gets no
+        // second display, and Google Maps keeps its own view on the main screen.
+        if (ClusterMapConfig.Content.of(settings.clusterMapContent) == ClusterMapConfig.Content.TURN_CARD) return emptyList()
         val p = profile(settings)
         AppLog.i("[ServiceDiscovery] Announcing dashboard display: type=${p.displayType} " +
             "codec=${p.codecWidth}x${p.codecHeight} content=${p.contentWidth}x${p.contentHeight} " +

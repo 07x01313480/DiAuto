@@ -944,7 +944,7 @@
     <string name="cluster_map_description">عرض خريطة تطبيق الملاحة الخاصة بلوحة العدادات (Waze وخرائط Google) على لوحة عدادات BYD. يُطبَّق عند الاتصال التالي.</string>
     <string name="cluster_map_content">ما يُعرض على لوحة العدادات</string>
     <string name="cluster_map_content_map">الخريطة</string>
-    <string name="cluster_map_content_turn_card">بطاقة الانعطاف (تجريبي)</string>
+    <string name="cluster_map_content_turn_card">بطاقة الانعطاف فقط</string>
     <string name="cluster_map_size">حجم الخريطة</string>
     <string name="cluster_map_size_normal">عادي (1920×720، واضح)</string>
     <string name="cluster_map_size_large">كبير (مكبّر 1.5×)</string>
@@ -983,4 +983,18 @@
     <string name="audio_queue_backlog">بلا حد (أقصى تراكم)</string>
     <string name="keymap_test_hint">اضغط أي زر لاختباره…</string>
     <string name="keymap_test_event">الزر: %1$s (%2$d) · %3$s</string>
+    <string name="cluster_theme">سمة لوحة العدادات في السيارة</string>
+    <string name="cluster_theme_scenario">المشهد</string>
+    <string name="cluster_theme_map">الخريطة</string>
+    <string name="cluster_theme_simple">بسيط</string>
+    <string name="cluster_turn_card_overlay">بطاقة الانعطاف على خريطة لوحة العدادات</string>
+    <string name="cluster_turn_card_overlay_description">يعرض الانعطاف التالي والمسافة واسم الشارع فوق خريطة لوحة العدادات، كما في DiPlay.</string>
+    <string name="turn_card_now">الآن</string>
+    <string name="turn_card_distance_m">%1$d م</string>
+    <string name="turn_card_distance_km">%1$.1f كم</string>
+    <string name="turn_card_exit">مخرج %1$d</string>
+    <string name="turn_card_info_arrival">الوصول %1$s</string>
+    <string name="turn_card_info_duration_hm">%1$dس %2$dد</string>
+    <string name="turn_card_info_duration_m">%1$dد</string>
+    <string name="turn_card_info_km">%1$.1f كم</string>
 </resources>

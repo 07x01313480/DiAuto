@@ -129,4 +129,44 @@ class ClusterMapConfigTest {
         assertEquals(Size.NORMAL, Size.of(-1))
         assertEquals(Detail.NORMAL, Detail.of(7))
     }
+
+    @Test
+    fun `measured DiLink 5_1 windows are the ones DiPlay measured`() {
+        assertEquals(ClusterMapConfig.Window(0, 144, 1920, 480, true), ClusterMapConfig.window(ClusterMapConfig.Theme.MAP))
+        assertEquals(ClusterMapConfig.Window(1320, 0, 600, 720, false), ClusterMapConfig.window(ClusterMapConfig.Theme.SCENARIO))
+        assertEquals(ClusterMapConfig.window(ClusterMapConfig.Theme.SCENARIO), ClusterMapConfig.window(ClusterMapConfig.Theme.SIMPLE))
+        assertTrue(ClusterMapConfig.measured("BYD-AUTO/IVI/IVI:13/TP1A.220624.014/eng.build20260722.221155:user/release-keys"))
+        assertTrue(!ClusterMapConfig.measured("other"))
+    }
+
+    @Test
+    fun `the safe area is centred on the side window, so the car sits in it`() {
+        val window = ClusterMapConfig.window(ClusterMapConfig.Theme.SCENARIO)
+        val i = ClusterMapConfig.insets(1920, 720, 0, 0, window = window)
+        val centre = i.left + (1920 - i.left - i.right) / 2
+        assertTrue("car centre $centre inside the side window", centre in 1320..1920)
+        assertTrue(kotlin.math.abs(centre - (1320 + 300)) <= 20)
+    }
+
+    @Test
+    fun `the safe area fills the Map window between the readouts`() {
+        val window = ClusterMapConfig.window(ClusterMapConfig.Theme.MAP)
+        val i = ClusterMapConfig.insets(1920, 720, 0, 0, window = window)
+        assertEquals(720 * 20 / 100, i.top)
+        assertEquals(1920 * 24 / 100, i.left)
+        assertEquals(i.left, i.right)
+        val middleY = i.top + (720 - i.top - i.bottom) / 2
+        assertTrue("car centre $middleY inside the window", middleY in 144..624)
+    }
+
+    @Test
+    fun `the turn card stays inside the window it belongs to`() {
+        val side = ClusterMapConfig.window(ClusterMapConfig.Theme.SCENARIO)
+        val card = ClusterTurnCardPlacement.card(1920, 720, side)!!
+        assertTrue(card.left >= side.left && card.left + card.width <= side.left + side.width)
+        val map = ClusterMapConfig.window(ClusterMapConfig.Theme.MAP)
+        val mapCard = ClusterTurnCardPlacement.card(1920, 720, map)!!
+        assertTrue(mapCard.top >= map.top && mapCard.top + mapCard.height <= map.top + map.height)
+        assertNull(ClusterTurnCardPlacement.card(0, 720, null))
+    }
 }
