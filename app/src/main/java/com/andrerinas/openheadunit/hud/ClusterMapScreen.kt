@@ -42,7 +42,6 @@ internal class ClusterMapScreen(
     private val profile: ClusterMapConfig.Profile,
 ) : Presentation(context, display) {
 
-    private var surface: Surface? = null
     private var turnCard: ClusterTurnCardView? = null
     private val handler = Handler(Looper.getMainLooper())
     private val guidanceTick = object : Runnable {
@@ -59,9 +58,10 @@ internal class ClusterMapScreen(
         val mapWindow = ClusterDisplayServices.window(context, settings)
         this.mapWindow = mapWindow
         val root = FrameLayout(context)
-        // On measured firmware the map fills only the window of the cluster's theme. Scenario
-        // shows this whole layer, so anything drawn outside it would cover the car's own dashboard.
-        if (cardOnly || mapWindow != null) {
+        // The Map theme shows its whole layer, so the map fills it; Scenario and Simple show a side
+        // window, and Scenario shows the rest of this layer too, so only that window is drawn.
+        val sideWindow = mapWindow?.takeIf { !it.fullMap }
+        if (cardOnly || sideWindow != null) {
             // The rest of the layer stays clear, so the car's own dashboard shows around it.
             this.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             this.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
@@ -69,7 +69,7 @@ internal class ClusterMapScreen(
         } else {
             root.setBackgroundColor(Color.BLACK)
         }
-        if (!cardOnly) addMap(root, mapWindow)
+        if (!cardOnly) addMap(root, sideWindow)
         if (cardOnly || settings.clusterTurnCardOverlay) {
             turnCard = ClusterTurnCardView(context).apply {
                 visibility = android.view.View.GONE
@@ -123,7 +123,8 @@ internal class ClusterMapScreen(
                 st.setDefaultBufferSize(profile.codecWidth, profile.codecHeight)
                 applyCrop(width, height)
                 val s = Surface(st)
-                surface = s
+                sharedTexture = st
+                sharedSurface = s
                 AppLog.i("ClusterMap: surface ready ${width}x$height on display ${display.displayId}:${display.name}")
                 decoder().setSurface(s)
                 // A codec on a new surface needs a keyframe before it can draw anything.
@@ -134,12 +135,22 @@ internal class ClusterMapScreen(
             override fun onSurfaceTextureUpdated(st: SurfaceTexture) = Unit
 
             override fun onSurfaceTextureDestroyed(st: SurfaceTexture): Boolean {
+                if (keepSurface && st === sharedTexture) {
+                    // Moving to another layer: the next window takes this surface over, so the
+                    // decoder keeps running and needs no keyframe from the phone.
+                    AppLog.i("ClusterMap: keeping the map's surface for the next window")
+                    return false
+                }
                 AppLog.i("ClusterMap: surface destroyed")
-                surface?.let { decoder().stopIfCurrentSurface(it, "dashboard surface destroyed") }
-                surface?.release()
-                surface = null
+                releaseSharedSurface("dashboard surface destroyed", releaseTexture = false)
                 return true
             }
+        }
+        sharedTexture?.let { kept ->
+            // A theme change: carry on with the running decoder's surface, as DiPlay does.
+            texture.setSurfaceTexture(kept)
+            texture.addOnLayoutChangeListener { _, l, t, r, b, _, _, _, _ -> applyCrop(r - l, b - t) }
+            AppLog.i("ClusterMap: map moved to ${display.name} with the running decoder")
         }
         if (window == null) {
             root.addView(texture, FrameLayout.LayoutParams(-1, -1))
@@ -190,6 +201,23 @@ internal class ClusterMapScreen(
         private var lastMoveAt = 0L
         private const val MOVE_RETRY_MS = 10_000L
 
+        // The map's surface for the whole session: a theme change hands it to the next window
+        // instead of stopping the decoder, which then waited up to a minute for a keyframe.
+        private var sharedTexture: SurfaceTexture? = null
+        private var sharedSurface: Surface? = null
+        private var keepSurface = false
+        private var decoderContext: java.lang.ref.WeakReference<Context>? = null
+
+        /** [releaseTexture] false when the TextureView releases it itself (its destroy callback returned true). */
+        private fun releaseSharedSurface(reason: String, releaseTexture: Boolean = true) {
+            val context = decoderContext?.get()
+            sharedSurface?.let { surface -> context?.let { App.provide(it).clusterVideoDecoder.stopIfCurrentSurface(surface, reason) } }
+            sharedSurface?.release()
+            sharedSurface = null
+            if (releaseTexture) sharedTexture?.release()
+            sharedTexture = null
+        }
+
         private fun startMonitor(context: Context) {
             if (monitor != null || Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return
             if (!ClusterMapConfig.measured(Build.FINGERPRINT)) return
@@ -239,13 +267,14 @@ internal class ClusterMapScreen(
          */
         private fun moveLayer() {
             val context = showContext?.get() ?: return
-            closeWindow()
+            closeWindow(keepSurface = true)
             show(context)
         }
 
         /** Shows the dashboard map while a session with it enabled is up. Safe to call repeatedly. */
         fun show(context: Context) {
             showContext = java.lang.ref.WeakReference(context)
+            decoderContext = java.lang.ref.WeakReference(context.applicationContext)
             val settings = App.provide(context).settings
             if (!settings.clusterMapEnabled || current?.isShowing == true) return
             val display = findDisplay(context)
@@ -286,17 +315,24 @@ internal class ClusterMapScreen(
 
         /** DiAuto's screen is going away: closes the map only if that screen owns its window. */
         fun onScreenHidden() {
-            if (currentOwner == Owner.SCREEN) dismiss()
+            if (currentOwner == Owner.SCREEN) {
+                closeWindow(keepSurface = false)
+                releaseSharedSurface("DiAuto's screen hidden")
+            }
         }
 
         /** The session ended. */
         fun dismiss() {
-            closeWindow()
+            closeWindow(keepSurface = false)
+            // A surface kept for a move that never found its window is released here.
+            releaseSharedSurface("session ended")
             stopMonitor()
         }
 
-        private fun closeWindow() {
+        private fun closeWindow(keepSurface: Boolean) {
+            this.keepSurface = keepSurface
             current?.let { runCatching { it.dismiss() } }
+            this.keepSurface = false
             current = null
             currentOwner = null
         }
