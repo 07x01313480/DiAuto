@@ -118,7 +118,16 @@ internal class ClusterMapScreen(
                 lastClusterState = state
                 AppLog.i("ClusterMap: cluster theme=${state.theme} map card visible=${state.mapVisible}")
             }
-            setMapVisible(ClusterMapConfig.shownOnLayer(state.theme, state.mapVisible, mapWindow?.fullMap))
+            val onFullMap = mapWindow?.fullMap
+            val wantsFullMap = state.theme?.let { it == ClusterMapConfig.Theme.MAP }
+            if (onFullMap != null && wantsFullMap != null && onFullMap != wantsFullMap) {
+                // The driver switched the cluster theme: the map belongs on the other layer now.
+                AppLog.i("ClusterMap: cluster theme is now ${state.theme}; moving the map to its layer")
+                setMapVisible(false)
+                handler.post { relayout() }
+                return@DiLink51ClusterMonitor
+            }
+            setMapVisible(ClusterMapConfig.shownOnLayer(state.theme, state.mapVisible, onFullMap))
         }.also { it.start() }
     }
 
@@ -200,8 +209,27 @@ internal class ClusterMapScreen(
          */
         private enum class Owner { OVERLAY, APP, SCREEN }
 
+        /** What [show] was last called with, so the map can move layers when the cluster theme changes. */
+        private var showContext: java.lang.ref.WeakReference<Context>? = null
+
+        /**
+         * Moves the map to the layer of the cluster's current theme, and tells the phone where that
+         * theme's window is, so Google Maps puts the car in the middle of it again.
+         */
+        private fun relayout() {
+            val context = showContext?.get() ?: return
+            dismiss()
+            show(context)
+            val settings = App.provide(context).settings
+            if (ClusterMapConfig.Content.of(settings.clusterMapContent) == ClusterMapConfig.Content.MAP) {
+                App.provide(context).commManager.sendClusterUiConfig(
+                    ClusterDisplayServices.uiConfigUpdate(ClusterDisplayServices.profile(context, settings)))
+            }
+        }
+
         /** Shows the dashboard map while a session with it enabled is up. Safe to call repeatedly. */
         fun show(context: Context) {
+            showContext = java.lang.ref.WeakReference(context)
             val settings = App.provide(context).settings
             if (!settings.clusterMapEnabled || current?.isShowing == true) return
             val display = findDisplay(context)
