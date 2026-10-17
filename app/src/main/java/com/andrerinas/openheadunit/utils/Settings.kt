@@ -585,18 +585,19 @@ class Settings(private val context: Context) {
     /**
      * The connection types the user actually uses (multi-select). Drives which settings are shown.
      * Empty = nothing chosen yet, so everything is shown. Migrated once from the legacy
-     * single-choice [primaryConnection].
+     * single-choice [primaryConnection]. Leaving WiFi out also keeps every wireless transport
+     * down, see [com.andrerinas.openheadunit.aap.WirelessScopePolicy].
      */
     var connectionModes: Set<ConnectionMode>
         get() {
-            val stored = prefs.getStringSet("connection-modes", null)
+            val stored = prefs.getStringSet(KEY_CONNECTION_MODES, null)
             if (stored != null) return stored.mapNotNull { ConnectionMode.fromKey(it) }.toSet()
             val migrated = migrateLegacyConnectionModes()
             connectionModes = migrated
             return migrated
         }
         set(value) {
-            prefs.edit().putStringSet("connection-modes", value.map { it.key }.toSet()).apply()
+            prefs.edit().putStringSet(KEY_CONNECTION_MODES, value.map { it.key }.toSet()).apply()
         }
 
     private fun migrateLegacyConnectionModes(): Set<ConnectionMode> = when (primaryConnection) {
@@ -1064,6 +1065,8 @@ class Settings(private val context: Context) {
         const val KEY_MEDIA_VOLUME_OFFSET = "media-volume-offset"
         const val KEY_ASSISTANT_VOLUME_OFFSET = "assistant-volume-offset"
         const val KEY_NAVIGATION_VOLUME_OFFSET = "navigation-volume-offset"
+
+        const val KEY_CONNECTION_MODES = "connection-modes"
 
         const val AUTO_CONNECT_LAST_SESSION = "last-session"
         const val AUTO_CONNECT_SELF_MODE = "self-mode"
