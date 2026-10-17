@@ -79,6 +79,7 @@ internal class ClusterMapScreen(
             root.addView(turnCard, FrameLayout.LayoutParams(-1, -1))
         }
         setContentView(root)
+        contentRoot = root
         AppLog.i("ClusterMap: ${if (cardOnly) "turn card" else "map"} on ${display.name} window=$mapWindow card=${turnCard != null}")
     }
 
@@ -96,6 +97,7 @@ internal class ClusterMapScreen(
     }
 
     private var monitor: DiLink51ClusterMonitor? = null
+    private var contentRoot: FrameLayout? = null
     private var lastClusterState: ClusterActivityState.Snapshot? = null
 
     /**
@@ -119,11 +121,15 @@ internal class ClusterMapScreen(
         }.also { it.start() }
     }
 
-    /** Window alpha hides the pixels without destroying the TextureView and the decoder surface. */
+    /**
+     * Hides the content, not the window: the overlay owner gives this window a type its window
+     * context does not have, and Android refuses any window attribute update on it ("Window type
+     * mismatch"). A transparent view still draws, so the TextureView keeps taking frames.
+     */
     private fun setMapVisible(visible: Boolean) {
-        val target = this.window ?: return
+        val root = contentRoot ?: return
         val alpha = if (visible) 1f else 0f
-        if (target.attributes.alpha != alpha) target.attributes = target.attributes.apply { this.alpha = alpha }
+        if (root.alpha != alpha) root.alpha = alpha
     }
 
     /** Adds the map: across the whole layer, or only inside [window], where it is cut out of the panel. */
