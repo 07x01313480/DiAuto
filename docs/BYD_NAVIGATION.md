@@ -8,6 +8,8 @@ Live guidance and street names were physically confirmed in both DiAuto and DiPl
 
 The app sends navigation-only broadcasts to the stock ClusterDebug receiver as its normal Android UID. Vendor output runs outside phone control callbacks. Street text uses the installed HAL's UTF-16LE chunk protocol, capped at48 UTF-16 units without splitting a surrogate pair. Output logs exclude street text.
 
+While guidance is shown the navigation state is written again at most every 3.5 s, as the stock map does with its own guidance. The stock map sets that state to "not navigating" when the cluster projection display appears after start-up, when the driver changes the cluster's navi mode and when the map app starts; without the refresh the windshield kept the arrows hidden until the route was stopped and started again.
+
 Normal route end, disconnect, disabling navigation output and stale guidance trigger cleanup. Force-stop/process kill may leave the last instruction visible until the app opens again; a recovery journal handles that next launch. There is no guaranteed process-independent expiry. Run only one projection app at a time.
 
 Enable BYD navigation in settings. In DiAuto it is opt-in under Navigation; in DiPlay it is enabled by default when available. Debug-only receivers/demos require Android's DUMP permission and are absent from release manifests. Development starter and vendor-access experiments are not part of the production navigation path.
