@@ -56,7 +56,8 @@ internal class ClusterMapScreen(
         super.onCreate(savedInstanceState)
         val settings = App.provide(context).settings
         val cardOnly = ClusterMapConfig.Content.of(settings.clusterMapContent) == ClusterMapConfig.Content.TURN_CARD
-        val mapWindow = ClusterDisplayServices.window(settings)
+        val mapWindow = ClusterDisplayServices.window(context, settings)
+        this.mapWindow = mapWindow
         val root = FrameLayout(context)
         // Scenario and Simple show the map in a side window. Scenario shows this whole layer, so
         // anything drawn outside that window covers the car's own dashboard, as DiPlay avoids too.
@@ -98,6 +99,7 @@ internal class ClusterMapScreen(
 
     private var monitor: DiLink51ClusterMonitor? = null
     private var contentRoot: FrameLayout? = null
+    private var mapWindow: ClusterMapConfig.Window? = null
     private var lastClusterState: ClusterActivityState.Snapshot? = null
 
     /**
@@ -116,8 +118,7 @@ internal class ClusterMapScreen(
                 lastClusterState = state
                 AppLog.i("ClusterMap: cluster theme=${state.theme} map card visible=${state.mapVisible}")
             }
-            // Unknown theme (no cluster screen seen yet): keep showing, as without Usage access.
-            setMapVisible(state.theme == null || state.mapVisible)
+            setMapVisible(ClusterMapConfig.shownOnLayer(state.theme, state.mapVisible, mapWindow?.fullMap))
         }.also { it.start() }
     }
 
@@ -208,7 +209,7 @@ internal class ClusterMapScreen(
                 AppLog.w("ClusterMap: no BYD dashboard display among ${describeDisplays(context)}")
                 return
             }
-            val profile = ClusterDisplayServices.profile(settings)
+            val profile = ClusterDisplayServices.profile(context, settings)
             val app = context.applicationContext
             val owners = buildList {
                 // "Display over other apps" lets the window outlive DiAuto's screen for certain.
@@ -256,7 +257,7 @@ internal class ClusterMapScreen(
                 ?.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION) ?: return null
             // Measured DiLink 5.1: the layer the cluster shows for the car's theme, and no other.
             if (ClusterMapConfig.measured(Build.FINGERPRINT)) {
-                val theme = ClusterMapConfig.Theme.of(App.provide(context).settings.clusterTheme)
+                val theme = ClusterDisplayServices.theme(context, App.provide(context).settings)
                 val layer = if (theme == ClusterMapConfig.Theme.MAP) "shared_${DILINK5_BASE}_0" else "shared_${DILINK5_BASE}_1"
                 return displays.firstOrNull { it.name == layer }
             }

@@ -169,4 +169,18 @@ class ClusterMapConfigTest {
         assertTrue(mapCard.top >= map.top && mapCard.top + mapCard.height <= map.top + map.height)
         assertNull(ClusterTurnCardPlacement.card(0, 720, null))
     }
+
+    @Test
+    fun `a map on another theme's layer hides, so Scenario is never covered`() {
+        // Full-map layer: only in the Map theme.
+        assertTrue(ClusterMapConfig.shownOnLayer(ClusterMapConfig.Theme.MAP, true, fullMapLayer = true))
+        assertTrue(!ClusterMapConfig.shownOnLayer(ClusterMapConfig.Theme.SCENARIO, false, fullMapLayer = true))
+        assertTrue(!ClusterMapConfig.shownOnLayer(ClusterMapConfig.Theme.SCENARIO, true, fullMapLayer = true))
+        // Side layer: Scenario or Simple, and only with the map card open.
+        assertTrue(ClusterMapConfig.shownOnLayer(ClusterMapConfig.Theme.SCENARIO, true, fullMapLayer = false))
+        assertTrue(!ClusterMapConfig.shownOnLayer(ClusterMapConfig.Theme.SCENARIO, false, fullMapLayer = false))
+        assertTrue(!ClusterMapConfig.shownOnLayer(ClusterMapConfig.Theme.MAP, true, fullMapLayer = false))
+        // Nothing known: as without Usage access.
+        assertTrue(ClusterMapConfig.shownOnLayer(null, false, fullMapLayer = true))
+    }
 }

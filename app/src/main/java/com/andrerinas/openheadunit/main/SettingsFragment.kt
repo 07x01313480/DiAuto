@@ -1297,7 +1297,10 @@ class SettingsFragment : Fragment() {
                     arrayOf(getString(R.string.cluster_map_content_map), getString(R.string.cluster_map_content_turn_card)),
                     pendingClusterMapContent ?: 0) { pendingClusterMapContent = it }
                 // DiLink 5.1 shows the map on a different layer and window per cluster theme.
-                if (com.andrerinas.openheadunit.hud.ClusterMapConfig.measured(Build.FINGERPRINT)) {
+                // Picked by hand only when the cluster cannot report its theme (no Usage access).
+                if (com.andrerinas.openheadunit.hud.ClusterMapConfig.measured(Build.FINGERPRINT) &&
+                    !(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
+                        com.andrerinas.openheadunit.hud.DiLink51ClusterMonitor.hasAccess(requireContext()))) {
                     choice("clusterTheme", R.string.cluster_theme,
                         arrayOf(getString(R.string.cluster_theme_scenario), getString(R.string.cluster_theme_map),
                             getString(R.string.cluster_theme_simple)),

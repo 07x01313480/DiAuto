@@ -86,6 +86,28 @@ internal class DiLink51ClusterMonitor(context: Context, private val onState: (Cl
     }
 
     companion object {
+        /** The cluster right now, from the usage events since boot; null without Usage access. */
+        fun snapshotNow(context: Context): ClusterActivityState.Snapshot? {
+            if (!hasAccess(context)) return null
+            return runCatching {
+                val now = System.currentTimeMillis()
+                val since = (now - SystemClock.elapsedRealtime()).coerceAtLeast(0)
+                val events = context.getSystemService(UsageStatsManager::class.java).queryEvents(since, now)
+                    ?: return@runCatching null
+                val instanceId = runCatching { UsageEvents.Event::class.java.getMethod("getInstanceId") }.getOrNull()
+                val state = ClusterActivityState()
+                val event = UsageEvents.Event()
+                while (events.hasNextEvent()) {
+                    events.getNextEvent(event)
+                    val reset = event.eventType == UsageEvents.Event.DEVICE_SHUTDOWN || event.eventType == UsageEvents.Event.DEVICE_STARTUP
+                    if (!reset && !ClusterActivityState.accepted(event.packageName, event.className)) continue
+                    val instance = runCatching { instanceId?.invoke(event) as? Int }.getOrNull() ?: 0
+                    state.event(event.packageName, event.className, instance, event.eventType, event.timeStamp)
+                }
+                state.snapshot()
+            }.getOrNull()
+        }
+
         fun hasAccess(context: Context): Boolean = context.getSystemService(AppOpsManager::class.java)
             .checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), context.packageName) == AppOpsManager.MODE_ALLOWED
     }

@@ -19,29 +19,40 @@ internal object ClusterDisplayServices {
     // Android key codes a cluster/auxiliary display may receive (DPAD, media, navigation).
     private val AUXILIARY_KEYCODES = listOf(3, 4, 5, 6, 84, 85, 87, 88, 126, 127, 65537, 65538, 65540)
 
-    fun profile(settings: Settings): ClusterMapConfig.Profile = ClusterMapConfig.profile(
+    fun profile(context: android.content.Context, settings: Settings): ClusterMapConfig.Profile = ClusterMapConfig.profile(
         ClusterMapConfig.Content.of(settings.clusterMapContent),
         ClusterMapConfig.Size.of(settings.clusterMapSize),
         ClusterMapConfig.Detail.of(settings.clusterMapDetail),
         settings.clusterMarkerX,
         settings.clusterMarkerY,
         ClusterMapConfig.Width.of(settings.clusterMapWidth),
-        window(settings),
+        window(context, settings),
     )
 
+    /**
+     * The car's cluster theme: as the cluster itself reports it when DiAuto has Usage access (as
+     * DiPlay follows it), otherwise the theme picked in Settings. A wrong guess puts the map on a
+     * layer the cluster shows over everything, so the reported theme always wins.
+     */
+    fun theme(context: android.content.Context, settings: Settings): ClusterMapConfig.Theme {
+        val reported = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P &&
+            ClusterMapConfig.measured(android.os.Build.FINGERPRINT)
+        ) com.andrerinas.openheadunit.hud.DiLink51ClusterMonitor.snapshotNow(context)?.theme else null
+        return reported ?: ClusterMapConfig.Theme.of(settings.clusterTheme)
+    }
+
     /** The map window of the car's cluster theme, on measured DiLink 5.1 firmware only. */
-    fun window(settings: Settings): ClusterMapConfig.Window? =
-        if (ClusterMapConfig.measured(android.os.Build.FINGERPRINT))
-            ClusterMapConfig.window(ClusterMapConfig.Theme.of(settings.clusterTheme))
+    fun window(context: android.content.Context, settings: Settings): ClusterMapConfig.Window? =
+        if (ClusterMapConfig.measured(android.os.Build.FINGERPRINT)) ClusterMapConfig.window(theme(context, settings))
         else null
 
-    fun build(settings: Settings): List<Control.Service> {
+    fun build(context: android.content.Context, settings: Settings): List<Control.Service> {
         if (!settings.clusterMapEnabled) return emptyList()
         // DiAuto draws the turn card itself from the guidance the HUD uses, so the phone gets no
         // second display, and Google Maps keeps its own view on the main screen.
         if (ClusterMapConfig.Content.of(settings.clusterMapContent) == ClusterMapConfig.Content.TURN_CARD) return emptyList()
-        val p = profile(settings)
-        AppLog.i("[ServiceDiscovery] Announcing dashboard display: type=${p.displayType} " +
+        val p = profile(context, settings)
+        AppLog.i("[ServiceDiscovery] Announcing dashboard display: theme=${theme(context, settings)} type=${p.displayType} " +
             "codec=${p.codecWidth}x${p.codecHeight} content=${p.contentWidth}x${p.contentHeight} " +
             "density=${p.density} insets=${p.contentInsets}")
 

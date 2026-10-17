@@ -89,6 +89,18 @@ internal object ClusterMapConfig {
         if (theme == Theme.MAP) Window(0, 144, PANEL_WIDTH, 480, true)
         else Window(1320, 0, 600, PANEL_HEIGHT, false)
 
+    /**
+     * Whether DiAuto's map should show, given the cluster's [theme] and whether its [mapCardVisible]
+     * (the Map theme, or the side map card), for a map drawn on the full-map layer
+     * ([fullMapLayer] true) or the side layer (false). Scenario puts both layers over its whole
+     * screen, so a map on the layer of another theme must hide. Unknown state keeps it showing.
+     */
+    fun shownOnLayer(theme: Theme?, mapCardVisible: Boolean, fullMapLayer: Boolean?): Boolean = when {
+        theme == null || fullMapLayer == null -> true
+        fullMapLayer -> theme == Theme.MAP
+        else -> theme != Theme.MAP && mapCardVisible
+    }
+
     /** Simple keeps a dark background on that firmware; Scenario and Map are light. */
     fun dark(theme: Theme): Boolean = theme == Theme.SIMPLE
 
