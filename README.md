@@ -17,11 +17,13 @@ this is not Apple CarPlay.
 
 ![Android Auto with the current music card and a freely panned map, without a destination](site/assets/projection-music.png)
 
-## What’s new in 0.3.11
+## What’s new in 0.3.12
 
-- Connects when you turn on the car hotspot after opening DiAuto, without restarting the app.
-- Waits for the hotspot network to be ready instead of using the car’s wired or modem connection details.
-- Refreshes hotspot connection details after a failed phone join, and waits for a manually selected hotspot interface.
+- Windshield HUD arrows appear as soon as a route starts and no longer disappear mid-route.
+- Reconnecting during a route no longer ends in “Connection lost”.
+- Stops a reconnect loop when the phone is still on the car’s Wi-Fi from the previous connection.
+- Hiding the status bar or toolbar no longer drops the picture to 800x480.
+- Head units whose video decoder is not on the verified list now get 1080p instead of a 1440p stream they cannot show.
 
 ## Features
 

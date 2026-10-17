@@ -1,3 +1,11 @@
+# DiAuto 0.3.12 — 2026-10-17
+
+- Windshield HUD: re-send the instrument navigation state (0x43E0003A = 2) at most every 3.5 s while guidance shows, as the stock map does. The stock map resets it when the cluster display appears, the navi mode changes or the map app starts, which hid the arrows until the route was restarted (#41).
+- Answer the phone's main video focus request at once when a surface is ready. Reconnecting with an active route ended in "Connection lost" (#42).
+- Do not send Wi-Fi credentials after the phone's session has already started. A phone still on the car's network connected during the 1 s pause before them, and the late credentials made it open a second session that replaced the first, in a loop (#45).
+- Keep the negotiated resolution when the surface changes with the resolution locked, instead of falling through to 800x480 (#19, #42).
+- Ask for 1440p/4K automatically only with a decoder on the HEVC reliability list or chosen software HEVC; a manual 1440p uses H.265 on any hardware HEVC decoder (#35, #6, #42).
+
 # DiAuto 0.3.11 — 2026-10-01
 
 - Recover when the built-in car hotspot is enabled after DiAuto opens, without restarting the app.
