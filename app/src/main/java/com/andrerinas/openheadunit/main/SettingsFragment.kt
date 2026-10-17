@@ -91,6 +91,7 @@ class SettingsFragment : Fragment() {
     private var pendingClusterMapWidth: Int? = null
     private var pendingClusterTheme: Int? = null
     private var pendingClusterTurnCardOverlay: Boolean? = null
+    private var pendingBydLeftHandTraffic: Boolean? = null
     private var pendingShowNavigationNotifications: Boolean? = null
     private var pendingSyncMediaSessionAaMetadata: Boolean? = null
     private var pendingResolution: Int? = null
@@ -226,6 +227,7 @@ class SettingsFragment : Fragment() {
         pendingClusterMapWidth = settings.clusterMapWidth
         pendingClusterTheme = settings.clusterTheme
         pendingClusterTurnCardOverlay = settings.clusterTurnCardOverlay
+        pendingBydLeftHandTraffic = settings.bydLeftHandTraffic
         pendingShowNavigationNotifications = settings.showNavigationNotifications
         pendingSyncMediaSessionAaMetadata = settings.syncMediaSessionWithAaMetadata
         pendingResolution = settings.resolutionId
@@ -350,6 +352,7 @@ class SettingsFragment : Fragment() {
         pendingClusterMapWidth = settings.clusterMapWidth
         pendingClusterTheme = settings.clusterTheme
         pendingClusterTurnCardOverlay = settings.clusterTurnCardOverlay
+        pendingBydLeftHandTraffic = settings.bydLeftHandTraffic
         pendingShowNavigationNotifications = settings.showNavigationNotifications
         pendingSyncMediaSessionAaMetadata = settings.syncMediaSessionWithAaMetadata
         pendingResolution = settings.resolutionId
@@ -481,6 +484,7 @@ class SettingsFragment : Fragment() {
         pendingClusterMapWidth?.let { settings.clusterMapWidth = it }
         pendingClusterTheme?.let { settings.clusterTheme = it }
         pendingClusterTurnCardOverlay?.let { settings.clusterTurnCardOverlay = it }
+        pendingBydLeftHandTraffic?.let { settings.bydLeftHandTraffic = it }
         pendingShowNavigationNotifications?.let { settings.showNavigationNotifications = it }
         pendingSyncMediaSessionAaMetadata?.let { settings.syncMediaSessionWithAaMetadata = it }
         pendingResolution?.let { settings.resolutionId = it }
@@ -613,6 +617,7 @@ class SettingsFragment : Fragment() {
                         pendingClusterMapWidth != settings.clusterMapWidth ||
                         pendingClusterTheme != settings.clusterTheme ||
                         pendingClusterTurnCardOverlay != settings.clusterTurnCardOverlay ||
+                        pendingBydLeftHandTraffic != settings.bydLeftHandTraffic ||
                         pendingShowNavigationNotifications != settings.showNavigationNotifications ||
                         pendingSyncMediaSessionAaMetadata != settings.syncMediaSessionWithAaMetadata ||
                         pendingResolution != settings.resolutionId ||
@@ -1235,6 +1240,19 @@ class SettingsFragment : Fragment() {
                     updateSettingsList()
                 }
             ))
+            if (pendingBydNavigationEnabled == true) {
+                items.add(SettingItem.ToggleSettingEntry(
+                    stableId = "bydLeftHandTraffic",
+                    nameResId = R.string.byd_left_hand_traffic_title,
+                    descriptionResId = R.string.byd_left_hand_traffic_description,
+                    isChecked = pendingBydLeftHandTraffic ?: false,
+                    onCheckedChanged = { enabled ->
+                        pendingBydLeftHandTraffic = enabled
+                        checkChanges()
+                        updateSettingsList()
+                    }
+                ))
+            }
         }
 
 

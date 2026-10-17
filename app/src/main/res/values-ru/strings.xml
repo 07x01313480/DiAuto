@@ -965,6 +965,8 @@
     <string name="cluster_map_overlay_hint">Если карта на приборной панели закрывается при открытии камеры или другого приложения, разрешите DiAuto показ поверх других приложений. Необязательно: многие головные устройства сохраняют её и без этого.</string>
     <string name="cluster_map_overlay_grant">Разрешить показ поверх других приложений</string>
     <string name="cluster_map_overlay_unavailable">На этом устройстве нет экрана для этого разрешения.</string>
+    <string name="byd_left_hand_traffic_title">Левостороннее движение</string>
+    <string name="byd_left_hand_traffic_description">Круговое движение по часовой стрелке, как в Великобритании, Японии или Австралии. Оставьте выключенным при правостороннем движении. Используется для показа номера съезда с кольца на дисплеях BYD.</string>
     <string name="da_connection_setup">Настройка подключения</string>
     <string name="da_connection_setup_hint">Выберите подключение и настройте точку доступа автомобиля.</string>
     <string name="da_diagnostics">Диагностика</string>

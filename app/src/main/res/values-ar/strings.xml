@@ -964,6 +964,8 @@
     <string name="cluster_map_overlay_hint">إذا اختفت الخريطة من لوحة العدادات عند فتح الكاميرا أو تطبيق آخر، اسمح لـ DiAuto بالظهور فوق التطبيقات الأخرى. اختياري: كثير من الشاشات تبقيها ظاهرة بدونه.</string>
     <string name="cluster_map_overlay_grant">السماح بالظهور فوق التطبيقات الأخرى</string>
     <string name="cluster_map_overlay_unavailable">لا توجد في هذه الشاشة صفحة لهذا الإذن.</string>
+    <string name="byd_left_hand_traffic_title">القيادة على اليسار</string>
+    <string name="byd_left_hand_traffic_description">الدوّارات تسير باتجاه عقارب الساعة، كما في المملكة المتحدة واليابان وأستراليا. اتركه متوقفًا حيث تكون القيادة على اليمين. يُستخدم لعرض رقم مخرج الدوّار على شاشات BYD.</string>
     <string name="da_connection_setup">إعداد الاتصال</string>
     <string name="da_connection_setup_hint">اختر طريقة الاتصال وأعدّ نقطة اتصال سيارتك.</string>
     <string name="da_diagnostics">التشخيص</string>

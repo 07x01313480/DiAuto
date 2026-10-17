@@ -974,6 +974,8 @@
     <string name="cluster_map_overlay_hint">Si el mapa del tablero se cierra al abrir la cámara u otra app, permite que DiAuto se muestre sobre otras apps. Opcional: muchas unidades lo mantienen sin esto.</string>
     <string name="cluster_map_overlay_grant">Permitir mostrar sobre otras apps</string>
     <string name="cluster_map_overlay_unavailable">Esta unidad no tiene pantalla para este permiso.</string>
+    <string name="byd_left_hand_traffic_title">Circulación por la izquierda</string>
+    <string name="byd_left_hand_traffic_description">Las rotondas giran en sentido horario, como en Reino Unido, Japón o Australia. Déjalo desactivado donde se circula por la derecha. Se usa para mostrar el número de salida de las rotondas en las pantallas BYD.</string>
     <string name="da_connection_setup">Configuración de conexión</string>
     <string name="da_connection_setup_hint">Elige una conexión y configura el punto de acceso del coche.</string>
     <string name="da_diagnostics">Diagnóstico</string>

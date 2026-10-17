@@ -968,6 +968,8 @@
     <string name="cluster_map_overlay_hint">If the dashboard map closes when the camera or another app opens, allow DiAuto to display over other apps. Optional: many head units keep it up without this.</string>
     <string name="cluster_map_overlay_grant">Allow display over other apps</string>
     <string name="cluster_map_overlay_unavailable">This head unit has no screen for this permission.</string>
+    <string name="byd_left_hand_traffic_title">Traffic drives on the left</string>
+    <string name="byd_left_hand_traffic_description">Roundabouts turn clockwise, as in the UK, Japan or Australia. Leave off where traffic keeps right. Used to show the roundabout exit number on BYD displays.</string>
     <string name="da_connection_setup">Connection setup</string>
     <string name="da_connection_setup_hint">Choose a connection and set up your car hotspot.</string>
     <string name="da_diagnostics">Diagnostics</string>
