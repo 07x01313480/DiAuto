@@ -48,6 +48,17 @@ internal class AapControlMedia(
                 val focusRequest = message.parse(Media.VideoFocusRequestNotification.newBuilder()).build()
                 AppLog.i("RX: Video Focus Request - mode: %s, reason: %s", focusRequest.mode, focusRequest.reason)
 
+                if (focusRequest.mode == Media.VideoFocusMode.VIDEO_FOCUS_PROJECTED && aapTransport.hasVideoSurface()) {
+                    // Answer the phone's request now, as a car does. Left unanswered, the main
+                    // picture waited for the projection watchdog's unsolicited focus about three
+                    // seconds later, and when Google Maps resumed an active route inside that gap
+                    // the phone restarted its projection: on a Han L every reconnect during a
+                    // route dropped about two seconds in, with a second connection attempt.
+                    AppLog.i("Video focus granted on request")
+                    aapTransport.send(VideoFocusEvent(gain = true, unsolicited = false))
+                    return 0
+                }
+
                 if (focusRequest.mode == Media.VideoFocusMode.VIDEO_FOCUS_NATIVE) {
                     AppLog.i("Video Focus NATIVE received. User likely clicked Exit. Stopping transport.")
                     aapTransport.wasUserExit = true
