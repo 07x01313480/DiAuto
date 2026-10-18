@@ -250,6 +250,10 @@
     <string name="car_stream_label_only">Только метка Android</string>
     <string name="car_stream_same_as_navi">Как у навигации</string>
     <string name="car_stream_hint">Регулятор «Навигация» в BYD управляет потоком 15 на DiLink 5 и 14 на DiLink 3/4. При выборе номера звучит короткий тон: двигайте регуляторы автомобиля, чтобы услышать, какой им управляет, затем сохраните. Применяется при следующем подключении.</string>
+    <string name="car_slider_finder">Узнать, чем управляет ползунок автомобиля</string>
+    <string name="car_slider_finder_message">Подвигайте сейчас вверх и вниз один из ползунков громкости автомобиля (например, Voice). DiAuto следит за потоками громкости Android (%1$s) и настройками громкости автомобиля и покажет, что меняется.</string>
+    <string name="car_slider_finder_waiting">Пока ничего не изменилось. Если при движении ползунка ничего не меняется, этот ползунок недоступен для Android.</string>
+    <string name="car_slider_finder_done">Готово</string>
     <string name="use_aac_audio">Использовать AAC</string>
     <string name="use_aac_audio_description">Использовать кодек AAC для аудио для экономии трафика (Экспериментально).</string>
     <string name="attach_hw_dsp_equalizer">Триггер аппаратного DSP эквалайзера</string>

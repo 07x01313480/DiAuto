@@ -246,6 +246,10 @@
     <string name="car_stream_label_only">仅 Android 标签</string>
     <string name="car_stream_same_as_navi">与导航相同</string>
     <string name="car_stream_hint">比亚迪的导航滑块在 DiLink 5 上对应音频流 15，在 DiLink 3/4 上对应 14。选择一个编号会在其上播放短音：拖动车辆滑块听哪个能控制它，然后保存。下次连接时生效。</string>
+    <string name="car_slider_finder">查找车辆滑块控制的内容</string>
+    <string name="car_slider_finder_message">现在上下移动车辆的某个音量滑块（例如 Voice）。DiAuto 会监视 Android 的音量流（%1$s）和车辆的音量设置，并列出发生变化的项。</string>
+    <string name="car_slider_finder_waiting">尚无变化。如果移动滑块时没有任何变化，说明该滑块不在 Android 的控制范围内。</string>
+    <string name="car_slider_finder_done">完成</string>
     <string name="use_aac_audio">使用 AAC 音频</string>
     <string name="use_aac_audio_description">使用 AAC 编码器进行音频处理以节省带宽 (实验性)。</string>
     <string name="attach_hw_dsp_equalizer">硬件 DSP 等化器触发器</string>

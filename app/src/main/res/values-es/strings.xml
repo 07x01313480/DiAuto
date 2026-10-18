@@ -247,6 +247,10 @@
     <string name="car_stream_label_only">Solo etiqueta de Android</string>
     <string name="car_stream_same_as_navi">Igual que la navegación</string>
     <string name="car_stream_hint">El control Navegación de BYD sigue el flujo 15 en DiLink 5 y el 14 en DiLink 3/4. Al elegir un número suena un tono corto en él: mueve los controles del coche para oír cuál lo controla y pulsa Guardar. Se aplica en la próxima conexión.</string>
+    <string name="car_slider_finder">Averiguar qué controla un control del coche</string>
+    <string name="car_slider_finder_message">Mueve ahora arriba y abajo uno de los controles de volumen del coche (por ejemplo Voice). DiAuto vigila los flujos de volumen de Android (%1$s) y los ajustes de volumen del coche, y muestra lo que cambia.</string>
+    <string name="car_slider_finder_waiting">Todavía no ha cambiado nada. Si nada cambia mientras mueves el control, ese control queda fuera del alcance de Android.</string>
+    <string name="car_slider_finder_done">Hecho</string>
     <string name="use_aac_audio">Usar audio AAC</string>
     <string name="use_aac_audio_description">Usa el códec AAC para audio para ahorrar ancho de banda.</string>
     <string name="attach_hw_dsp_equalizer">Activador de ecualizador DSP por hardware</string>

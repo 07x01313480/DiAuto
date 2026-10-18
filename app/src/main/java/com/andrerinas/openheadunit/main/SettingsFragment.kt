@@ -1630,6 +1630,11 @@ class SettingsFragment : Fragment() {
                 stableId = "carStreamHint",
                 textResId = R.string.car_stream_hint
             ))
+            items.add(SettingItem.ActionButton(
+                stableId = "carSliderFinder",
+                textResId = R.string.car_slider_finder,
+                onClick = { showCarSliderFinder() }
+            ))
         }
         if (pendingCarVolumeGroups == true && pendingStaticAudioFocus == true) {
             items.add(SettingItem.InfoBanner(
@@ -2047,6 +2052,51 @@ class SettingsFragment : Fragment() {
     }
 
     /** Picks a stream; each choice plays a test tone on it so the matching slider can be found. */
+    /**
+     * Watches every stream volume and volume setting while the driver moves one of the car's
+     * sliders, and lists what moved. A slider that changes nothing here is outside Android's reach.
+     */
+    private fun showCarSliderFinder() {
+        val finder = com.andrerinas.openheadunit.utils.CarSliderFinder(requireContext())
+        val baseline = finder.snapshot()
+        val seen = LinkedHashSet<String>()
+        val handler = android.os.Handler(android.os.Looper.getMainLooper())
+        AppLog.i("Slider finder: streams=${finder.streams} baseline=$baseline")
+        fun text(): String = buildString {
+            append(getString(R.string.car_slider_finder_message, finder.streams.joinToString(", ")))
+            append("\n\n")
+            if (seen.isEmpty()) append(getString(R.string.car_slider_finder_waiting))
+            else seen.forEach { append(it).append('\n') }
+        }
+        val dialog = MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
+            .setTitle(R.string.car_slider_finder)
+            .setMessage(text())
+            .setPositiveButton(R.string.car_slider_finder_done, null)
+            .create()
+        var previous = baseline
+        val poll = object : Runnable {
+            override fun run() {
+                if (!dialog.isShowing) return
+                val now = finder.snapshot()
+                val moved = com.andrerinas.openheadunit.utils.CarSliderFinder.changes(previous, now)
+                if (moved.isNotEmpty()) {
+                    AppLog.i("Slider finder: $moved")
+                    // Keep one line per key, showing the start value and the latest one.
+                    com.andrerinas.openheadunit.utils.CarSliderFinder.changes(baseline, now).forEach { line ->
+                        seen.removeAll { it.substringBefore(':') == line.substringBefore(':') }
+                        seen += line
+                    }
+                    dialog.setMessage(text())
+                }
+                previous = now
+                handler.postDelayed(this, 300)
+            }
+        }
+        dialog.setOnDismissListener { handler.removeCallbacks(poll) }
+        dialog.show()
+        handler.postDelayed(poll, 300)
+    }
+
     private fun showCarStreamDialog(voice: Boolean, dilink: Int) {
         val values = listOf(-1, 0) + com.andrerinas.openheadunit.aap.CarVolumeGroups.STREAMS.toList()
         val labels = values.map { carStreamLabel(it, dilink, voice) }.toTypedArray()
