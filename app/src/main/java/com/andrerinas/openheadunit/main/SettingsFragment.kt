@@ -2063,12 +2063,14 @@ class SettingsFragment : Fragment() {
         val baseline = finder.snapshot()
         val seen = LinkedHashSet<String>()
         val handler = android.os.Handler(android.os.Looper.getMainLooper())
-        AppLog.i("Slider finder: streams=${finder.streams} baseline=$baseline")
+        val routes = finder.routes()
+        AppLog.i("Slider finder: streams=${finder.streams} baseline=$baseline routes=$routes")
         fun text(): String = buildString {
             append(getString(R.string.car_slider_finder_message, finder.streams.joinToString(", ")))
             append("\n\n")
             if (seen.isEmpty()) append(getString(R.string.car_slider_finder_waiting))
             else seen.forEach { append(it).append('\n') }
+            append("\n").append(routes)
         }
         val dialog = MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
             .setTitle(R.string.car_slider_finder)

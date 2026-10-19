@@ -47,6 +47,18 @@ class CarSliderFinder(context: Context) {
         }
     }
 
+    /**
+     * Which slider each stream number and usage really plays on here, as Android's audio
+     * configuration maps them: "17→17" means stream 17 reaches its own slider, "17→3" that it
+     * plays as media. Shown under the finder and logged, so a report shows the whole mapping.
+     */
+    fun routes(): String {
+        val groups = com.andrerinas.openheadunit.aap.CarVolumeGroups
+        val legacy = streams.filter { it > 0 }.joinToString(" ") { "$it→${groups.volumeStreamOfLegacy(it) ?: "?"}" }
+        val usages = groups.FALLBACK_USAGES.joinToString(" ") { "u$it→${groups.volumeStreamOfUsage(it) ?: "?"}" }
+        return "Streams: $legacy\nUsages: $usages"
+    }
+
     companion object {
         /** Android's own streams end at 11; BYD's vendor streams sit above that. */
         const val MAX_STREAM = 64
