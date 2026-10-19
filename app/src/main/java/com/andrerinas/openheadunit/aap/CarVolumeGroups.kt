@@ -13,7 +13,9 @@ import com.andrerinas.openheadunit.aap.protocol.Channel
  * channel carries both navigation prompts and the Assistant; Android Auto says which by opening
  * and closing a voice session, so the Assistant can be given a stream of its own: the Voice
  * slider follows stream 17 on DiLink 5 (a Qin Plus 2025 moved stream 17 and
- * `volume_btts_speaker` together with that slider, and nothing else).
+ * `volume_btts_speaker` together with that slider, and nothing else). That stays a manual choice:
+ * Gemini answers on the media channel and leaves its voice session open, so by default the
+ * Assistant keeps navigation's slider and nothing follows the voice session's state.
  *
  * Stream setting values: -1 automatic, 0 Android usage only, 1..20 that stream type.
  */
@@ -70,8 +72,9 @@ internal object CarVolumeGroups {
         else -> resolveNavi(naviStream, dilink)
     }
 
-    /** The measured Voice slider stream, or [AUTOMATIC] where the Assistant shares navigation's. */
-    fun defaultVoiceStream(dilink: Int): Int = if (dilink == 5) 17 else AUTOMATIC
+    /** The Assistant shares navigation's slider unless a stream is chosen (17 is DiLink 5's Voice slider). */
+    @Suppress("UNUSED_PARAMETER")
+    fun defaultVoiceStream(dilink: Int): Int = AUTOMATIC
 
     /**
      * Usages tried when a stream number does not reach its slider. Android maps a stream number

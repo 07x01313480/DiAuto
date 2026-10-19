@@ -39,9 +39,11 @@ class CarVolumeGroupsTest {
     }
 
     @Test
-    fun `assistant uses the Voice slider on DiLink 5 and follows navigation elsewhere`() {
-        assertEquals(17, route(Channel.ID_AU1, assistant = true).legacyStream)
-        assertEquals(AudioAttributes.USAGE_ASSISTANT, route(Channel.ID_AU1, assistant = true).usage)
+    fun `assistant follows navigation unless the Voice slider stream is chosen`() {
+        assertEquals(15, route(Channel.ID_AU1, assistant = true).legacyStream)
+        val voice = route(Channel.ID_AU1, assistant = true, voice = 17)
+        assertEquals(17, voice.legacyStream)
+        assertEquals(AudioAttributes.USAGE_ASSISTANT, voice.usage)
         assertEquals(14, route(Channel.ID_AU1, assistant = true, dilink = 4).legacyStream)
         assertEquals(15, route(Channel.ID_AU1, assistant = true, navi = 15, dilink = 0).legacyStream)
         val own = route(Channel.ID_AU1, assistant = true, voice = 12)
@@ -52,8 +54,8 @@ class CarVolumeGroupsTest {
 
     @Test
     fun `the speech track is rebuilt only when the assistant route differs`() {
-        assertTrue(CarVolumeGroups.speechRouteChanges(33, AUTOMATIC, AUTOMATIC, 5))
-        assertFalse(CarVolumeGroups.speechRouteChanges(33, AUTOMATIC, AUTOMATIC, 4))
+        assertFalse(CarVolumeGroups.speechRouteChanges(33, AUTOMATIC, AUTOMATIC, 5))
+        assertTrue(CarVolumeGroups.speechRouteChanges(33, AUTOMATIC, 17, 5))
         assertFalse(CarVolumeGroups.speechRouteChanges(33, 17, 17, 5))
         assertTrue(CarVolumeGroups.speechRouteChanges(33, AUTOMATIC, 12, 5))
         assertFalse(CarVolumeGroups.speechRouteChanges(25, AUTOMATIC, 12, 5))
