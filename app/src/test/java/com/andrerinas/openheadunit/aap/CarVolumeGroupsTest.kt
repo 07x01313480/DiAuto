@@ -90,4 +90,16 @@ class CarVolumeGroupsTest {
         val media = CarVolumeGroups.Route(AudioAttributes.USAGE_MEDIA, AudioAttributes.CONTENT_TYPE_MUSIC, null)
         assertEquals(media, CarVolumeGroups.reach(media, { error("not asked") }, { error("not asked") }))
     }
+
+    @Test
+    fun `media moves to the Voice slider only during a voice session`() {
+        assertNull(route(Channel.ID_AUD).legacyStream)
+        val gemini = route(Channel.ID_AUD, assistant = true)
+        assertEquals(17, gemini.legacyStream)
+        assertEquals(AudioAttributes.USAGE_ASSISTANT, gemini.usage)
+        // Where the Assistant shares navigation's slider, media stays media.
+        assertNull(route(Channel.ID_AUD, assistant = true, dilink = 4).legacyStream)
+        assertTrue(CarVolumeGroups.routeChanges(Channel.ID_AUD, 33, AUTOMATIC, AUTOMATIC, 5))
+        assertFalse(CarVolumeGroups.routeChanges(Channel.ID_AUD, 33, AUTOMATIC, AUTOMATIC, 4))
+    }
 }

@@ -50,7 +50,17 @@ internal object CarVolumeGroups {
             }
         }
         Channel.ID_AU2 -> Route(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION, AudioAttributes.CONTENT_TYPE_SONIFICATION, null)
-        else -> Route(AudioAttributes.USAGE_MEDIA, AudioAttributes.CONTENT_TYPE_MUSIC, null)
+        else -> {
+            // Gemini answers on the media channel, not the speech one (Qin Plus 2025: only the
+            // Media slider moved it). The phone pauses music while it talks, so during a voice
+            // session the media channel carries the assistant and goes to the Voice slider.
+            val voice = resolveVoice(voiceStream, naviStream, dilink)
+            if (assistantActive && sdkInt >= ASSISTANT_MIN_SDK && voice in STREAMS && voice != resolveNavi(naviStream, dilink)) {
+                Route(AudioAttributes.USAGE_ASSISTANT, AudioAttributes.CONTENT_TYPE_SPEECH, voice)
+            } else {
+                Route(AudioAttributes.USAGE_MEDIA, AudioAttributes.CONTENT_TYPE_MUSIC, null)
+            }
+        }
     }
 
     /** The navigation stream for a setting value; automatic picks the DiLink default. */
@@ -117,11 +127,15 @@ internal object CarVolumeGroups {
         AudioAttributes.Builder().setUsage(usage).build().volumeControlStream
     }.getOrNull()
 
+    /** Whether a voice-session change moves [channel] to another slider. */
+    fun routeChanges(channel: Int, sdkInt: Int, naviStream: Int, voiceStream: Int, dilink: Int): Boolean =
+        sdkInt >= ASSISTANT_MIN_SDK &&
+            routeFor(channel, true, sdkInt, naviStream, voiceStream, dilink) !=
+            routeFor(channel, false, sdkInt, naviStream, voiceStream, dilink)
+
     /** Whether a voice-session change can move the speech channel to another slider. */
     fun speechRouteChanges(sdkInt: Int, naviStream: Int, voiceStream: Int, dilink: Int): Boolean =
-        sdkInt >= ASSISTANT_MIN_SDK &&
-            routeFor(Channel.ID_AU1, true, sdkInt, naviStream, voiceStream, dilink) !=
-            routeFor(Channel.ID_AU1, false, sdkInt, naviStream, voiceStream, dilink)
+        routeChanges(Channel.ID_AU1, sdkInt, naviStream, voiceStream, dilink)
 
     private val VERSION = Regex("""DiLink\s*([345])(?:\.\d+)?""", RegexOption.IGNORE_CASE)
 
