@@ -550,14 +550,48 @@ class AapService : Service(), UsbReceiver.Listener {
     // Lifecycle
     // -------------------------------------------------------------------------
 
+    /**
+     * Starts or renews the foreground service. Android 14+ refuses the location type while the app
+     * has no visible screen (a start from boot, say); the service then runs without it rather than
+     * not at all, and gains it on the next renewal from the foreground.
+     */
+    @androidx.annotation.RequiresApi(Build.VERSION_CODES.Q)
+    private fun startForegroundWithTypes() {
+        val types = foregroundServiceTypes()
+        try {
+            startForeground(1, createNotification(), types)
+        } catch (e: SecurityException) {
+            if (types and ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION == 0) throw e
+            AppLog.w("AapService: location type refused now (${e.message}); running without it")
+            startForeground(1, createNotification(), types and ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION.inv())
+        }
+    }
+
+    /**
+     * The foreground service types to run under. The car's GPS is read for the phone in the
+     * background too (camera, another app on screen): Android only delivers location to an app
+     * without a visible screen when a foreground service of the location type runs. Without it the
+     * fixes stop, the last one is resent, and Android Auto shows the car standing still. The type
+     * is declared only with location permission, which Android 14+ requires for it.
+     */
+    @androidx.annotation.RequiresApi(Build.VERSION_CODES.Q)
+    private fun foregroundServiceTypes(): Int {
+        var types = ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE or ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+        val location = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
+            android.content.pm.PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
+            android.content.pm.PackageManager.PERMISSION_GRANTED
+        if (location) types = types or ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
+        return types
+    }
+
     override fun onCreate() {
         super.onCreate()
         AppLog.i("AapService creating...")
 
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                startForeground(1, createNotification(),
-                    ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE or ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
+                startForegroundWithTypes()
             } else {
                 startForeground(1, createNotification())
             }
@@ -809,6 +843,12 @@ class AapService : Service(), UsbReceiver.Listener {
 
         // Start GpsLocationService and NightModeManager sensor tracking
         AppLog.i("AapService: Starting GpsLocationService and NightModeManager since connection is established")
+        // Re-declare the service with the location type: permission may have been granted since
+        // the service started, and without the type the car's GPS goes quiet in the background.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            runCatching { startForegroundWithTypes() }
+                .onFailure { AppLog.w("AapService: could not renew the foreground service: ${it.message}") }
+        }
         startService(GpsLocationService.intent(this))
         nightModeManager?.start()
 
@@ -1180,8 +1220,7 @@ class AapService : Service(), UsbReceiver.Listener {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                startForeground(1, createNotification(),
-                    ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE or ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
+                startForegroundWithTypes()
             } else {
                 startForeground(1, createNotification())
             }
