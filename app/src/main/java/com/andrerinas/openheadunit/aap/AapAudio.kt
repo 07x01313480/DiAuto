@@ -296,8 +296,8 @@ internal class AapAudio(
 
         val config = AudioConfigs.get(channel)
         val stream = AudioConfigs.stream(channel, separateAudioStreams || carVolumeGroups)
-        val route = if (carVolumeGroups) CarVolumeGroups.routeFor(
-            channel, assistantActive, Build.VERSION.SDK_INT, carNaviStream, carVoiceStream, dilink) else null
+        val route = if (carVolumeGroups) CarVolumeGroups.reachOnThisUnit(CarVolumeGroups.routeFor(
+            channel, assistantActive, Build.VERSION.SDK_INT, carNaviStream, carVoiceStream, dilink)) else null
 
         val offset = when (channel) {
             Channel.ID_AUD -> mediaVolumeOffset

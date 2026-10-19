@@ -246,7 +246,7 @@
     <string name="car_stream_auto_label">تلقائي (تصنيف Android)</string>
     <string name="car_stream_label_only">تصنيف Android فقط</string>
     <string name="car_stream_same_as_navi">مثل الملاحة</string>
-    <string name="car_stream_hint">منزلق الملاحة في BYD يتبع المسار 15 في DiLink 5 والمسار 14 في DiLink 3/4. اختيار رقم يشغّل نغمة قصيرة عليه: حرّك منزلقات السيارة لتسمع أيّها يتحكم به، ثم احفظ. يُطبَّق عند الاتصال التالي.</string>
+    <string name="car_stream_hint">منزلق الملاحة في BYD يتبع المسار 15 في DiLink 5 والمسار 14 في DiLink 3/4. شريط Voice يتبع المسار 17 في DiLink 5. اختيار رقم يشغّل نغمة قصيرة عليه: حرّك منزلقات السيارة لتسمع أيّها يتحكم به، ثم احفظ. يُطبَّق عند الاتصال التالي.</string>
     <string name="car_slider_finder">اكتشف ما يتحكم به شريط صوت السيارة</string>
     <string name="car_slider_finder_message">حرّك الآن أحد أشرطة الصوت في السيارة (مثل Voice) للأعلى والأسفل. يراقب DiAuto مسارات الصوت في Android (%1$s) وإعدادات الصوت في السيارة، ويعرض ما يتغيّر.</string>
     <string name="car_slider_finder_waiting">لم يتغيّر شيء بعد. إذا لم يتغيّر شيء أثناء تحريك الشريط، فهذا الشريط خارج نطاق Android.</string>

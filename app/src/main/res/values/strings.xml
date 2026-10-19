@@ -473,7 +473,7 @@
     <string name="car_stream_auto_label">Automatic (Android label)</string>
     <string name="car_stream_label_only">Android label only</string>
     <string name="car_stream_same_as_navi">Same as navigation</string>
-    <string name="car_stream_hint">BYD’s Navi slider follows stream 15 on DiLink 5 and 14 on DiLink 3/4. Choosing a number plays a short tone on it: move the car’s sliders to hear which one controls it, then Save. Applies on the next connection.</string>
+    <string name="car_stream_hint">BYD’s Navi slider follows stream 15 on DiLink 5 and 14 on DiLink 3/4; the Voice slider follows stream 17 on DiLink 5. Choosing a number plays a short tone on it: move the car’s sliders to hear which one controls it, then Save. Applies on the next connection.</string>
     <string name="car_slider_finder">Find what a car slider controls</string>
     <string name="car_slider_finder_message">Move one of the car\'s volume sliders (for example Voice) up and down now. DiAuto watches Android\'s volume streams (%1$s) and the car\'s volume settings, and lists what moves.</string>
     <string name="car_slider_finder_waiting">Nothing has moved yet. If nothing moves while you move the slider, that slider is outside Android\'s reach.</string>

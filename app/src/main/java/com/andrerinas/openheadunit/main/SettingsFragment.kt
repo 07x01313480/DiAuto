@@ -2042,6 +2042,8 @@ class SettingsFragment : Fragment() {
     }
 
     private fun carStreamLabel(value: Int, dilink: Int, voice: Boolean): String = when {
+        value == -1 && voice && com.andrerinas.openheadunit.aap.CarVolumeGroups.defaultVoiceStream(dilink) > 0 ->
+            getString(R.string.car_stream_auto, com.andrerinas.openheadunit.aap.CarVolumeGroups.defaultVoiceStream(dilink))
         value == -1 && voice -> getString(R.string.car_stream_same_as_navi)
         value == -1 -> {
             val auto = com.andrerinas.openheadunit.aap.CarVolumeGroups.defaultNaviStream(dilink)
@@ -2110,7 +2112,7 @@ class SettingsFragment : Fragment() {
             .setSingleChoiceItems(labels, selected) { _, which ->
                 selected = which
                 val stream = when (val v = values[which]) {
-                    -1 -> if (voice) com.andrerinas.openheadunit.aap.CarVolumeGroups.resolveNavi(pendingCarNaviStream ?: -1, dilink)
+                    -1 -> if (voice) com.andrerinas.openheadunit.aap.CarVolumeGroups.resolveVoice(-1, pendingCarNaviStream ?: -1, dilink)
                         else com.andrerinas.openheadunit.aap.CarVolumeGroups.defaultNaviStream(dilink)
                     else -> v
                 }
