@@ -405,21 +405,16 @@ internal class AapAudio(
     }
 
     /**
-     * A voice session opened or closed. The speech channel, and the media channel Gemini answers
-     * on, change slider with it; a track's label is fixed when it is built, so the open ones are
-     * closed and the next sound builds anew.
+     * A voice session opened or closed. The speech channel changes slider with it, and a track's
+     * label is fixed when it is built, so the open one is closed and the next speech builds anew.
      */
     fun onVoiceSessionChanged(active: Boolean) {
         if (assistantActive == active) return
         assistantActive = active
-        if (!carVolumeGroups) return
-        for (channel in intArrayOf(Channel.ID_AU1, Channel.ID_AUD)) {
-            if (!CarVolumeGroups.routeChanges(channel, Build.VERSION.SDK_INT, carNaviStream, carVoiceStream, dilink)) continue
-            if (audioDecoder.getTrack(channel) != null) {
-                AppLog.i("AapAudio: voice session ${if (active) "started" else "ended"} - rebuilding ${Channel.name(channel)} " +
-                    "for the ${if (active) "Voice" else "usual"} slider")
-                audioDecoder.stop(channel)
-            }
+        if (!carVolumeGroups || !CarVolumeGroups.speechRouteChanges(Build.VERSION.SDK_INT, carNaviStream, carVoiceStream, dilink)) return
+        if (audioDecoder.getTrack(Channel.ID_AU1) != null) {
+            AppLog.i("AapAudio: voice session ${if (active) "started" else "ended"} - rebuilding the speech track for the ${if (active) "Voice" else "Navi"} slider")
+            audioDecoder.stop(Channel.ID_AU1)
         }
     }
 
