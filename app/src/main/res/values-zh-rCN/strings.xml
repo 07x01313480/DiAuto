@@ -245,7 +245,7 @@
     <string name="car_stream_auto_label">自动（Android 标签）</string>
     <string name="car_stream_label_only">仅 Android 标签</string>
     <string name="car_stream_same_as_navi">与导航相同</string>
-    <string name="car_stream_hint">比亚迪的导航滑块在 DiLink 5 上对应音频流 15，在 DiLink 3/4 上对应 14。选择一个编号会在其上播放短音：拖动车辆滑块听哪个能控制它，然后保存。下次连接时生效。</string>
+    <string name="car_stream_hint">比亚迪的导航滑块在 DiLink 5 上对应音频流 15，在 DiLink 3/4 上对应 14。Voice 滑块在 DiLink 5 上对应音频流 17。选择一个编号会在其上播放短音：拖动车辆滑块听哪个能控制它，然后保存。下次连接时生效。</string>
     <string name="use_aac_audio">使用 AAC 音频</string>
     <string name="use_aac_audio_description">使用 AAC 编码器进行音频处理以节省带宽 (实验性)。</string>
     <string name="attach_hw_dsp_equalizer">硬件 DSP 等化器触发器</string>

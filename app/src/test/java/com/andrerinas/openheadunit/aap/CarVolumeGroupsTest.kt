@@ -39,8 +39,11 @@ class CarVolumeGroupsTest {
     }
 
     @Test
-    fun `assistant follows navigation unless it has its own stream`() {
-        assertEquals(15, route(Channel.ID_AU1, assistant = true).legacyStream)
+    fun `assistant uses the Voice slider on DiLink 5 and follows navigation elsewhere`() {
+        assertEquals(17, route(Channel.ID_AU1, assistant = true).legacyStream)
+        assertEquals(AudioAttributes.USAGE_ASSISTANT, route(Channel.ID_AU1, assistant = true).usage)
+        assertEquals(14, route(Channel.ID_AU1, assistant = true, dilink = 4).legacyStream)
+        assertEquals(15, route(Channel.ID_AU1, assistant = true, navi = 15, dilink = 0).legacyStream)
         val own = route(Channel.ID_AU1, assistant = true, voice = 12)
         assertEquals(12, own.legacyStream)
         assertEquals(AudioAttributes.USAGE_ASSISTANT, own.usage)
@@ -49,7 +52,9 @@ class CarVolumeGroupsTest {
 
     @Test
     fun `the speech track is rebuilt only when the assistant route differs`() {
-        assertFalse(CarVolumeGroups.speechRouteChanges(33, AUTOMATIC, AUTOMATIC, 5))
+        assertTrue(CarVolumeGroups.speechRouteChanges(33, AUTOMATIC, AUTOMATIC, 5))
+        assertFalse(CarVolumeGroups.speechRouteChanges(33, AUTOMATIC, AUTOMATIC, 4))
+        assertFalse(CarVolumeGroups.speechRouteChanges(33, 17, 17, 5))
         assertTrue(CarVolumeGroups.speechRouteChanges(33, AUTOMATIC, 12, 5))
         assertFalse(CarVolumeGroups.speechRouteChanges(25, AUTOMATIC, 12, 5))
     }
@@ -60,5 +65,29 @@ class CarVolumeGroupsTest {
         assertEquals(5, CarVolumeGroups.detectDiLink("IVI", "BYD-AUTO/IVI/IVI:13/x", null, 33, null))
         assertEquals(4, CarVolumeGroups.detectDiLink(null, null, null, 30, "21.1.2"))
         assertEquals(0, CarVolumeGroups.detectDiLink("sdk_phone", "google/sdk", null, 34, null))
+    }
+
+    private val voice17 = CarVolumeGroups.Route(AudioAttributes.USAGE_ASSISTANT, AudioAttributes.CONTENT_TYPE_SPEECH, 17)
+
+    @Test
+    fun `a stream number Android maps to its slider is kept`() {
+        val r = CarVolumeGroups.reach(voice17, legacyStreamOf = { it }, usageStreamOf = { 3 })
+        assertEquals(voice17, r)
+    }
+
+    @Test
+    fun `an unmapped stream number is replaced by the usage that reaches that slider`() {
+        val usages = mapOf(AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY to 17)
+        val r = CarVolumeGroups.reach(voice17, legacyStreamOf = { 3 }, usageStreamOf = { usages[it] ?: 3 })
+        assertNull(r.legacyStream)
+        assertEquals(AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY, r.usage)
+    }
+
+    @Test
+    fun `with no usage reaching the slider the stream number is kept`() {
+        val r = CarVolumeGroups.reach(voice17, legacyStreamOf = { 3 }, usageStreamOf = { 3 })
+        assertEquals(voice17, r)
+        val media = CarVolumeGroups.Route(AudioAttributes.USAGE_MEDIA, AudioAttributes.CONTENT_TYPE_MUSIC, null)
+        assertEquals(media, CarVolumeGroups.reach(media, { error("not asked") }, { error("not asked") }))
     }
 }

@@ -17,6 +17,15 @@ class StreamTonePreview {
     @Volatile private var current: AudioTrack? = null
 
     fun play(stream: Int, usage: Int) {
+        // Tested the way the audio will play: a stream number Android does not map to its slider
+        // is replaced by the usage that does reach it.
+        val reached = com.andrerinas.openheadunit.aap.CarVolumeGroups.reachOnThisUnit(
+            com.andrerinas.openheadunit.aap.CarVolumeGroups.Route(usage, AudioAttributes.CONTENT_TYPE_SPEECH, stream.takeIf { it > 0 }))
+        play(reached.legacyStream ?: 0, reached.usage, stream)
+    }
+
+    private fun play(stream: Int, usage: Int, asked: Int) {
+        if (stream != asked) AppLog.i("Tone preview: stream $asked plays by usage $usage, which reaches its slider")
         worker.execute {
             current?.let { runCatching { it.stop(); it.release() } }
             current = null
