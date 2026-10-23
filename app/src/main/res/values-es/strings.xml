@@ -967,6 +967,9 @@
     <string name="nav_notification_access_path">Abre Aplicaciones → Acceso especial de apps → Acceso a notificaciones y activa DiAuto.</string>
     <string name="cluster_map_title">Mapa de Android Auto en el cuadro (experimental)</string>
     <string name="cluster_map_description">Muestra el mapa de cuadro de la app de navegación (Waze, Google Maps) en el cuadro de instrumentos BYD. Se aplica en la próxima conexión.</string>
+    <string name="cluster_map_content">El cuadro muestra</string>
+    <string name="cluster_map_content_map">Mapa</string>
+    <string name="cluster_map_content_turn_card">Solo la tarjeta de giro</string>
     <string name="cluster_map_size">Tamaño del mapa</string>
     <string name="cluster_map_size_normal">Normal (1920×720, nítido)</string>
     <string name="cluster_map_size_large">Grande (ampliado 1,5×)</string>

@@ -957,6 +957,9 @@
     <string name="nav_notification_access_path">افتح التطبيقات ← وصول خاص للتطبيقات ← الوصول إلى الإشعارات، ثم فعّل DiAuto.</string>
     <string name="cluster_map_title">خريطة Android Auto على لوحة العدادات (تجريبي)</string>
     <string name="cluster_map_description">عرض خريطة تطبيق الملاحة الخاصة بلوحة العدادات (Waze وخرائط Google) على لوحة عدادات BYD. يُطبَّق عند الاتصال التالي.</string>
+    <string name="cluster_map_content">ما يُعرض على لوحة العدادات</string>
+    <string name="cluster_map_content_map">الخريطة</string>
+    <string name="cluster_map_content_turn_card">بطاقة الانعطاف فقط</string>
     <string name="cluster_map_size">حجم الخريطة</string>
     <string name="cluster_map_size_normal">عادي (1920×720، واضح)</string>
     <string name="cluster_map_size_large">كبير (مكبّر 1.5×)</string>

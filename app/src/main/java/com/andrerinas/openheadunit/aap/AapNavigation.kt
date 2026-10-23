@@ -177,7 +177,8 @@ class AapNavigation(
 
     private fun scheduleDebouncedBroadcast(navEventType: Int) {
         // The dashboard turn card shows the same mapped guidance as the HUD.
-        val turnCard = settings.clusterMapEnabled && settings.clusterTurnCardOverlay
+        val turnCard = settings.clusterMapEnabled && (settings.clusterTurnCardOverlay ||
+            settings.clusterMapContent == com.andrerinas.openheadunit.hud.ClusterMapConfig.Content.TURN_CARD.value)
         val mapped = if (settings.bydNavigationEnabled || turnCard) com.andrerinas.openheadunit.hud.BydNavigationMapper.from(snapshot, settings.bydLeftHandTraffic) else null
         val bydFrame = if (settings.bydNavigationEnabled) mapped else null
         com.andrerinas.openheadunit.hud.DashboardGuidance.latest = if (turnCard) mapped else null

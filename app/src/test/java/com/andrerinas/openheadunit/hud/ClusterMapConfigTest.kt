@@ -1,5 +1,6 @@
 package com.andrerinas.openheadunit.hud
 
+import com.andrerinas.openheadunit.hud.ClusterMapConfig.Content
 import com.andrerinas.openheadunit.hud.ClusterMapConfig.Detail
 import com.andrerinas.openheadunit.hud.ClusterMapConfig.Size
 import org.junit.Assert.assertArrayEquals
@@ -11,9 +12,9 @@ import org.junit.Test
 class ClusterMapConfigTest {
 
     private fun profile(
-        size: Size = Size.NORMAL, detail: Detail = Detail.NORMAL,
+        content: Content = Content.MAP, size: Size = Size.NORMAL, detail: Detail = Detail.NORMAL,
         x: Int = 0, y: Int = 0,
-    ) = ClusterMapConfig.profile(size, detail, x, y)
+    ) = ClusterMapConfig.profile(content, size, detail, x, y)
 
     @Test
     fun `normal size draws the 8 to 3 panel inside a 1080p frame`() {
@@ -34,6 +35,15 @@ class ClusterMapConfigTest {
         assertEquals(480, p.contentHeight)
         assertEquals(240, p.heightMargin)
         assertEquals(ClusterMapConfig.Insets(120, 120, 0, 0), p.margins)
+    }
+
+    @Test
+    fun `map is a cluster display and the turn card an auxiliary one`() {
+        assertEquals(ClusterMapConfig.DISPLAY_TYPE_CLUSTER, profile().displayType)
+        assertNull(profile().initialContentKeycode)
+        val card = profile(content = Content.TURN_CARD)
+        assertEquals(ClusterMapConfig.DISPLAY_TYPE_AUXILIARY, card.displayType)
+        assertEquals(ClusterMapConfig.KEYCODE_TURN_CARD, card.initialContentKeycode)
     }
 
     @Test
@@ -93,7 +103,7 @@ class ClusterMapConfigTest {
 
     @Test
     fun `wider layouts widen the safe area around the same centre`() {
-        val wide = ClusterMapConfig.profile(Size.NORMAL, Detail.NORMAL, 0, 0, ClusterMapConfig.Width.WIDE)
+        val wide = ClusterMapConfig.profile(Content.MAP, Size.NORMAL, Detail.NORMAL, 0, 0, ClusterMapConfig.Width.WIDE)
         assertEquals(1920 * 16 / 100, wide.contentInsets.left)
         assertEquals(1920 * 16 / 100, wide.contentInsets.right)
         assertEquals(profile().contentInsets.top, wide.contentInsets.top)
@@ -115,6 +125,7 @@ class ClusterMapConfigTest {
     @Test
     fun `unknown stored values fall back to defaults`() {
         assertEquals(ClusterMapConfig.Width.COMPACT, ClusterMapConfig.Width.of(7))
+        assertEquals(Content.MAP, Content.of(9))
         assertEquals(Size.NORMAL, Size.of(-1))
         assertEquals(Detail.NORMAL, Detail.of(7))
     }

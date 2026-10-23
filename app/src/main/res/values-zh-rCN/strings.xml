@@ -958,6 +958,9 @@
     <string name="nav_notification_access_path">打开“应用”→“特殊应用权限”→“通知使用权”，然后开启 DiAuto。</string>
     <string name="cluster_map_title">仪表盘上的 Android Auto 地图（实验）</string>
     <string name="cluster_map_description">在比亚迪仪表盘上显示导航应用的仪表地图（Waze、Google 地图）。下次连接时生效。</string>
+    <string name="cluster_map_content">仪表盘显示</string>
+    <string name="cluster_map_content_map">地图</string>
+    <string name="cluster_map_content_turn_card">仅转向卡片</string>
     <string name="cluster_map_size">地图大小</string>
     <string name="cluster_map_size_normal">标准（1920×720，清晰）</string>
     <string name="cluster_map_size_large">大（放大 1.5 倍）</string>
