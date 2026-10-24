@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DiAuto</string>
+    <string name="app_name">DiAuto Wire</string>
     <string name="menu">القائمة</string>
     <string name="settings">الإعدادات</string>
 
@@ -12,7 +12,7 @@
     <string name="video">Android Auto</string>
     <string name="self_mode">الوضع الذاتي</string>
     <string name="to_android_auto">إلى Android Auto</string>
-    <string name="title">DiAuto</string>
+    <string name="title">DiAuto Wire</string>
     <string name="remove">إزالة</string>
     <string name="usb">USB</string>
     <string name="wifi">واي فاي</string>
@@ -237,6 +237,20 @@
     <string name="enable_audio_sink_description">عند تعطيله، لن تستقبل وحدة السيارة الصوت. سيُشغَّل الصوت من الهاتف.</string>
     <string name="separate_audio_streams">فصل تيارات الصوت</string>
     <string name="separate_audio_streams_description">فصل قنوات الصوت للموسيقى والمكالمات والإشعارات بدلاً من تيار وسائط واحد (قد لا يعمل بشكل صحيح على بعض الأجهزة).</string>
+    <string name="car_volume_groups">استخدام منزلقات الصوت في السيارة</string>
+    <string name="car_volume_groups_description">يشغّل وسائط Android Auto وتوجيهات الملاحة والمساعد على منزلقات الوسائط والملاحة والصوت الخاصة بالسيارة. يُطبَّق عند الاتصال التالي.</string>
+    <string name="car_volume_groups_static_hint">أوقف «تركيز الصوت الثابت» لهذا الخيار: فهو يدمج كل أصوات Android Auto في مسار واحد لا تضعه السيارة إلا على منزلق واحد.</string>
+    <string name="car_navi_stream">مسار منزلق الملاحة</string>
+    <string name="car_voice_stream">مسار المساعد (منزلق الصوت)</string>
+    <string name="car_stream_auto">تلقائي (%1$d)</string>
+    <string name="car_stream_auto_label">تلقائي (تصنيف Android)</string>
+    <string name="car_stream_label_only">تصنيف Android فقط</string>
+    <string name="car_stream_same_as_navi">مثل الملاحة</string>
+    <string name="car_stream_hint">منزلق الملاحة في BYD يتبع المسار 15 في DiLink 5 والمسار 14 في DiLink 3/4. شريط Voice يتبع المسار 17 في DiLink 5. اختيار رقم يشغّل نغمة قصيرة عليه: حرّك منزلقات السيارة لتسمع أيّها يتحكم به، ثم احفظ. يُطبَّق عند الاتصال التالي.</string>
+    <string name="car_slider_finder">اكتشف ما يتحكم به شريط صوت السيارة</string>
+    <string name="car_slider_finder_message">حرّك الآن أحد أشرطة الصوت في السيارة (مثل Voice) للأعلى والأسفل. يراقب DiAuto مسارات الصوت في Android (%1$s) وإعدادات الصوت في السيارة، ويعرض ما يتغيّر.</string>
+    <string name="car_slider_finder_waiting">لم يتغيّر شيء بعد. إذا لم يتغيّر شيء أثناء تحريك الشريط، فهذا الشريط خارج نطاق Android.</string>
+    <string name="car_slider_finder_done">تم</string>
     <string name="use_aac_audio">استخدام ترميز AAC للصوت</string>
     <string name="use_aac_audio_description">استخدام ترميز AAC للصوت لتوفير عرض النطاق الترددي (تجريبي).</string>
     <string name="attach_hw_dsp_equalizer">مشغل معادل الصوت DSP للأجهزة</string>
@@ -940,8 +954,12 @@
     <string name="no_files_found">لم يتم العثور على ملفات</string>
     <string name="byd_navigation_title">شاشة BYD الأمامية ولوحة العدادات</string>
     <string name="byd_navigation_description">عرض إرشادات Android Auto على شاشات BYD المدعومة. تجريبي؛ يختلف التوافق حسب السيارة.</string>
+    <string name="nav_notification_access_path">افتح التطبيقات ← وصول خاص للتطبيقات ← الوصول إلى الإشعارات، ثم فعّل DiAuto.</string>
     <string name="cluster_map_title">خريطة Android Auto على لوحة العدادات (تجريبي)</string>
     <string name="cluster_map_description">عرض خريطة تطبيق الملاحة الخاصة بلوحة العدادات (Waze وخرائط Google) على لوحة عدادات BYD. يُطبَّق عند الاتصال التالي.</string>
+    <string name="cluster_map_content">ما يُعرض على لوحة العدادات</string>
+    <string name="cluster_map_content_map">الخريطة</string>
+    <string name="cluster_map_content_turn_card">بطاقة الانعطاف فقط</string>
     <string name="cluster_map_size">حجم الخريطة</string>
     <string name="cluster_map_size_normal">عادي (1920×720، واضح)</string>
     <string name="cluster_map_size_large">كبير (مكبّر 1.5×)</string>
@@ -963,6 +981,12 @@
     <string name="cluster_map_overlay_unavailable">لا توجد في هذه الشاشة صفحة لهذا الإذن.</string>
     <string name="byd_left_hand_traffic_title">القيادة على اليسار</string>
     <string name="byd_left_hand_traffic_description">الدوّارات تسير باتجاه عقارب الساعة، كما في المملكة المتحدة واليابان وأستراليا. اتركه متوقفًا حيث تكون القيادة على اليمين. يُستخدم لعرض رقم مخرج الدوّار على شاشات BYD.</string>
+    <string name="nav_notification_guidance_title">إرشادات تطبيقات الملاحة على هذه الشاشة</string>
+    <string name="nav_notification_guidance_description">عرض أسهم الانعطاف والمسافة واسم الشارع من Waze أو خرائط Google المشغّلة على شاشة السيارة نفسها، بدون هاتف. تُقرأ من إشعار الملاحة؛ ميزة تجريبية. تبقى الأولوية لـ Android Auto أثناء الاتصال.</string>
+    <string name="nav_notification_access_needed">اسمح بالوصول إلى الإشعارات ليتمكن DiAuto من قراءة إرشادات تطبيق الملاحة.</string>
+    <string name="nav_notification_grant_access">السماح بالوصول إلى الإشعارات</string>
+    <string name="nav_notification_access_adb">لا تحتوي شاشة السيارة هذه على صفحة الوصول إلى الإشعارات. شغّل هذا الأمر من حاسوب متصل عبر ADB:\n\n%1$s</string>
+    <string name="nav_notification_copy_command">نسخ الأمر</string>
     <string name="da_connection_setup">إعداد الاتصال</string>
     <string name="da_connection_setup_hint">اختر طريقة الاتصال وأعدّ نقطة اتصال سيارتك.</string>
     <string name="da_diagnostics">التشخيص</string>

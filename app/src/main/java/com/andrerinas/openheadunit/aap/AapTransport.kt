@@ -20,7 +20,6 @@ import com.andrerinas.openheadunit.aap.protocol.messages.SensorEvent
 import com.andrerinas.openheadunit.aap.protocol.messages.VideoFocusEvent
 import com.andrerinas.openheadunit.utils.LegacyOptimizer
 import com.andrerinas.openheadunit.connection.AccessoryConnection
-import com.andrerinas.openheadunit.connection.SocketAccessoryConnection
 import com.andrerinas.openheadunit.contract.ProjectionActivityRequest
 import com.andrerinas.openheadunit.decoder.AudioDecoder
 import com.andrerinas.openheadunit.decoder.MicRecorder
@@ -111,8 +110,8 @@ class AapTransport(
     private var aapRead: AapRead? = null
     var isQuittingAllowed: Boolean = false
 
-    val isWireless: Boolean
-        get() = connection is com.andrerinas.openheadunit.connection.SocketAccessoryConnection
+    /** DiAuto Wire runs over USB only. */
+    val isWireless: Boolean get() = false
     var ignoreNextStopRequest: Boolean = false
     /** Why the last [startHandshake] failed, for callers that report it. */
     enum class HandshakeFailure {
@@ -616,7 +615,7 @@ class AapTransport(
     private fun handshake(connection: AccessoryConnection): Boolean {
         lastHandshakeFailure = HandshakeFailure.OTHER
         try {
-            val isUsb = connection !is SocketAccessoryConnection && !connection.isSingleMessage
+            val isUsb = !connection.isSingleMessage
             // Increased delay for AA 16.4+ stability on USB - skip for Sockets
             if (isUsb) {
                 SystemClock.sleep(500)

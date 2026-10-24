@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DiAuto</string>
+    <string name="app_name">DiAuto Wire</string>
     <string name="menu">Menu</string>
     <string name="settings">Settings</string>
 
@@ -183,7 +183,7 @@
     <string name="video">Android Auto</string>
     <string name="self_mode">Self Mode</string>
     <string name="to_android_auto">To Android Auto</string>
-    <string name="title">DiAuto</string>
+    <string name="title">DiAuto Wire</string>
     <string name="remove">Remove</string>
     <string name="usb">USB</string>
     <string name="wifi">WiFi</string>
@@ -464,6 +464,20 @@
     <string name="playback_focus_mode_static_hint">With Static Audio Focus on, this applies from the moment the phone connects and lasts the whole session, rather than only while audio is playing.</string>
     <string name="separate_audio_streams">Separate Audio Streams</string>
     <string name="separate_audio_streams_description">Separate audio channels for music, calls, and notifications instead of a single multimedia stream (may not work correctly on some devices).</string>
+    <string name="car_volume_groups">Use the car’s volume sliders</string>
+    <string name="car_volume_groups_description">Plays Android Auto media, navigation prompts and the Assistant on the car’s own Media, Navi and Voice volume sliders. Applies on the next connection.</string>
+    <string name="car_volume_groups_static_hint">Turn off Static audio focus for this: it mixes all Android Auto sound into one stream, which the car can only put on one slider.</string>
+    <string name="car_navi_stream">Navi slider stream</string>
+    <string name="car_voice_stream">Assistant (Voice slider) stream</string>
+    <string name="car_stream_auto">Automatic (%1$d)</string>
+    <string name="car_stream_auto_label">Automatic (Android label)</string>
+    <string name="car_stream_label_only">Android label only</string>
+    <string name="car_stream_same_as_navi">Same as navigation</string>
+    <string name="car_stream_hint">BYD’s Navi slider follows stream 15 on DiLink 5 and 14 on DiLink 3/4; the Voice slider follows stream 17 on DiLink 5. Choosing a number plays a short tone on it: move the car’s sliders to hear which one controls it, then Save. Applies on the next connection.</string>
+    <string name="car_slider_finder">Find what a car slider controls</string>
+    <string name="car_slider_finder_message">Move one of the car\'s volume sliders (for example Voice) up and down now. DiAuto watches Android\'s volume streams (%1$s) and the car\'s volume settings, and lists what moves.</string>
+    <string name="car_slider_finder_waiting">Nothing has moved yet. If nothing moves while you move the slider, that slider is outside Android\'s reach.</string>
+    <string name="car_slider_finder_done">Done</string>
     <string name="use_aac_audio">Use AAC Audio</string>
     <string name="use_aac_audio_description">Use AAC codec for audio to save bandwidth (Experimental).</string>
     <string name="attach_hw_dsp_equalizer">Hardware DSP Equalizer Trigger</string>
@@ -944,8 +958,12 @@
     <string name="rename_notice_button">Got it</string>
     <string name="byd_navigation_title">BYD HUD and instrument cluster</string>
     <string name="byd_navigation_description">Show Android Auto directions on supported BYD displays. Experimental; vehicle compatibility varies.</string>
+    <string name="nav_notification_access_path">Open Apps → Special app access → Notification access, then turn on DiAuto.</string>
     <string name="cluster_map_title">Android Auto map on the dashboard (experimental)</string>
     <string name="cluster_map_description">Show the navigation app\'s own cluster map (Waze, Google Maps) on the BYD instrument cluster. Applies on the next connection.</string>
+    <string name="cluster_map_content">Dashboard shows</string>
+    <string name="cluster_map_content_map">Map</string>
+    <string name="cluster_map_content_turn_card">Turn card only</string>
     <string name="cluster_map_size">Map size</string>
     <string name="cluster_map_size_normal">Normal (1920×720, sharp)</string>
     <string name="cluster_map_size_large">Large (enlarged 1.5×)</string>
@@ -967,6 +985,12 @@
     <string name="cluster_map_overlay_unavailable">This head unit has no screen for this permission.</string>
     <string name="byd_left_hand_traffic_title">Traffic drives on the left</string>
     <string name="byd_left_hand_traffic_description">Roundabouts turn clockwise, as in the UK, Japan or Australia. Leave off where traffic keeps right. Used to show the roundabout exit number on BYD displays.</string>
+    <string name="nav_notification_guidance_title">Directions from navigation apps on this screen</string>
+    <string name="nav_notification_guidance_description">Show turn arrows, distance and street from Waze or Google Maps running on the head unit itself, without a phone. Read from their navigation notification; experimental. Android Auto keeps priority while connected.</string>
+    <string name="nav_notification_access_needed">Allow notification access so DiAuto can read the navigation app\'s directions.</string>
+    <string name="nav_notification_grant_access">Allow notification access</string>
+    <string name="nav_notification_access_adb">This head unit has no notification-access screen. Run this command from a computer connected over ADB:\n\n%1$s</string>
+    <string name="nav_notification_copy_command">Copy command</string>
     <string name="da_connection_setup">Connection setup</string>
     <string name="da_connection_setup_hint">Choose a connection and set up your car hotspot.</string>
     <string name="da_diagnostics">Diagnostics</string>

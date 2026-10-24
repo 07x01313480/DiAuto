@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DiAuto</string>
+    <string name="app_name">DiAuto Wire</string>
     <string name="menu">Menú</string>
     <string name="settings">Configuración</string>
 
@@ -12,7 +12,7 @@
     <string name="video">Android Auto</string>
     <string name="self_mode">Modo Autónomo</string>
     <string name="to_android_auto">Ir a Android Auto</string>
-    <string name="title">DiAuto</string>
+    <string name="title">DiAuto Wire</string>
     <string name="remove">Eliminar</string>
     <string name="usb">USB</string>
     <string name="wifi">Wi-Fi</string>
@@ -237,6 +237,20 @@
     <string name="enable_audio_sink_description">Si está desactivado, el audio se reproducirá en el teléfono conectado.</string>
     <string name="separate_audio_streams">Separar flujos de audio</string>
     <string name="separate_audio_streams_description">Separar los canales de audio para música, llamadas y notificaciones en lugar de un único flujo multimedia (puede no funcionar correctamente en algunos dispositivos).</string>
+    <string name="car_volume_groups">Usar los controles de volumen del coche</string>
+    <string name="car_volume_groups_description">Reproduce los medios, las indicaciones de navegación y el Asistente de Android Auto en los controles Medios, Navegación y Voz del propio coche. Se aplica en la próxima conexión.</string>
+    <string name="car_volume_groups_static_hint">Desactiva el foco de audio estático para esto: mezcla todo el sonido de Android Auto en una sola salida, que el coche solo puede asignar a un control.</string>
+    <string name="car_navi_stream">Flujo del control Navegación</string>
+    <string name="car_voice_stream">Flujo del Asistente (control Voz)</string>
+    <string name="car_stream_auto">Automático (%1$d)</string>
+    <string name="car_stream_auto_label">Automático (etiqueta de Android)</string>
+    <string name="car_stream_label_only">Solo etiqueta de Android</string>
+    <string name="car_stream_same_as_navi">Igual que la navegación</string>
+    <string name="car_stream_hint">El control Navegación de BYD sigue el flujo 15 en DiLink 5 y el 14 en DiLink 3/4. El control Voice sigue el flujo 17 en DiLink 5. Al elegir un número suena un tono corto en él: mueve los controles del coche para oír cuál lo controla y pulsa Guardar. Se aplica en la próxima conexión.</string>
+    <string name="car_slider_finder">Averiguar qué controla un control del coche</string>
+    <string name="car_slider_finder_message">Mueve ahora arriba y abajo uno de los controles de volumen del coche (por ejemplo Voice). DiAuto vigila los flujos de volumen de Android (%1$s) y los ajustes de volumen del coche, y muestra lo que cambia.</string>
+    <string name="car_slider_finder_waiting">Todavía no ha cambiado nada. Si nada cambia mientras mueves el control, ese control queda fuera del alcance de Android.</string>
+    <string name="car_slider_finder_done">Hecho</string>
     <string name="use_aac_audio">Usar audio AAC</string>
     <string name="use_aac_audio_description">Usa el códec AAC para audio para ahorrar ancho de banda.</string>
     <string name="attach_hw_dsp_equalizer">Activador de ecualizador DSP por hardware</string>
@@ -950,8 +964,12 @@
     <string name="no_files_found">No se encontraron archivos</string>
     <string name="byd_navigation_title">HUD y cuadro de instrumentos BYD</string>
     <string name="byd_navigation_description">Muestra las indicaciones de Android Auto en pantallas BYD compatibles. Experimental; la compatibilidad varía según el coche.</string>
+    <string name="nav_notification_access_path">Abre Aplicaciones → Acceso especial de apps → Acceso a notificaciones y activa DiAuto.</string>
     <string name="cluster_map_title">Mapa de Android Auto en el cuadro (experimental)</string>
     <string name="cluster_map_description">Muestra el mapa de cuadro de la app de navegación (Waze, Google Maps) en el cuadro de instrumentos BYD. Se aplica en la próxima conexión.</string>
+    <string name="cluster_map_content">El cuadro muestra</string>
+    <string name="cluster_map_content_map">Mapa</string>
+    <string name="cluster_map_content_turn_card">Solo la tarjeta de giro</string>
     <string name="cluster_map_size">Tamaño del mapa</string>
     <string name="cluster_map_size_normal">Normal (1920×720, nítido)</string>
     <string name="cluster_map_size_large">Grande (ampliado 1,5×)</string>
@@ -973,6 +991,12 @@
     <string name="cluster_map_overlay_unavailable">Esta unidad no tiene pantalla para este permiso.</string>
     <string name="byd_left_hand_traffic_title">Circulación por la izquierda</string>
     <string name="byd_left_hand_traffic_description">Las rotondas giran en sentido horario, como en Reino Unido, Japón o Australia. Déjalo desactivado donde se circula por la derecha. Se usa para mostrar el número de salida de las rotondas en las pantallas BYD.</string>
+    <string name="nav_notification_guidance_title">Indicaciones de apps de navegación en esta pantalla</string>
+    <string name="nav_notification_guidance_description">Muestra flechas de giro, distancia y calle de Waze o Google Maps ejecutándose en la propia unidad, sin teléfono. Se leen de su notificación de navegación; experimental. Android Auto tiene prioridad mientras está conectado.</string>
+    <string name="nav_notification_access_needed">Permite el acceso a notificaciones para que DiAuto pueda leer las indicaciones de la app de navegación.</string>
+    <string name="nav_notification_grant_access">Permitir acceso a notificaciones</string>
+    <string name="nav_notification_access_adb">Esta unidad no tiene pantalla de acceso a notificaciones. Ejecuta este comando desde un ordenador conectado por ADB:\n\n%1$s</string>
+    <string name="nav_notification_copy_command">Copiar comando</string>
     <string name="da_connection_setup">Configuración de conexión</string>
     <string name="da_connection_setup_hint">Elige una conexión y configura el punto de acceso del coche.</string>
     <string name="da_diagnostics">Diagnóstico</string>

@@ -9,8 +9,8 @@
     <string name="da_ready">جاهز متى ما كنت جاهزاً</string>
     <string name="da_connecting">جارٍ الاتصال بهاتفك…</string>
     <string name="da_connected">تم الاتصال بـ Android Auto</string>
-    <string name="da_hint">اقرن هاتفك من إعدادات Bluetooth في السيارة، ثم اختر توصيل الهاتف. أبقِ Bluetooth وWi-Fi مفعّلين.</string>
-    <string name="da_wireless">ANDROID AUTO اللاسلكي</string>
+    <string name="da_hint">وصّل هاتفك بمنفذ USB في السيارة بكابل بيانات، ثم اختر توصيل الهاتف.</string>
+    <string name="da_wireless">ANDROID AUTO عبر USB</string>
     <string name="da_usb">الاتصال عبر USB</string>
     <string name="da_usb_hint">تفضل السلك؟ وصّل هاتفك.</string>
     <string name="da_settings">الإعدادات</string>

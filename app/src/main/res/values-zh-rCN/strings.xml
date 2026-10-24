@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DiAuto</string>
+    <string name="app_name">DiAuto Wire</string>
     <string name="menu">菜单</string>
     <string name="settings">设置</string>
     <string name="title_activity_settings">设置行为</string>
@@ -11,7 +11,7 @@
     <string name="video">Android Auto</string>
     <string name="self_mode">自我模式</string>
     <string name="to_android_auto">到 Android Auto</string>
-    <string name="title">DiAuto</string>
+    <string name="title">DiAuto Wire</string>
     <string name="remove">移除</string>
     <string name="usb">USB</string>
     <string name="wifi">WiFi</string>
@@ -236,6 +236,20 @@
     <string name="enable_audio_sink_description">如果已停用，主机将不会作为音频接收器。 音频将从手机播放。</string>
     <string name="separate_audio_streams">分离音频串流</string>
     <string name="separate_audio_streams_description">为音乐、通话和通知分离音频频道，而不是单一的多媒体串流（可能在某些设备上无法正常运作）。</string>
+    <string name="car_volume_groups">使用车辆的音量滑块</string>
+    <string name="car_volume_groups_description">让 Android Auto 的媒体、导航语音和助理分别使用车辆自带的“媒体”“导航”“语音”音量滑块。下次连接时生效。</string>
+    <string name="car_volume_groups_static_hint">需要关闭“静态音频焦点”：它会把所有 Android Auto 声音混成一路，车辆只能把它放到一个滑块上。</string>
+    <string name="car_navi_stream">导航滑块的音频流</string>
+    <string name="car_voice_stream">助理（语音滑块）的音频流</string>
+    <string name="car_stream_auto">自动（%1$d）</string>
+    <string name="car_stream_auto_label">自动（Android 标签）</string>
+    <string name="car_stream_label_only">仅 Android 标签</string>
+    <string name="car_stream_same_as_navi">与导航相同</string>
+    <string name="car_stream_hint">比亚迪的导航滑块在 DiLink 5 上对应音频流 15，在 DiLink 3/4 上对应 14。Voice 滑块在 DiLink 5 上对应音频流 17。选择一个编号会在其上播放短音：拖动车辆滑块听哪个能控制它，然后保存。下次连接时生效。</string>
+    <string name="car_slider_finder">查找车辆滑块控制的内容</string>
+    <string name="car_slider_finder_message">现在上下移动车辆的某个音量滑块（例如 Voice）。DiAuto 会监视 Android 的音量流（%1$s）和车辆的音量设置，并列出发生变化的项。</string>
+    <string name="car_slider_finder_waiting">尚无变化。如果移动滑块时没有任何变化，说明该滑块不在 Android 的控制范围内。</string>
+    <string name="car_slider_finder_done">完成</string>
     <string name="use_aac_audio">使用 AAC 音频</string>
     <string name="use_aac_audio_description">使用 AAC 编码器进行音频处理以节省带宽 (实验性)。</string>
     <string name="attach_hw_dsp_equalizer">硬件 DSP 等化器触发器</string>
@@ -941,8 +955,12 @@
     <string name="no_files_found">未找到文件</string>
     <string name="byd_navigation_title">比亚迪抬头显示和仪表盘</string>
     <string name="byd_navigation_description">在支持的比亚迪显示屏上显示 Android Auto 导航。实验功能；兼容性因车型而异。</string>
+    <string name="nav_notification_access_path">打开“应用”→“特殊应用权限”→“通知使用权”，然后开启 DiAuto。</string>
     <string name="cluster_map_title">仪表盘上的 Android Auto 地图（实验）</string>
     <string name="cluster_map_description">在比亚迪仪表盘上显示导航应用的仪表地图（Waze、Google 地图）。下次连接时生效。</string>
+    <string name="cluster_map_content">仪表盘显示</string>
+    <string name="cluster_map_content_map">地图</string>
+    <string name="cluster_map_content_turn_card">仅转向卡片</string>
     <string name="cluster_map_size">地图大小</string>
     <string name="cluster_map_size_normal">标准（1920×720，清晰）</string>
     <string name="cluster_map_size_large">大（放大 1.5 倍）</string>
@@ -964,6 +982,12 @@
     <string name="cluster_map_overlay_unavailable">此车机没有该权限的设置页面。</string>
     <string name="byd_left_hand_traffic_title">靠左行驶</string>
     <string name="byd_left_hand_traffic_description">环岛按顺时针方向行驶，例如英国、日本或澳大利亚。靠右行驶的地区请保持关闭。用于在比亚迪显示屏上显示环岛出口编号。</string>
+    <string name="nav_notification_guidance_title">在此屏幕上显示导航应用的指引</string>
+    <string name="nav_notification_guidance_description">无需手机，显示车机上运行的 Waze 或 Google 地图的转向箭头、距离和街道。从其导航通知中读取；实验功能。连接 Android Auto 时以其为准。</string>
+    <string name="nav_notification_access_needed">请允许通知访问权限，以便 DiAuto 读取导航应用的指引。</string>
+    <string name="nav_notification_grant_access">允许通知访问</string>
+    <string name="nav_notification_access_adb">此车机没有通知访问设置页面。请在通过 ADB 连接的电脑上运行此命令：\n\n%1$s</string>
+    <string name="nav_notification_copy_command">复制命令</string>
     <string name="da_connection_setup">连接设置</string>
     <string name="da_connection_setup_hint">选择连接方式并设置车载热点。</string>
     <string name="da_diagnostics">诊断</string>

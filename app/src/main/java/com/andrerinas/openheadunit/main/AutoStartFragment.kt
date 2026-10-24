@@ -278,30 +278,6 @@ class AutoStartFragment : Fragment() {
         ))
 
         items.add(SettingItem.ToggleSettingEntry(
-            stableId = "autoStartOnBoot",
-            nameResId = R.string.auto_start_on_boot_label,
-            descriptionResId = R.string.auto_start_on_boot_description,
-            isChecked = pendingAutoStartOnBoot!!,
-            onCheckedChanged = { isChecked ->
-                pendingAutoStartOnBoot = isChecked
-                checkChanges()
-                updateSettingsList()
-            }
-        ))
-
-        items.add(SettingItem.ToggleSettingEntry(
-            stableId = "autoStartOnScreenOn",
-            nameResId = R.string.auto_start_screen_on_label,
-            descriptionResId = R.string.auto_start_screen_on_description,
-            isChecked = pendingAutoStartOnScreenOn!!,
-            onCheckedChanged = { isChecked ->
-                pendingAutoStartOnScreenOn = isChecked
-                checkChanges()
-                updateSettingsList()
-            }
-        ))
-
-        items.add(SettingItem.ToggleSettingEntry(
             stableId = "listenForUsbDevices",
             nameResId = R.string.listen_for_usb_devices_label,
             descriptionResId = R.string.listen_for_usb_devices_description,
@@ -338,53 +314,8 @@ class AutoStartFragment : Fragment() {
             ))
         }
 
-        items.add(SettingItem.SettingEntry(
-            stableId = "autoStartBt",
-            nameResId = R.string.auto_start_bt_label,
-            value = getBluetoothSummaryText(),
-            onClick = {
-                showBluetoothDeviceSelector()
-            }
-        ))
-
-        if (Build.VERSION.SDK_INT <= 32) {
-            items.add(SettingItem.InfoBanner(
-                stableId = "autoStartWifiWarning",
-                textResId = R.string.auto_start_wifi_warning
-            ))
-
-            items.add(SettingItem.ToggleSettingEntry(
-                stableId = "autoStartWifi",
-                nameResId = R.string.auto_start_wifi_label,
-                descriptionResId = R.string.auto_start_wifi_description,
-                isChecked = pendingAutoStartOnWifi!!,
-                onCheckedChanged = { isChecked ->
-                    pendingAutoStartOnWifi = isChecked
-                    checkChanges()
-                    updateSettingsList()
-                }
-            ))
-
-            if (pendingAutoStartOnWifi == true) {
-                items.add(SettingItem.SettingEntry(
-                    stableId = "autoStartWifiSsid",
-                    nameResId = R.string.auto_start_wifi_ssid_label,
-                    value = if (pendingAutoStartWifiSsid.isNullOrEmpty()) getString(R.string.wifi_ssid_not_set) else pendingAutoStartWifiSsid!!,
-                    onClick = {
-                        showSsidInputDialog()
-                    }
-                ))
-            }
-        }
-
-        // Hide options that do not apply to the chosen connection types. Bluetooth bridges
-        // WiFi, so it is treated as WiFi scope.
-        val usbIds = setOf("listenForUsbDevices", "autoStartUsb", "reopenOnReconnection")
-        val wifiIds = setOf("autoStartBt", "autoStartWifiWarning", "autoStartWifi", "autoStartWifiSsid")
-        val filtered = items.filterNot { item ->
-            (item.stableId in usbIds && !settings.showsUsb()) ||
-                (item.stableId in wifiIds && !settings.showsWifi())
-        }
+        // DiAuto Wire is USB-only, so every remaining option applies.
+        val filtered = items
 
         settingsAdapter.submitList(filtered) {
             scrollState?.let { recyclerView.layoutManager?.onRestoreInstanceState(it) }

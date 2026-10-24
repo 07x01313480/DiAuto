@@ -54,13 +54,14 @@ internal class ClusterMapScreen(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val settings = App.provide(context).settings
+        val cardOnly = ClusterMapConfig.Content.of(settings.clusterMapContent) == ClusterMapConfig.Content.TURN_CARD
         val mapWindow = ClusterDisplayServices.window(context, settings)
         this.mapWindow = mapWindow
         val root = FrameLayout(context)
         // The Map theme shows its whole layer, so the map fills it; Scenario and Simple show a side
         // window, and Scenario shows the rest of this layer too, so only that window is drawn.
         val sideWindow = mapWindow?.takeIf { !it.fullMap }
-        if (sideWindow != null) {
+        if (cardOnly || sideWindow != null) {
             // The rest of the layer stays clear, so the car's own dashboard shows around it.
             this.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             this.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
@@ -68,8 +69,8 @@ internal class ClusterMapScreen(
         } else {
             root.setBackgroundColor(Color.BLACK)
         }
-        addMap(root, sideWindow)
-        if (settings.clusterTurnCardOverlay) {
+        if (!cardOnly) addMap(root, sideWindow)
+        if (cardOnly || settings.clusterTurnCardOverlay) {
             turnCard = ClusterTurnCardView(context).apply {
                 visibility = android.view.View.GONE
                 setPlan(mapWindow)
@@ -79,7 +80,7 @@ internal class ClusterMapScreen(
         }
         setContentView(root)
         contentRoot = root
-        AppLog.i("ClusterMap: map on ${display.name} window=$mapWindow card=${turnCard != null}")
+        AppLog.i("ClusterMap: ${if (cardOnly) "turn card" else "map"} on ${display.name} window=$mapWindow card=${turnCard != null}")
     }
 
     override fun onStart() {

@@ -121,6 +121,10 @@ class Settings(private val context: Context) {
         get() = prefs.getBoolean("cluster-map-enabled", false)
         set(value) { prefs.edit().putBoolean("cluster-map-enabled", value).apply() }
 
+    var clusterMapContent: Int
+        get() = prefs.getInt("cluster-map-content", 0)
+        set(value) { prefs.edit().putInt("cluster-map-content", value).apply() }
+
     var clusterMapSize: Int
         get() = prefs.getInt("cluster-map-size", 0)
         set(value) { prefs.edit().putInt("cluster-map-size", value).apply() }
@@ -156,6 +160,10 @@ class Settings(private val context: Context) {
     var bydLeftHandTraffic: Boolean
         get() = prefs.getBoolean("byd-left-hand-traffic", false)
         set(value) { prefs.edit().putBoolean("byd-left-hand-traffic", value).apply() }
+    /** Read turn guidance from Waze / Google Maps running on the head unit for the BYD displays. */
+    var navNotificationGuidance: Boolean
+        get() = prefs.getBoolean("nav-notification-guidance", false)
+        set(value) { prefs.edit().putBoolean("nav-notification-guidance", value).apply() }
 
     var showNavigationNotifications: Boolean
         get() = prefs.getBoolean("show-navigation-notifications", false)
@@ -517,23 +525,9 @@ class Settings(private val context: Context) {
         get() = prefs.getString("head-unit-model", "Desktop Head Unit")!!
         set(value) { prefs.edit().putString("head-unit-model", value).apply() }
 
-    // 0 = Manual, 1 = Auto (Headunit Server), 2 = Helper (Wifi Launcher), 3 = Native AA
+    // DiAuto Wire has no wireless modes: always 0 (manual / off), whatever an older install stored.
     var wifiConnectionMode: Int
-        get() {
-            // Migration: Check if old helper boolean exists
-            if (prefs.contains("wifi-launcher-mode")) {
-                val old = prefs.getBoolean("wifi-launcher-mode", false)
-                val newMode = if (old) 2 else 1
-                prefs.edit().putInt("wifi-connection-mode", newMode).remove("wifi-launcher-mode").apply()
-                return newMode
-            }
-            // Migration: Check if native-aa-wireless was true
-            if (prefs.getBoolean("native-aa-wireless", false)) {
-                prefs.edit().putInt("wifi-connection-mode", 3).remove("native-aa-wireless").apply()
-                return 3
-            }
-            return prefs.getInt("wifi-connection-mode", 3) // Native Android Auto; no companion app
-        }
+        get() = 0
         set(value) { prefs.edit().putInt("wifi-connection-mode", value).apply() }
 
     var videoCodec: String
@@ -605,9 +599,10 @@ class Settings(private val context: Context) {
     }
 
     /** Whether USB-related settings should be shown (empty selection shows everything). */
-    fun showsUsb(): Boolean = connectionModes.isEmpty() || ConnectionMode.USB in connectionModes
+    /** DiAuto Wire connects over USB only. */
+    fun showsUsb(): Boolean = true
     /** Whether WiFi/wireless settings should be shown (empty selection shows everything). */
-    fun showsWifi(): Boolean = connectionModes.isEmpty() || ConnectionMode.WIFI in connectionModes
+    fun showsWifi(): Boolean = false
     /** The external-GPS choice only applies when a phone is connected; false only for Self-only. */
     fun showsExternalGps(): Boolean = showsUsb() || showsWifi()
 
@@ -688,6 +683,21 @@ class Settings(private val context: Context) {
         get() = prefs.getBoolean("separate-audio-streams", false)
         set(value) { prefs.edit().putBoolean("separate-audio-streams", value).apply() }
 
+    /** Label AA audio for the car's own Media / Navi / Voice volume sliders. See aap/CarVolumeGroups. */
+    var carVolumeGroups: Boolean
+        get() = prefs.getBoolean("car-volume-groups", false)
+        set(value) { prefs.edit().putBoolean("car-volume-groups", value).apply() }
+
+    /** Stream for the car's Navi slider: -1 automatic (BYD DiLink default), 0 Android label only, 1..20. */
+    var carNaviStream: Int
+        get() = prefs.getInt("car-navi-stream", -1)
+        set(value) { prefs.edit().putInt("car-navi-stream", value).apply() }
+
+    /** Stream for the Assistant's voice: -1 same as navigation, 0 Android label only, 1..20. */
+    var carVoiceStream: Int
+        get() = prefs.getInt("car-voice-stream", -1)
+        set(value) { prefs.edit().putInt("car-voice-stream", value).apply() }
+
     var micInputSource: Int
         get() = prefs.getInt("mic-input-source", 0) // Default: DEFAULT
         set(value) { prefs.edit().putInt("mic-input-source", value).apply() }
@@ -745,15 +755,15 @@ class Settings(private val context: Context) {
         set(value) { prefs.edit().putBoolean("auto-start-on-usb", value).apply() }
 
     var autoStartOnBoot: Boolean
-        get() = prefs.getBoolean("auto-start-on-boot", true)
+        get() = false // DiAuto Wire only auto-starts on USB
         set(value) { prefs.edit().putBoolean("auto-start-on-boot", value).apply() }
 
     var autoStartOnScreenOn: Boolean
-        get() = prefs.getBoolean("auto-start-on-screen-on", false)
+        get() = false // DiAuto Wire only auto-starts on USB
         set(value) { prefs.edit().putBoolean("auto-start-on-screen-on", value).apply() }
 
     var autoStartOnWifi: Boolean
-        get() = prefs.getBoolean("auto-start-on-wifi", false)
+        get() = false // DiAuto Wire only auto-starts on USB
         set(value) { prefs.edit().putBoolean("auto-start-on-wifi", value).apply() }
 
     var autoStartWifiSsid: String
